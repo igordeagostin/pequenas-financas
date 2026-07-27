@@ -1,0 +1,242 @@
+using PequenasFinancas.Core.Comum;
+using PequenasFinancas.Core.Modelos;
+using PequenasFinancas.Core.Servicos;
+
+namespace PequenasFinancas.Tests;
+
+public sealed class ServicoResumoTeste : IDisposable
+{
+    private static readonly Competencia MesAnalisado = new(2026, 7);
+
+    private readonly AmbienteDeTeste _ambiente = new();
+
+    [Fact]
+    public void SobraDoMesDescontaGastosFixosCartaoEParcelamentos()
+    {
+        MontarMesCompleto();
+
+        ResumoMes resumo = _ambiente.Resumo.Calcular(MesAnalisado);
+
+        Assert.Equal(6000.00m, resumo.TotalReceitas);
+        Assert.Equal(1500.00m, resumo.TotalGastosFixos);
+        Assert.Equal(400.00m, resumo.TotalCartoes);
+        Assert.Equal(200.00m, resumo.TotalParcelamentos);
+        Assert.Equal(3900.00m, resumo.SobraAntesDeGuardar);
+    }
+
+    [Fact]
+    public void DinheiroGuardadoNoMesDiminuiASobraFinal()
+    {
+        MontarMesCompleto();
+        GuardarNaReserva(500.00m);
+
+        ResumoMes resumo = _ambiente.Resumo.Calcular(MesAnalisado);
+
+        Assert.Equal(500.00m, resumo.TotalGuardado);
+        Assert.Equal(3900.00m, resumo.SobraAntesDeGuardar);
+        Assert.Equal(3400.00m, resumo.SobraFinal);
+        Assert.False(resumo.NoVermelho);
+    }
+
+    [Fact]
+    public void RendaExtraDoMesEntraNasReceitas()
+    {
+        MontarMesCompleto();
+
+        _ambiente.RendasExtras.Salvar(new RendaExtra
+        {
+            Competencia = MesAnalisado,
+            Descricao = "Freela",
+            Valor = 800.00m
+        });
+
+        ResumoMes resumo = _ambiente.Resumo.Calcular(MesAnalisado);
+
+        Assert.Equal(800.00m, resumo.TotalRendasExtras);
+        Assert.Equal(6800.00m, resumo.TotalReceitas);
+        Assert.Equal(4700.00m, resumo.SobraAntesDeGuardar);
+    }
+
+    [Fact]
+    public void FaturaAgrupaAsParcelasPorCartao()
+    {
+        MontarMesCompleto();
+
+        FaturaCartao fatura = _ambiente.Resumo.Calcular(MesAnalisado).Faturas.Single();
+
+        Assert.Equal("Nubank", fatura.Nome);
+        Assert.Equal(400.00m, fatura.Total);
+        Assert.Equal("1/12", fatura.Parcelas.Single().Progresso);
+    }
+
+    [Fact]
+    public void SaldoDaReservaAcumulaAoLongoDosMeses()
+    {
+        MontarMesCompleto();
+        GuardarNaReserva(500.00m);
+        GuardarNaReserva(300.00m, MesAnalisado.Proxima());
+
+        SaldoReserva saldoEmJulho = _ambiente.Resumo.Calcular(MesAnalisado).SaldosDeReservas.Single();
+        SaldoReserva saldoEmAgosto = _ambiente.Resumo.Calcular(MesAnalisado.Proxima()).SaldosDeReservas.Single();
+
+        Assert.Equal(500.00m, saldoEmJulho.Saldo);
+        Assert.Equal(800.00m, saldoEmAgosto.Saldo);
+        Assert.Equal(300.00m, saldoEmAgosto.MovimentadoNoMes);
+    }
+
+    [Fact]
+    public void ResgateDiminuiOSaldoGuardado()
+    {
+        MontarMesCompleto();
+        GuardarNaReserva(500.00m);
+
+        Reserva reserva = _ambiente.Reservas.Listar().Single();
+
+        _ambiente.Reservas.RegistrarMovimento(reserva.Id, new MovimentoReserva
+        {
+            Competencia = MesAnalisado,
+            Tipo = TipoMovimentoReserva.Resgate,
+            Valor = 200.00m
+        });
+
+        ResumoMes resumo = _ambiente.Resumo.Calcular(MesAnalisado);
+
+        Assert.Equal(300.00m, resumo.TotalGuardado);
+        Assert.Equal(300.00m, resumo.SaldosDeReservas.Single().Saldo);
+    }
+
+    [Fact]
+    public void GastosSaoAgrupadosPorCategoria()
+    {
+        MontarMesCompleto();
+
+        _ambiente.GastosAvulsos.Salvar(new GastoAvulso
+        {
+            Competencia = MesAnalisado,
+            Descricao = "Farmácia",
+            Valor = 87.90m,
+            Categoria = "Saúde"
+        });
+
+        IReadOnlyList<TotalPorCategoria> categorias = _ambiente.Resumo.Calcular(MesAnalisado).GastosPorCategoria;
+
+        Assert.Equal(1500.00m, categorias.Single(categoria => categoria.Categoria == "Moradia").Total);
+        Assert.Equal(87.90m, categorias.Single(categoria => categoria.Categoria == "Saúde").Total);
+        Assert.Equal("Moradia", categorias[0].Categoria);
+    }
+
+    [Fact]
+    public void MesSemNenhumLancamentoNaoQuebraOResumo()
+    {
+        ResumoMes resumo = _ambiente.Resumo.Calcular(MesAnalisado);
+
+        Assert.Equal(0m, resumo.TotalReceitas);
+        Assert.Equal(0m, resumo.TotalGastos);
+        Assert.Equal(0m, resumo.SobraFinal);
+        Assert.Empty(resumo.Lancamentos);
+        Assert.Empty(resumo.Faturas);
+    }
+
+    [Fact]
+    public void ListaDeLancamentosMostraEntradasESaidasDoMes()
+    {
+        MontarMesCompleto();
+
+        IReadOnlyList<LancamentoDoMes> lancamentos = _ambiente.Resumo.Calcular(MesAnalisado).Lancamentos;
+
+        Assert.Equal(4, lancamentos.Count);
+        Assert.Single(lancamentos, lancamento => lancamento.EhEntrada);
+        Assert.Contains(lancamentos, lancamento => lancamento.Detalhe == "Nubank · parcela 1/12");
+        Assert.Contains(lancamentos, lancamento => lancamento.Detalhe == "Parcelado · parcela 1/6");
+    }
+
+    [Fact]
+    public void GastosMaioresQueAsReceitasDeixamOMesNoVermelho()
+    {
+        _ambiente.Rendas.Salvar(new FonteRenda
+        {
+            Descricao = "Salário",
+            Valor = 1000.00m,
+            VigenciaInicio = MesAnalisado
+        });
+
+        _ambiente.GastosFixos.Salvar(new GastoFixo
+        {
+            Descricao = "Aluguel",
+            Valor = 1500.00m,
+            Categoria = "Moradia",
+            VigenciaInicio = MesAnalisado
+        });
+
+        ResumoMes resumo = _ambiente.Resumo.Calcular(MesAnalisado);
+
+        Assert.Equal(-500.00m, resumo.SobraFinal);
+        Assert.True(resumo.NoVermelho);
+    }
+
+    public void Dispose() => _ambiente.Dispose();
+
+    /// <summary>Salário de 6.000, aluguel de 1.500, notebook em 12x no cartão e carnê em 6x.</summary>
+    private void MontarMesCompleto()
+    {
+        _ambiente.Rendas.Salvar(new FonteRenda
+        {
+            Descricao = "Salário",
+            Valor = 6000.00m,
+            Tipo = TipoRenda.Principal,
+            VigenciaInicio = new Competencia(2026, 1)
+        });
+
+        _ambiente.GastosFixos.Salvar(new GastoFixo
+        {
+            Descricao = "Aluguel",
+            Valor = 1500.00m,
+            Categoria = "Moradia",
+            VigenciaInicio = new Competencia(2026, 1)
+        });
+
+        Cartao cartao = new() { Nome = "Nubank", DiaVencimento = 27 };
+        _ambiente.Cartoes.Salvar(cartao);
+
+        _ambiente.ComprasCartao.Salvar(new CompraCartao
+        {
+            CartaoId = cartao.Id,
+            Descricao = "Notebook",
+            ValorTotal = 4800.00m,
+            QuantidadeParcelas = 12,
+            CompetenciaPrimeiraParcela = MesAnalisado,
+            Categoria = "Eletrônicos"
+        });
+
+        _ambiente.Parcelamentos.Salvar(new Parcelamento
+        {
+            Descricao = "Sofá",
+            Credor = "Loja de móveis",
+            ValorTotal = 1200.00m,
+            QuantidadeParcelas = 6,
+            CompetenciaPrimeiraParcela = MesAnalisado,
+            Categoria = "Casa"
+        });
+    }
+
+    private void GuardarNaReserva(decimal valor, Competencia? competencia = null)
+    {
+        Reserva reserva = _ambiente.Reservas.Listar().FirstOrDefault()
+            ?? CriarReservaDeEmergencia();
+
+        _ambiente.Reservas.RegistrarMovimento(reserva.Id, new MovimentoReserva
+        {
+            Competencia = competencia ?? MesAnalisado,
+            Tipo = TipoMovimentoReserva.Deposito,
+            Valor = valor
+        });
+    }
+
+    private Reserva CriarReservaDeEmergencia()
+    {
+        Reserva reserva = new() { Nome = "Emergência", Objetivo = 10000.00m };
+        _ambiente.Reservas.Salvar(reserva);
+
+        return reserva;
+    }
+}
