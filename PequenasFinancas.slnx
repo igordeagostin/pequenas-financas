@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/PequenasFinancas.App/PequenasFinancas.App.csproj" />
+    <Project Path="src/PequenasFinancas.Core/PequenasFinancas.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/PequenasFinancas.Tests/PequenasFinancas.Tests.csproj" />
+  </Folder>
+</Solution>
