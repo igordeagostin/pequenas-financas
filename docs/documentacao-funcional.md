@@ -140,6 +140,10 @@ Só existe uma semana aberta por vez em cada mês.
 - **Já teve outra semana antes**: começa com **o saldo que você informou** ao fechar a
   semana anterior.
 
+O dinheiro que está guardado nas reservas **não entra nessa conta**, nem o que você
+guardou no mês, nem o saldo inicial das reservas. Se você tem R$ 7.000 guardados e o mês
+não teve nada a receber nem a pagar, a semana começa com R$ 0,00, e não com R$ -7.000.
+
 ### Quanto dá para gastar na semana
 
 O app divide o dinheiro pelos dias que faltam no mês e multiplica pelos dias da semana:

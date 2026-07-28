@@ -24,6 +24,29 @@ public sealed class ServicoSemanasTeste : IDisposable
     }
 
     [Fact]
+    public void ODinheiroGuardadoNaoMudaOComecoDaSemana()
+    {
+        MontarMesComDinheiroLivre();
+        GuardarNaReserva(800.00m);
+
+        SemanaPlanejada semana = _ambiente.Semanas.Abrir(MesAnalisado, PrimeiroDiaDaSemana);
+
+        Assert.Equal(2100.00m, semana.SaldoInicial);
+    }
+
+    [Fact]
+    public void OSaldoInicialDaReservaNaoMudaOComecoDaSemana()
+    {
+        MontarMesComDinheiroLivre();
+
+        _ambiente.Reservas.Salvar(new Reserva { Nome = "Emergência", SaldoInicial = 5000.00m });
+
+        SemanaPlanejada semana = _ambiente.Semanas.Abrir(MesAnalisado, PrimeiroDiaDaSemana);
+
+        Assert.Equal(2100.00m, semana.SaldoInicial);
+    }
+
+    [Fact]
     public void QuantoPodeGastarNaSemanaEProporcionalAosDiasQueFaltamNoMes()
     {
         MontarMesComDinheiroLivre();
@@ -218,6 +241,19 @@ public sealed class ServicoSemanasTeste : IDisposable
             Valor = 1000.00m,
             Categoria = "Moradia",
             VigenciaInicio = new Competencia(2026, 1)
+        });
+    }
+
+    private void GuardarNaReserva(decimal valor)
+    {
+        Reserva reserva = new() { Nome = "Emergência" };
+        _ambiente.Reservas.Salvar(reserva);
+
+        _ambiente.Reservas.RegistrarMovimento(reserva.Id, new MovimentoReserva
+        {
+            Competencia = MesAnalisado,
+            Tipo = TipoMovimentoReserva.Deposito,
+            Valor = valor
         });
     }
 
