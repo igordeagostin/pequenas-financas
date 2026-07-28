@@ -1,0 +1,14 @@
+@namespace PequenasFinancas.App.Componentes.Compartilhados
+
+<span class="nome-colorido">
+    <span class="ponto" style="background: @Cor"></span>
+    <span class="nome">@Nome</span>
+</span>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Nome { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Cor { get; set; } = "var(--text-suave)";
+}

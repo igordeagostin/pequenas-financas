@@ -67,9 +67,8 @@ else
                                 </div>
                             </td>
                             <td>
-                                <span class="etiqueta etiqueta-cartao" style="background: @ObterCor(compra.CartaoId)">
-                                    @ServicoDeCartoes.ObterNome(compra.CartaoId)
-                                </span>
+                                <NomeColorido Nome="@ServicoDeCartoes.ObterNome(compra.CartaoId)"
+                                              Cor="@ObterCor(compra.CartaoId)" />
                             </td>
                             <td class="numero">@DescritorParcelamento.Parcelas(compra)</td>
                             <td class="texto-suave">@DescritorParcelamento.Periodo(compra)</td>

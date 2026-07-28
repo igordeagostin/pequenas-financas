@@ -422,6 +422,34 @@ a {
     border-color: transparent;
 }
 
+.nome-colorido {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.nome-colorido .ponto {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex: none;
+}
+
+.nome-colorido .nome {
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.celula-nome {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
 .estado-vazio {
     padding: 34px 20px;
     text-align: center;

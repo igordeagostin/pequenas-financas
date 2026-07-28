@@ -38,14 +38,16 @@
                 {
                     <tr>
                         <td>
-                            <span class="etiqueta etiqueta-cartao" style="background: @cartao.Cor">@cartao.Nome</span>
+                            <div class="celula-nome">
+                                <NomeColorido Nome="@cartao.Nome" Cor="@cartao.Cor" />
+                                @if (!cartao.Ativo)
+                                {
+                                    <span class="etiqueta">Sem uso</span>
+                                }
+                            </div>
                             @if (!string.IsNullOrWhiteSpace(cartao.Bandeira))
                             {
-                                <span class="texto-suave texto-pequeno"> @cartao.Bandeira</span>
-                            }
-                            @if (!cartao.Ativo)
-                            {
-                                <span class="etiqueta">Sem uso</span>
+                                <div class="texto-suave texto-pequeno">@cartao.Bandeira</div>
                             }
                         </td>
                         <td class="texto-suave">dia @cartao.DiaFechamento / dia @cartao.DiaVencimento</td>
