@@ -1,12 +1,12 @@
 # Pequenas Finanças — Convenções do Projeto
 
-App desktop para registro simples das finanças do dia a dia.
+App desktop para saber quanto dinheiro livre sobra no mês e quanto dá para gastar por dia.
 Stack: .NET 10, WPF + BlazorWebView (Razor/CSS), banco em arquivo JSON.
 
 ## Idioma do código
 
 Todo o código é escrito em **português**: classes, métodos, propriedades, variáveis,
-parâmetros, rotas, campos do JSON, textos de interface e comentários.
+parâmetros, rotas, campos do JSON e textos de interface.
 
 Permanecem em inglês apenas:
 
@@ -29,6 +29,15 @@ Permanecem em inglês apenas:
 - Formulários usam os componentes compartilhados `ModalFormulario` e `CampoMoeda`.
 - Listas de lançamentos usam um único componente de linha.
 - CRUD dos cadastros herda de `ServicoCrud<T>`; recorrência vigente sai de `ServicoRecorrencia`.
+
+## Sem comentários
+
+O código **não tem comentários** — nem `//`, nem `/* */`, nem `///` de documentação,
+nem `@* *@` no Razor. O nome da classe, do método e da variável explica o que o código faz.
+
+Quando um trecho parece precisar de comentário, o problema é o código: extraia um método
+com nome melhor, dê nome à constante ou simplifique a expressão. Explicação de uso do app
+vai para a documentação funcional, não para dentro do código.
 
 ## Código limpo
 
@@ -80,8 +89,23 @@ componente escreve cor fixa fora dessas variáveis.
 | Error      | `--error`       | `#EF4444` |
 | Border     | `--border`      | `#E2E8F0` |
 
+Tons de apoio, derivados dos anteriores. Também vivem no mesmo bloco de variáveis:
+
+| Papel                          | Variável           | Cor         |
+|--------------------------------|--------------------|-------------|
+| Fundo suave do primary         | `--primary-claro`  | `#0F766E1A` |
+| Texto sobre fundo colorido     | `--sobre-primary`  | `#FFFFFF`   |
+| Texto secundário               | `--text-suave`     | `#64748B`   |
+| Fundo de aviso de erro         | `--error-fundo`    | `#FEF2F2`   |
+| Borda de aviso de erro         | `--error-borda`    | `#FECACA`   |
+| Anel de foco dos campos        | `--foco`           | `#14B8A62E` |
+| Véu escuro atrás do modal      | `--veu-modal`      | `#0F172A73` |
+
 Uso: entradas de dinheiro em `--success`, saídas em `--error`, reservas e destaques
 em `--primary`/`--secondary`, alertas e vencimentos em `--accent`.
+
+A janela WPF em `MainWindow.xaml` repete o valor de `--background` porque o WPF não lê CSS.
+É o único lugar fora do `app.css` com cor fixa, e as duas mudam juntas.
 
 ## Segurança dos dados (regra obrigatória)
 

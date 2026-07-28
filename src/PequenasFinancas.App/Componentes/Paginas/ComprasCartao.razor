@@ -177,7 +177,7 @@ else
             ? [.. Itens.Where(compra => DescritorParcelamento.CaiNoMes(compra, MesSelecionado))]
             : Itens;
 
-    private string ObterCor(Guid cartaoId) => ServicoDeCartoes.Obter(cartaoId)?.Cor ?? "#64748B";
+    private string ObterCor(Guid cartaoId) => ServicoDeCartoes.Obter(cartaoId)?.Cor ?? "var(--text-suave)";
 
     private static void DefinirPrimeiraParcela(CompraCartao compra, Competencia? mes)
         => compra.CompetenciaPrimeiraParcela = mes ?? compra.CompetenciaPrimeiraParcela;
