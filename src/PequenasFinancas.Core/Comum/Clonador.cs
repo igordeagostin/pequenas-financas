@@ -3,10 +3,6 @@ using PequenasFinancas.Core.Dados;
 
 namespace PequenasFinancas.Core.Comum;
 
-/// <summary>
-/// Cria uma cópia independente de um registro. Usado ao abrir um formulário de edição,
-/// para que cancelar não deixe alterações no dado guardado.
-/// </summary>
 public static class Clonador
 {
     public static T Clonar<T>(T original)

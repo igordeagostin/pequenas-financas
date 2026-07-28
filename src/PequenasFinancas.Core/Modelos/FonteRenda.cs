@@ -2,7 +2,6 @@ using PequenasFinancas.Core.Comum;
 
 namespace PequenasFinancas.Core.Modelos;
 
-/// <summary>Origem do dinheiro que entra todo mês (salário, aposentadoria, aluguel recebido...).</summary>
 public sealed class FonteRenda : IRecorrente
 {
     public Guid Id { get; set; } = Guid.NewGuid();

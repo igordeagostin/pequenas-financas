@@ -1,6 +1,5 @@
 namespace PequenasFinancas.Core.Modelos;
 
-/// <summary>Cartão de crédito onde as compras parceladas são lançadas.</summary>
 public sealed class Cartao : IRegistro
 {
     public Guid Id { get; set; } = Guid.NewGuid();

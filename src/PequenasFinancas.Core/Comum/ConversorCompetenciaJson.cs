@@ -3,9 +3,6 @@ using System.Text.Json.Serialization;
 
 namespace PequenasFinancas.Core.Comum;
 
-/// <summary>
-/// Grava a competência como texto "aaaa-MM", inclusive quando ela é chave de dicionário.
-/// </summary>
 public sealed class ConversorCompetenciaJson : JsonConverter<Competencia>
 {
     public override Competencia Read(ref Utf8JsonReader leitor, Type tipo, JsonSerializerOptions opcoes)

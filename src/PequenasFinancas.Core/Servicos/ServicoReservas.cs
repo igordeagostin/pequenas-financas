@@ -4,12 +4,10 @@ using PequenasFinancas.Core.Modelos;
 
 namespace PequenasFinancas.Core.Servicos;
 
-/// <summary>Lugares onde o dinheiro guardado fica separado, com seus depósitos e resgates.</summary>
 public sealed class ServicoReservas(BancoJson banco) : ServicoCrud<Reserva>(banco)
 {
     protected override List<Reserva> Colecao => Banco.Dados.Reservas;
 
-    /// <summary>Registra dinheiro guardado ou retirado. Sempre disponível para qualquer reserva.</summary>
     public void RegistrarMovimento(Guid reservaId, MovimentoReserva movimento)
     {
         Reserva reserva = Obter(reservaId)
@@ -42,13 +40,11 @@ public sealed class ServicoReservas(BancoJson banco) : ServicoCrud<Reserva>(banc
     public IReadOnlyList<MovimentoReserva> ListarMovimentos(Guid reservaId)
         => [.. (Obter(reservaId)?.Movimentos ?? []).OrderByDescending(movimento => movimento.Data)];
 
-    /// <summary>Saldo acumulado até o fim da competência informada.</summary>
     public static decimal CalcularSaldo(Reserva reserva, Competencia ate)
         => reserva.Movimentos
             .Where(movimento => movimento.Competencia <= ate)
             .Sum(movimento => movimento.ValorComSinal);
 
-    /// <summary>Quanto foi guardado dentro de um mês (depósitos menos resgates).</summary>
     public static decimal CalcularMovimentadoNoMes(Reserva reserva, Competencia competencia)
         => reserva.Movimentos
             .Where(movimento => movimento.Competencia == competencia)

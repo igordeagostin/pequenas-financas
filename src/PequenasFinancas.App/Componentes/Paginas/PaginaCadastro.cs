@@ -6,10 +6,6 @@ using PequenasFinancas.Core.Servicos;
 
 namespace PequenasFinancas.App.Componentes.Paginas;
 
-/// <summary>
-/// Comportamento comum das telas de cadastro: listar, abrir o formulário, salvar e excluir.
-/// Cada tela só declara seus campos e suas conferências.
-/// </summary>
 public abstract class PaginaCadastro<T> : ComponentBase, IDisposable
     where T : class, IRegistro, new()
 {
@@ -44,10 +40,8 @@ public abstract class PaginaCadastro<T> : ComponentBase, IDisposable
         GC.SuppressFinalize(this);
     }
 
-    /// <summary>Relê os dados da tela. Telas com listas extras completam este método.</summary>
     protected virtual void Recarregar() => Itens = Servico.Listar();
 
-    /// <summary>Item em branco usado ao clicar em "novo". Cada tela pode preencher valores iniciais.</summary>
     protected virtual T CriarNovo() => new();
 
     protected void AbrirNovo()
@@ -89,7 +83,6 @@ public abstract class PaginaCadastro<T> : ComponentBase, IDisposable
         Recarregar();
     }
 
-    /// <summary>Devolve a mensagem de erro quando algo está faltando, ou nada quando pode salvar.</summary>
     protected abstract string? Conferir(T item);
 
     protected void PedirExclusao(T item) => ItemParaExcluir = item;
@@ -108,7 +101,6 @@ public abstract class PaginaCadastro<T> : ComponentBase, IDisposable
         Recarregar();
     }
 
-    /// <summary>Nome mostrado na pergunta de confirmação da exclusão.</summary>
     protected abstract string DescreverParaExclusao(T item);
 
     private void AoTrocarDeMes()

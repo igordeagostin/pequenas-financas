@@ -1,6 +1,5 @@
 namespace PequenasFinancas.App.Servicos;
 
-/// <summary>Mensagens de conferência dos formulários, escritas em linguagem simples.</summary>
 public static class Validacoes
 {
     private const int UltimoDiaDoMes = 31;
@@ -23,7 +22,6 @@ public static class Validacoes
     public static string? Selecionado(Guid id, string oQueFalta)
         => id == Guid.Empty ? $"Escolha {oQueFalta}." : null;
 
-    /// <summary>Retorna a primeira mensagem encontrada, ou nada quando está tudo certo.</summary>
     public static string? Primeira(params string?[] mensagens)
         => mensagens.FirstOrDefault(mensagem => mensagem is not null);
 }

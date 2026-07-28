@@ -3,7 +3,6 @@ using PequenasFinancas.Core.Modelos;
 
 namespace PequenasFinancas.Core.Servicos;
 
-/// <summary>Parcelamentos feitos fora do cartão de crédito.</summary>
 public sealed class ServicoParcelamentos(BancoJson banco) : ServicoCrud<Parcelamento>(banco)
 {
     protected override List<Parcelamento> Colecao => Banco.Dados.Parcelamentos;

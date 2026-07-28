@@ -2,7 +2,6 @@ using PequenasFinancas.Core.Comum;
 
 namespace PequenasFinancas.Core.Modelos;
 
-/// <summary>Despesa que se repete todo mês (aluguel, internet, escola...).</summary>
 public sealed class GastoFixo : IRecorrente
 {
     public Guid Id { get; set; } = Guid.NewGuid();

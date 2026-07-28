@@ -2,7 +2,6 @@ using PequenasFinancas.Core.Comum;
 
 namespace PequenasFinancas.Core.Modelos;
 
-/// <summary>Compra feita no cartão de crédito, à vista (1x) ou parcelada.</summary>
 public sealed class CompraCartao : IParcelado
 {
     public Guid Id { get; set; } = Guid.NewGuid();

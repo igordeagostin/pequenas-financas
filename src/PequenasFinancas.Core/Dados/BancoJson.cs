@@ -3,10 +3,6 @@ using PequenasFinancas.Core.Modelos;
 
 namespace PequenasFinancas.Core.Dados;
 
-/// <summary>
-/// Guarda todos os dados do app em um único arquivo JSON.
-/// A gravação é atômica e mantém um histórico curto de backups.
-/// </summary>
 public sealed class BancoJson
 {
     private const string NomeDoArquivo = "dados.json";
@@ -28,7 +24,6 @@ public sealed class BancoJson
         CaminhoDoArquivo = caminhoDoArquivo;
     }
 
-    /// <summary>Disparado após qualquer gravação, para a interface se atualizar.</summary>
     public event Action? DadosAlterados;
 
     public string CaminhoDoArquivo { get; }
@@ -69,7 +64,6 @@ public sealed class BancoJson
         }
     }
 
-    /// <summary>Grava o arquivo e avisa a interface. Chamado por todo serviço após alterar dados.</summary>
     public void Salvar()
     {
         lock (_travaDeGravacao)

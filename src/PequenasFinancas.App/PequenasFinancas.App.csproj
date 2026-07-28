@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <!-- A versão do Windows é necessária para o WebView2 desenhar a tela dentro da janela. -->
     <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
     <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
     <Nullable>enable</Nullable>
@@ -12,12 +11,10 @@
     <AssemblyName>PequenasFinancas</AssemblyName>
     <ApplicationTitle>Pequenas Finanças</ApplicationTitle>
     <ApplicationIcon>logo.ico</ApplicationIcon>
-    <!-- O manifesto declara a escala de tela por monitor e mantém a interface nítida. -->
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Faz o WPF redesenhar na escala nova quando a janela muda de monitor. -->
     <RuntimeHostConfigurationOption Include="Switch.System.Windows.DoNotScaleForDpiChanges" Value="false" />
   </ItemGroup>
 

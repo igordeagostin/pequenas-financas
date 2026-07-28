@@ -3,7 +3,6 @@ using PequenasFinancas.Core.Comum;
 
 namespace PequenasFinancas.Core.Modelos;
 
-/// <summary>Entrada ou saída de dinheiro de uma reserva.</summary>
 public sealed class MovimentoReserva : IRegistro
 {
     public Guid Id { get; set; } = Guid.NewGuid();
@@ -18,7 +17,6 @@ public sealed class MovimentoReserva : IRegistro
 
     public string Observacao { get; set; } = string.Empty;
 
-    /// <summary>Depósito soma ao saldo; resgate subtrai.</summary>
     [JsonIgnore]
     public decimal ValorComSinal => Tipo == TipoMovimentoReserva.Deposito ? Valor : -Valor;
 }

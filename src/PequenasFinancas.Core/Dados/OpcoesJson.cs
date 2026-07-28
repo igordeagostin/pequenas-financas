@@ -5,7 +5,6 @@ using PequenasFinancas.Core.Comum;
 
 namespace PequenasFinancas.Core.Dados;
 
-/// <summary>Configuração única de leitura e gravação do JSON, usada pelo banco e pelo clonador.</summary>
 public static class OpcoesJson
 {
     public static JsonSerializerOptions Padrao { get; } = Criar();

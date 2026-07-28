@@ -10,19 +10,12 @@
     </security>
   </trustInfo>
 
-  <!-- Informa ao Windows que o aplicativo entende Windows 10 e 11. -->
   <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
     <application>
       <supportedOS Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}" />
     </application>
   </compatibility>
 
-  <!--
-    Sem esta declaração o Windows trata a janela como se ela fosse de 96 pontos por polegada
-    e amplia a imagem pronta, o que deixa textos e ícones borrados em telas com escala
-    diferente de 100%. Com PerMonitorV2 o próprio aplicativo desenha na escala de cada
-    monitor e a tela continua nítida ao mover a janela entre telas.
-  -->
   <application xmlns="urn:schemas-microsoft-com:asm.v3">
     <windowsSettings>
       <dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">true/pm</dpiAware>

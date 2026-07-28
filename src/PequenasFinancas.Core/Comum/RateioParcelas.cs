@@ -1,17 +1,9 @@
 namespace PequenasFinancas.Core.Comum;
 
-/// <summary>
-/// Divide um valor total em parcelas de centavos exatos.
-/// Ponto único de verdade do cálculo — nenhuma outra parte do app divide valores por parcelas.
-/// </summary>
 public static class RateioParcelas
 {
     private const int CasasDecimaisDoReal = 2;
 
-    /// <summary>
-    /// Retorna o valor de cada parcela. Todas iguais, exceto a última, que absorve
-    /// a diferença de centavos gerada pelo arredondamento (ex.: 100,00 em 3x = 33,33 / 33,33 / 33,34).
-    /// </summary>
     public static IReadOnlyList<decimal> Calcular(decimal valorTotal, int quantidadeParcelas)
     {
         if (quantidadeParcelas < 1)
@@ -35,7 +27,6 @@ public static class RateioParcelas
         return parcelas;
     }
 
-    /// <summary>Valor da parcela de número <paramref name="numeroDaParcela"/> (contado a partir de 1).</summary>
     public static decimal CalcularParcela(decimal valorTotal, int quantidadeParcelas, int numeroDaParcela)
     {
         if (numeroDaParcela < 1 || numeroDaParcela > quantidadeParcelas)

@@ -6,10 +6,8 @@
     </linearGradient>
   </defs>
 
-  <!-- Background -->
   <rect width="512" height="512" rx="120" fill="url(#bg)"/>
 
-  <!-- P -->
   <path
     fill="white"
     fill-rule="evenodd"
@@ -33,7 +31,6 @@
       Z
     "/>
 
-  <!-- Growth cut -->
   <path
     d="M235 282 L278 246 L308 263 L344 220"
     fill="none"

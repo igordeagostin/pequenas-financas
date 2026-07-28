@@ -2,7 +2,6 @@ using PequenasFinancas.Core.Comum;
 
 namespace PequenasFinancas.Core.Modelos;
 
-/// <summary>Compra parcelada fora do cartão de crédito: carnê, boleto, empréstimo, acordo direto.</summary>
 public sealed class Parcelamento : IParcelado
 {
     public Guid Id { get; set; } = Guid.NewGuid();

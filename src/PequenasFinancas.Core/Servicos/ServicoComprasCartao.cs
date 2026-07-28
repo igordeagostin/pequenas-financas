@@ -10,7 +10,6 @@ public sealed class ServicoComprasCartao(BancoJson banco) : ServicoCrud<CompraCa
     public IReadOnlyList<CompraCartao> ListarDoCartao(Guid cartaoId)
         => [.. Listar().Where(compra => compra.CartaoId == cartaoId)];
 
-    /// <summary>Soma o que ainda falta pagar de todas as compras de um cartão.</summary>
     public decimal CalcularSaldoDevedor(Guid cartaoId, Comum.Competencia competencia)
         => ListarDoCartao(cartaoId).Sum(compra => ServicoParcelas.CalcularValorEmAberto(compra, competencia));
 
