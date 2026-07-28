@@ -29,7 +29,8 @@ html, body {
 }
 
 body {
-    font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+    /* "Segoe UI" tem traço mais firme que a variante variável e fica mais legível na tela. */
+    font-family: "Segoe UI", system-ui, sans-serif;
     font-size: 14px;
     color: var(--text);
     background: var(--background);
@@ -39,7 +40,6 @@ body {
 h1, h2, h3 {
     margin: 0;
     font-weight: 600;
-    letter-spacing: -.01em;
 }
 
 h1 { font-size: 22px; }
@@ -125,7 +125,12 @@ a {
     color: var(--primary);
 }
 
-.item-menu .icone { width: 18px; text-align: center; }
+.item-menu .icone {
+    width: 22px;
+    text-align: center;
+    font-size: 18px;
+    line-height: 1;
+}
 
 .conteudo {
     display: flex;
@@ -211,10 +216,11 @@ a {
 .botao-perigo:hover { background: #FEF2F2; filter: none; }
 
 .botao-icone {
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
     padding: 0;
-    font-size: 16px;
+    font-size: 21px;
+    line-height: 1;
     background: var(--surface);
     border-color: var(--border);
     color: var(--text);
@@ -269,12 +275,17 @@ a {
 .cartao-valor .rotulo {
     display: flex;
     align-items: center;
-    gap: 7px;
+    gap: 8px;
     color: var(--text-suave);
     font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: .04em;
+}
+
+.cartao-valor .rotulo span {
+    font-size: 18px;
+    line-height: 1;
 }
 
 .cartao-valor .valor {
@@ -387,7 +398,7 @@ a {
     color: var(--text-suave);
 }
 
-.estado-vazio .icone { font-size: 26px; }
+.estado-vazio .icone { font-size: 40px; line-height: 1; }
 .estado-vazio p { margin: 8px 0 14px; }
 
 /* ---------- Barras ---------- */

@@ -12,7 +12,14 @@
     <AssemblyName>PequenasFinancas</AssemblyName>
     <ApplicationTitle>Pequenas Finanças</ApplicationTitle>
     <ApplicationIcon>logo.ico</ApplicationIcon>
+    <!-- O manifesto declara a escala de tela por monitor e mantém a interface nítida. -->
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Faz o WPF redesenhar na escala nova quando a janela muda de monitor. -->
+    <RuntimeHostConfigurationOption Include="Switch.System.Windows.DoNotScaleForDpiChanges" Value="false" />
+  </ItemGroup>
 
   <ItemGroup>
     <Resource Include="logo.ico" />
