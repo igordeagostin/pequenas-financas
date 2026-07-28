@@ -37,6 +37,7 @@
                     <th>Vence</th>
                     <th>Período</th>
                     <th class="direita">Valor neste mês</th>
+                    <th>Pagamento</th>
                     <th class="acoes"></th>
                 </tr>
             </thead>
@@ -59,6 +60,12 @@
                             @(valeNesteMes
                                 ? Dinheiro.Formatar(ServicoRecorrencia.ValorNoMes(gasto, MesSelecionado))
                                 : "não vale neste mês")
+                        </td>
+                        <td>
+                            @if (valeNesteMes)
+                            {
+                                <MarcadorPago Tipo="TipoPagavel.GastoFixo" ItemId="gasto.Id" AoAlterar="Recarregar" />
+                            }
                         </td>
                         <td class="acoes">
                             <button class="botao botao-secundario" @onclick="() => AbrirEdicao(gasto)">Editar</button>

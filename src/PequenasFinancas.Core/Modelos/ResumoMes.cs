@@ -22,6 +22,8 @@ public sealed record ResumoMes
 
     public required decimal TotalGuardado { get; init; }
 
+    public required decimal TotalGastosPagos { get; init; }
+
     public required IReadOnlyList<FaturaCartao> Faturas { get; init; }
 
     public required IReadOnlyList<LancamentoDoMes> Lancamentos { get; init; }
@@ -33,6 +35,10 @@ public sealed record ResumoMes
     public decimal TotalReceitas => TotalRendas + TotalRendasExtras;
 
     public decimal TotalGastos => TotalGastosFixos + TotalCartoes + TotalParcelamentos;
+
+    public decimal TotalGastosAPagar => TotalGastos - TotalGastosPagos;
+
+    public bool TudoPago => TotalGastos > 0 && TotalGastosAPagar <= 0;
 
     public decimal DinheiroLivre => TotalReceitas - TotalGastos;
 
@@ -57,6 +63,8 @@ public sealed record FaturaCartao
     public required decimal Total { get; init; }
 
     public required int DiaVencimento { get; init; }
+
+    public required bool EstaPaga { get; init; }
 
     public required IReadOnlyList<ParcelaCalculada> Parcelas { get; init; }
 }

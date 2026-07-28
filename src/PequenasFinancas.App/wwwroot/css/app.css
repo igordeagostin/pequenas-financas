@@ -249,6 +249,24 @@ a {
 
 .botao-discreto:hover { background: var(--background); color: var(--text); filter: none; }
 
+.botao-marcador {
+    padding: 5px 11px;
+    background: var(--surface);
+    border-color: var(--border);
+    color: var(--text-suave);
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.botao-marcador .icone { font-size: 15px; }
+
+.botao-marcador:hover { background: var(--background); filter: none; }
+
+.botao-marcador.pago {
+    border-color: var(--success);
+    color: var(--success);
+}
+
 .painel {
     padding: 20px;
     background: var(--surface);
@@ -416,6 +434,17 @@ a {
     color: var(--text-suave);
     white-space: nowrap;
 }
+
+.etiqueta-pago {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--success);
+    border-color: var(--success);
+    background: var(--surface);
+}
+
+.etiqueta-pago .icone { font-size: 13px; }
 
 .etiqueta-cartao {
     color: var(--sobre-primary);

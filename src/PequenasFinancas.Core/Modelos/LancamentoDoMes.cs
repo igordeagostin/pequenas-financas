@@ -16,5 +16,7 @@ public sealed record LancamentoDoMes
 
     public string Categoria { get; init; } = string.Empty;
 
+    public bool EstaPago { get; init; }
+
     public int? DiaDoMes { get; init; }
 }

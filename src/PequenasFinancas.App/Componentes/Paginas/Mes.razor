@@ -15,6 +15,9 @@
     <CartaoValor Rotulo="Sai" Simbolo="NomeIcone.Saida" Valor="Resumo.TotalGastos" EhEntrada="false"
                  Apoio="@DescreverGastos()" />
 
+    <CartaoValor Rotulo="Falta pagar" Simbolo="NomeIcone.Pago" Valor="Resumo.TotalGastosAPagar"
+                 Apoio="@DescreverPagamentos()" />
+
     <CartaoValor Rotulo="Livre no mês" Simbolo="NomeIcone.DinheiroLivre" Valor="Resumo.DinheiroLivre"
                  ColorirPeloSinal="true" Destaque="true" Apoio="@DescreverDinheiroLivre()" />
 
@@ -82,7 +85,11 @@
                             <strong>@fatura.Nome</strong>
                             <span>vence dia @fatura.DiaVencimento · @DescreverQuantidadeDeParcelas(fatura)</span>
                         </div>
-                        <div class="valor texto-saida">@Dinheiro.Formatar(fatura.Total)</div>
+                        <MarcadorPago Tipo="TipoPagavel.FaturaCartao" ItemId="fatura.CartaoId"
+                                      AoAlterar="CalcularResumo" />
+                        <div class="valor @(fatura.EstaPaga ? "texto-suave" : "texto-saida")">
+                            @Dinheiro.Formatar(fatura.Total)
+                        </div>
                     </div>
                 }
             }
@@ -240,6 +247,18 @@
         => $"Fixos {Dinheiro.Formatar(Resumo.TotalGastosFixos)} · "
          + $"cartão {Dinheiro.Formatar(Resumo.TotalCartoes)} · "
          + $"parcelas {Dinheiro.Formatar(Resumo.TotalParcelamentos)}";
+
+    private string DescreverPagamentos()
+    {
+        if (Resumo.TotalGastos == 0)
+        {
+            return "Nada a pagar neste mês";
+        }
+
+        return Resumo.TudoPago
+            ? "Tudo pago neste mês"
+            : $"{Dinheiro.Formatar(Resumo.TotalGastosPagos)} já pagos de {Dinheiro.Formatar(Resumo.TotalGastos)}";
+    }
 
     private string DescreverDinheiroLivre()
         => Resumo.NoVermelho ? "Os gastos passaram do que entrou" : "Depois de pagar tudo";

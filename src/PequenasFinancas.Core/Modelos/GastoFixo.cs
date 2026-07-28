@@ -2,7 +2,7 @@ using PequenasFinancas.Core.Comum;
 
 namespace PequenasFinancas.Core.Modelos;
 
-public sealed class GastoFixo : IRecorrente
+public sealed class GastoFixo : IRecorrente, IPagavelPorMes
 {
     public Guid Id { get; set; } = Guid.NewGuid();
 
@@ -19,4 +19,6 @@ public sealed class GastoFixo : IRecorrente
     public Competencia? VigenciaFim { get; set; }
 
     public Dictionary<Competencia, decimal> Ajustes { get; set; } = [];
+
+    public List<Competencia> MesesPagos { get; set; } = [];
 }

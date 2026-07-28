@@ -19,7 +19,8 @@ public sealed class AmbienteDeTeste : IDisposable
         ComprasCartao = new ServicoComprasCartao(Banco);
         Parcelamentos = new ServicoParcelamentos(Banco);
         Reservas = new ServicoReservas(Banco);
-        Parcelas = new ServicoParcelas(Banco, Cartoes);
+        Pagamentos = new ServicoPagamentos(Banco);
+        Parcelas = new ServicoParcelas(Banco, Cartoes, Pagamentos);
         Resumo = new ServicoResumo(
             Rendas, RendasExtras, GastosFixos, Cartoes, Parcelas, Reservas);
         Semanas = new ServicoSemanas(Banco, Resumo);
@@ -40,6 +41,8 @@ public sealed class AmbienteDeTeste : IDisposable
     public ServicoParcelamentos Parcelamentos { get; }
 
     public ServicoReservas Reservas { get; }
+
+    public ServicoPagamentos Pagamentos { get; }
 
     public ServicoParcelas Parcelas { get; }
 

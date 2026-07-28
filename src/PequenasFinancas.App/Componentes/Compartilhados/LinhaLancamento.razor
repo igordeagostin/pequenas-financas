@@ -8,6 +8,11 @@
         <span>@Detalhe</span>
     </div>
 
+    @if (Lancamento.EstaPago)
+    {
+        <span class="etiqueta etiqueta-pago"><Icone Nome="NomeIcone.Pago" /> pago</span>
+    }
+
     @if (!string.IsNullOrWhiteSpace(Lancamento.Categoria))
     {
         <span class="etiqueta">@Lancamento.Categoria</span>

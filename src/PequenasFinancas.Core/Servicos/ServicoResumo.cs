@@ -35,7 +35,9 @@ public sealed class ServicoResumo(
             TotalCartoes = parcelasDeCartao.Sum(parcela => parcela.Valor),
             TotalParcelamentos = parcelasForaDoCartao.Sum(parcela => parcela.Valor),
             TotalGuardado = saldosDeReservas.Sum(saldo => saldo.MovimentadoNoMes),
-            Faturas = MontarFaturas(parcelasDeCartao),
+            TotalGastosPagos = SomarGastosPagos(
+                competencia, gastosFixosVigentes, parcelasDeCartao, parcelasForaDoCartao),
+            Faturas = MontarFaturas(competencia, parcelasDeCartao),
             Lancamentos = MontarLancamentos(
                 competencia, rendasVigentes, rendasExtras, gastosFixosVigentes,
                 parcelasDeCartao, parcelasForaDoCartao),
@@ -50,7 +52,21 @@ public sealed class ServicoResumo(
             ? competencia.QuantidadeDeDias - hoje.Day + 1
             : competencia.QuantidadeDeDias;
 
-    private IReadOnlyList<FaturaCartao> MontarFaturas(IReadOnlyList<ParcelaCalculada> parcelasDeCartao)
+    private static decimal SomarGastosPagos(
+        Competencia competencia,
+        IEnumerable<GastoFixo> gastosFixos,
+        IEnumerable<ParcelaCalculada> parcelasDeCartao,
+        IEnumerable<ParcelaCalculada> parcelasForaDoCartao)
+        => gastosFixos
+            .Where(gasto => ServicoPagamentos.EstaPago(gasto, competencia))
+            .Sum(gasto => ServicoRecorrencia.ValorNoMes(gasto, competencia))
+         + parcelasDeCartao
+            .Concat(parcelasForaDoCartao)
+            .Where(parcela => parcela.EstaPago)
+            .Sum(parcela => parcela.Valor);
+
+    private IReadOnlyList<FaturaCartao> MontarFaturas(
+        Competencia competencia, IReadOnlyList<ParcelaCalculada> parcelasDeCartao)
         => [.. servicoCartoes.Listar()
             .Select(cartao => new
             {
@@ -64,6 +80,7 @@ public sealed class ServicoResumo(
                 Nome = agrupamento.Cartao.Nome,
                 Cor = agrupamento.Cartao.Cor,
                 DiaVencimento = agrupamento.Cartao.DiaVencimento,
+                EstaPaga = ServicoPagamentos.EstaPago(agrupamento.Cartao, competencia),
                 Total = agrupamento.Parcelas.Sum(parcela => parcela.Valor),
                 Parcelas = agrupamento.Parcelas
             })
@@ -118,7 +135,8 @@ public sealed class ServicoResumo(
                 EhEntrada = false,
                 Detalhe = "Gasto fixo",
                 Categoria = gasto.Categoria,
-                DiaDoMes = gasto.DiaVencimento
+                DiaDoMes = gasto.DiaVencimento,
+                EstaPago = ServicoPagamentos.EstaPago(gasto, competencia)
             }),
             .. parcelasDeCartao.Select(parcela => new LancamentoDoMes
             {
@@ -128,7 +146,8 @@ public sealed class ServicoResumo(
                 Valor = parcela.Valor,
                 EhEntrada = false,
                 Detalhe = $"{parcela.NomeCartao} · parcela {parcela.Progresso}",
-                Categoria = parcela.Categoria
+                Categoria = parcela.Categoria,
+                EstaPago = parcela.EstaPago
             }),
             .. parcelasForaDoCartao.Select(parcela => new LancamentoDoMes
             {
@@ -138,7 +157,8 @@ public sealed class ServicoResumo(
                 Valor = parcela.Valor,
                 EhEntrada = false,
                 Detalhe = $"Parcelado · parcela {parcela.Progresso}",
-                Categoria = parcela.Categoria
+                Categoria = parcela.Categoria,
+                EstaPago = parcela.EstaPago
             })
         ];
 

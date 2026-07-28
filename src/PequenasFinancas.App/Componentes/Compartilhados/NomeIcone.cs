@@ -14,6 +14,8 @@ public enum NomeIcone
     Entrada,
     Saida,
     DinheiroLivre,
+    Pago,
+    APagar,
     Adicionar,
     MesAnterior,
     ProximoMes,

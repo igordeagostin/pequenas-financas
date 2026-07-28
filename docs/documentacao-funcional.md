@@ -67,12 +67,13 @@ Se quiser controlar o dinheiro semana a semana, use a tela
 
 É a primeira tela do app. Mostra o retrato do mês escolhido.
 
-No topo aparecem quatro números:
+No topo aparecem cinco números:
 
 | Número | O que significa |
 |---|---|
 | **Entra** | Todo o dinheiro que você recebe no mês |
 | **Sai** | Gastos fixos + cartões + parcelas |
+| **Falta pagar** | Do que sai, quanto ainda não foi marcado como pago |
 | **Livre no mês** | Quanto sobra depois de pagar tudo |
 | **Guardado até aqui** | Quanto você tem separado em todas as reservas |
 
@@ -90,8 +91,10 @@ Mais abaixo a tela mostra:
 
 - **Quanto dá para gastar por dia**: explicado na próxima seção.
 - **Tudo que entra e sai no mês**: uma lista com cada entrada e cada saída.
-  Verde é dinheiro que entra, vermelho é dinheiro que sai.
-- **Faturas dos cartões**: quanto cada cartão vai cobrar neste mês.
+  Verde é dinheiro que entra, vermelho é dinheiro que sai. O que já foi pago
+  ganha uma etiqueta verde **pago**.
+- **Faturas dos cartões**: quanto cada cartão vai cobrar neste mês, com o botão para
+  marcar a fatura como paga.
 - **Para onde vai o dinheiro**: seus gastos somados por categoria.
 - **Sua semana**: um resumo curto da semana que está aberta.
 - **Dinheiro guardado**: o saldo de cada reserva.
@@ -130,6 +133,75 @@ Detalhes que valem saber:
   R$ 500, o app continua dividindo R$ 3.900 pelos dias.
 - Se os gastos passaram do que entrou, o valor aparece como R$ 0,00 e o app avisa que
   não há dinheiro livre para dividir por dia.
+
+---
+
+## Marcar o que já foi pago
+
+Saber quanto sai no mês é uma coisa. Saber **o que você já pagou** é outra. Esta marcação
+serve para você não pagar a mesma conta duas vezes nem esquecer uma que ainda falta.
+
+Três coisas podem ser marcadas como pagas:
+
+- **Gastos fixos** (o aluguel de julho, a internet de julho…).
+- **Parcelados sem cartão** (a parcela do sofá que cai em julho).
+- **Faturas do cartão** (a fatura do Nubank de julho).
+
+### Como marcar
+
+Em todas as telas o botão é o mesmo:
+
+1. Escolha o mês na barra de cima do app.
+2. Clique em **Marcar pago**.
+3. O botão fica verde e passa a mostrar **Pago**.
+
+Para desmarcar, clique de novo no mesmo botão.
+
+Onde fica o botão:
+
+| O que você quer marcar | Onde clicar |
+|---|---|
+| Gasto fixo | Tela **Gastos fixos**, coluna **Pagamento** |
+| Parcelado sem cartão | Tela **Parcelados sem cartão**, coluna **Pagamento** |
+| Fatura do cartão | Tela **Resumo do mês**, quadro **Faturas dos cartões** |
+
+### A marca vale só para um mês
+
+Cada marcação vale para **um mês de cada vez**. O aluguel pago em julho continua
+aparecendo como não pago em agosto — e é isso que você quer, porque em agosto ele vence
+de novo.
+
+Por isso, antes de marcar, confira o mês que está escolhido na barra de cima.
+
+O botão só aparece quando aquela conta realmente cai no mês escolhido. Um gasto fixo que
+já terminou, ou uma parcela que ainda não começou, não têm nada a pagar naquele mês.
+
+### Marcar a fatura marca as parcelas
+
+Você não marca parcela por parcela do cartão: marca **a fatura inteira**, porque é isso
+que você paga de verdade — um pagamento só, no vencimento do cartão.
+
+Exemplo: em julho o Nubank cobra a parcela do notebook (R$ 300) e a do fone (R$ 100),
+total de R$ 400. Ao marcar a fatura do Nubank como paga, as duas parcelas aparecem com a
+etiqueta **pago** na lista do resumo.
+
+### Como isso aparece no resumo do mês
+
+O número **Falta pagar** mostra quanto do mês ainda não foi marcado.
+
+Exemplo: o mês tem R$ 2.100 de gastos (R$ 1.500 de aluguel, R$ 400 de fatura do cartão e
+R$ 200 de parcela do sofá). Você marca o aluguel e a fatura como pagos:
+
+- Sai: R$ 2.100
+- Falta pagar: R$ 200
+- Embaixo do número aparece: *R$ 1.900 já pagos de R$ 2.100*
+
+Quando não sobra nada para marcar, o app escreve **Tudo pago neste mês**.
+
+Marcar como pago **não muda o dinheiro livre** nem o quanto dá para gastar por dia. O
+gasto já estava contado desde que você cadastrou a conta: pagar só confirma que ele saiu
+da sua mão. Se marcar tirasse o valor da conta, o dinheiro livre subiria de mentira a cada
+conta paga.
 
 ---
 
@@ -294,6 +366,9 @@ Quando uma conta acaba (por exemplo, você cancelou a academia), abra o cadastro
 e preencha o campo **Termina em** com o último mês que você pagou. O gasto continua
 aparecendo nos meses antigos e some dos meses seguintes.
 
+Na coluna **Pagamento** você marca a conta como paga no mês escolhido. Veja
+**Marcar o que já foi pago**.
+
 ---
 
 ## Cartões
@@ -314,6 +389,9 @@ A lista de cartões mostra, para o mês escolhido:
 
 Se parou de usar um cartão, desmarque **Ainda uso este cartão**. Ele continua na lista,
 mas não aparece mais quando você lança uma compra nova.
+
+Para dizer que já pagou a fatura de um mês, vá ao **Resumo do mês**, no quadro
+**Faturas dos cartões**. Veja **Marcar o que já foi pago**.
 
 ### Gráfico de gastos por mês
 
@@ -392,6 +470,9 @@ carnê de loja, boleto parcelado, empréstimo, acordo com alguém.
 No resumo do mês essas parcelas aparecem separadas das faturas dos cartões, para você
 saber o que é cartão e o que não é.
 
+Na coluna **Pagamento** você marca a parcela do mês escolhido como paga. Veja
+**Marcar o que já foi pago**.
+
 ---
 
 ## Dinheiro guardado
@@ -467,6 +548,16 @@ Pelo app, não. Mas existe uma cópia do arquivo anterior na pasta `backups`.
 **O valor da parcela ficou com um centavo diferente. Por quê?**
 Quando o total não divide certinho, a diferença de centavos vai para a última parcela,
 para a soma das parcelas dar exatamente o valor da compra.
+
+**Marcar uma conta como paga aumenta meu dinheiro livre?**
+Não. O gasto já estava contado desde o cadastro. A marca só mostra o que você já resolveu
+e desconta do número **Falta pagar**.
+
+**Marquei o aluguel como pago e no mês seguinte ele apareceu como não pago. Está errado?**
+Não, está certo. A marca vale para um mês só, porque no mês seguinte a conta vence de novo.
+
+**Marquei sem querer. Como desfaço?**
+Clique no mesmo botão outra vez. Ele volta para **Marcar pago**.
 
 **Onde eu anoto o mercado, a farmácia, o lanche?**
 O app não é um caderno de gastos do dia a dia. O que existe é o **planejamento da

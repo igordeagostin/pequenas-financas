@@ -2,7 +2,7 @@ using PequenasFinancas.Core.Comum;
 
 namespace PequenasFinancas.Core.Modelos;
 
-public sealed class Parcelamento : IParcelado
+public sealed class Parcelamento : IParcelado, IPagavelPorMes
 {
     public Guid Id { get; set; } = Guid.NewGuid();
 
@@ -17,4 +17,6 @@ public sealed class Parcelamento : IParcelado
     public Competencia CompetenciaPrimeiraParcela { get; set; } = Competencia.Atual;
 
     public string Categoria { get; set; } = string.Empty;
+
+    public List<Competencia> MesesPagos { get; set; } = [];
 }

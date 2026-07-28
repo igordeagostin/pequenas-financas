@@ -26,6 +26,8 @@ public sealed record ParcelaCalculada
 
     public string NomeCartao { get; init; } = string.Empty;
 
+    public bool EstaPago { get; init; }
+
     public string Progresso => $"{Numero}/{QuantidadeParcelas}";
 
     public bool EhUltimaParcela => Numero == QuantidadeParcelas;

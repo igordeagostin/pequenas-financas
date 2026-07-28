@@ -4,10 +4,12 @@ using PequenasFinancas.Core.Modelos;
 
 namespace PequenasFinancas.Core.Servicos;
 
-public sealed class ServicoParcelas(BancoJson banco, ServicoCartoes servicoCartoes)
+public sealed class ServicoParcelas(
+    BancoJson banco, ServicoCartoes servicoCartoes, ServicoPagamentos servicoPagamentos)
 {
     private readonly BancoJson _banco = banco;
     private readonly ServicoCartoes _servicoCartoes = servicoCartoes;
+    private readonly ServicoPagamentos _servicoPagamentos = servicoPagamentos;
 
     public IReadOnlyList<ParcelaCalculada> ObterParcelasDeCartao(Competencia competencia)
         => [.. _banco.Dados.ComprasCartao
@@ -17,7 +19,7 @@ public sealed class ServicoParcelas(BancoJson banco, ServicoCartoes servicoCarto
 
     public IReadOnlyList<ParcelaCalculada> ObterParcelasForaDoCartao(Competencia competencia)
         => [.. _banco.Dados.Parcelamentos
-            .Select(parcelamento => MontarParcela(parcelamento, competencia, OrigemLancamento.Parcelamento))
+            .Select(parcelamento => MontarParcelaForaDoCartao(parcelamento, competencia))
             .OfType<ParcelaCalculada>()
             .OrderByDescending(parcela => parcela.Valor)];
 
@@ -61,8 +63,18 @@ public sealed class ServicoParcelas(BancoJson banco, ServicoCartoes servicoCarto
         return parcela with
         {
             CartaoId = compra.CartaoId,
-            NomeCartao = _servicoCartoes.ObterNome(compra.CartaoId)
+            NomeCartao = _servicoCartoes.ObterNome(compra.CartaoId),
+            EstaPago = _servicoPagamentos.EstaPago(TipoPagavel.FaturaCartao, compra.CartaoId, competencia)
         };
+    }
+
+    private static ParcelaCalculada? MontarParcelaForaDoCartao(Parcelamento parcelamento, Competencia competencia)
+    {
+        ParcelaCalculada? parcela = MontarParcela(parcelamento, competencia, OrigemLancamento.Parcelamento);
+
+        return parcela is null
+            ? null
+            : parcela with { EstaPago = ServicoPagamentos.EstaPago(parcelamento, competencia) };
     }
 
     private static ParcelaCalculada? MontarParcela(
