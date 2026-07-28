@@ -83,11 +83,34 @@ componente escreve cor fixa fora dessas variáveis.
 Uso: entradas de dinheiro em `--success`, saídas em `--error`, reservas e destaques
 em `--primary`/`--secondary`, alertas e vencimentos em `--accent`.
 
+## Segurança dos dados (regra obrigatória)
+
+Este é um **repositório público**. Nada sensível pode ser publicado nem rastreado pelo git.
+
+Nunca versionar, em hipótese alguma:
+
+- **O banco de dados** — qualquer `dados.json`, `dados.json.tmp` ou a pasta `backups/`.
+  Ele contém salário, gastos e reservas do usuário. Vive apenas em
+  `%AppData%\PequenasFinancas` e jamais é copiado para dentro do repositório.
+- **Chaves e segredos** — token, senha, string de conexão, chave de API, certificado
+  (`.pem`, `.pfx`, `.key`), `.env`, `secrets.json` ou credencial de qualquer tipo.
+  O app não usa nenhum serviço externo; se um dia usar, o segredo fica fora do repositório.
+- **Dados pessoais reais** — valores, nomes, extratos ou capturas de tela com dados
+  verdadeiros. Exemplos em código, testes, documentação e imagens usam **dados fictícios**.
+
+Antes de cada commit:
+
+1. Rodar `git status` e conferir o que está sendo adicionado.
+2. Nunca usar `git add -f` para forçar um arquivo ignorado.
+3. Conferir que o `.gitignore` continua bloqueando `dados.json`, `backups/`, `.env` e chaves.
+
+Se um segredo ou dado pessoal for enviado por engano, ele deve ser tratado como vazado:
+trocar a credencial e limpar o histórico, não basta apagar em um commit novo.
+
 ## Commits
 
 - Mensagens em português, no imperativo ("Adiciona resumo mensal").
 - **Proibido** incluir `Co-Authored-By: Claude` ou qualquer rodapé de geração automática.
-- Nunca versionar dados pessoais: o `dados.json` do usuário fica em `%AppData%\PequenasFinancas`.
 
 ## Estrutura
 

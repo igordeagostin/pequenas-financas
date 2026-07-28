@@ -3,8 +3,25 @@
 ##
 ## Get latest from `dotnet new gitignore`
 
-# dotenv files
+# ---------------------------------------------------------------
+# Dados pessoais e segredos — nunca podem ir para o repositorio
+# ---------------------------------------------------------------
+
+# Banco de dados do usuario (salario, gastos, reservas)
+dados.json
+dados.json.tmp
+dados-*.json
+backups/
+
+# Chaves, senhas e credenciais
 .env
+.env.*
+*.pem
+*.pfx
+*.key
+*.p12
+appsettings.*.Local.json
+secrets.json
 
 # User-specific files
 *.rsuser
