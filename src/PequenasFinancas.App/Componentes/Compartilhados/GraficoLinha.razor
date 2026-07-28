@@ -1,0 +1,37 @@
+@namespace PequenasFinancas.App.Componentes.Compartilhados
+
+<svg class="grafico-linha" viewBox="@TracadoGrafico.CaixaDeDesenho" role="img" aria-label="@Descricao">
+    @foreach (LinhaDeGrade linha in Tracado.LinhasDeGrade)
+    {
+        <line class="grafico-grade"
+              x1="@TracadoGrafico.InicioDaGrade" x2="@TracadoGrafico.FimDaGrade"
+              y1="@linha.Y" y2="@linha.Y" />
+        <svg:text class="grafico-rotulo-valor" x="@TracadoGrafico.FimDoRotuloDeValor" y="@linha.Y">@linha.Rotulo</svg:text>
+    }
+
+    <path class="grafico-area" d="@Tracado.Area" />
+    <polyline class="grafico-traco" points="@Tracado.Linha" />
+
+    @foreach (MarcaDoGrafico marca in Tracado.Marcas)
+    {
+        <circle class="@ClasseDaMarca(marca)" cx="@marca.X" cy="@marca.Y">
+            <title>@marca.Rotulo: @Dinheiro.Formatar(marca.Valor)</title>
+        </circle>
+        <svg:text class="grafico-rotulo-mes" x="@marca.X" y="@TracadoGrafico.BaseDosRotulosDeMes">@marca.Rotulo</svg:text>
+    }
+</svg>
+
+@code {
+    private TracadoGrafico Tracado = TracadoGrafico.Montar([]);
+
+    [Parameter, EditorRequired]
+    public IReadOnlyList<PontoGrafico> Pontos { get; set; } = [];
+
+    [Parameter]
+    public string Descricao { get; set; } = string.Empty;
+
+    protected override void OnParametersSet() => Tracado = TracadoGrafico.Montar(Pontos);
+
+    private static string ClasseDaMarca(MarcaDoGrafico marca)
+        => marca.EhDestaque ? "grafico-ponto grafico-ponto-destaque" : "grafico-ponto";
+}

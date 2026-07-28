@@ -1,7 +1,7 @@
 @namespace PequenasFinancas.App.Componentes.Compartilhados
 
 <div class="estado-vazio">
-    <div class="icone">@Icone</div>
+    <Icone Nome="Simbolo" />
     <p>@Mensagem</p>
     @if (Acao is not null)
     {
@@ -11,7 +11,7 @@
 
 @code {
     [Parameter]
-    public string Icone { get; set; } = "◌";
+    public NomeIcone Simbolo { get; set; } = NomeIcone.Vazio;
 
     [Parameter, EditorRequired]
     public string Mensagem { get; set; } = string.Empty;

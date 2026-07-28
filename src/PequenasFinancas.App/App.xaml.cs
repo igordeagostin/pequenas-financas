@@ -52,6 +52,7 @@ public partial class App : Application
         servicos.AddSingleton<ServicoReservas>();
         servicos.AddSingleton<ServicoParcelas>();
         servicos.AddSingleton<ServicoResumo>();
+        servicos.AddSingleton<ServicoSemanas>();
         servicos.AddSingleton<EstadoAplicacao>();
 
         return servicos.BuildServiceProvider();

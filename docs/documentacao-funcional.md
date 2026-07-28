@@ -37,6 +37,9 @@ Para o app ficar útil, faça nesta ordem:
 
 Depois disso, a tela **Resumo do mês** mostra tudo junto.
 
+Se quiser controlar o dinheiro semana a semana, use a tela
+**Planejamento da semana** depois desses passos.
+
 ---
 
 ## Resumo do mês
@@ -68,6 +71,7 @@ Mais abaixo a tela mostra:
   Verde é dinheiro que entra, vermelho é dinheiro que sai.
 - **Faturas dos cartões**: quanto cada cartão vai cobrar neste mês.
 - **Para onde vai o dinheiro**: seus gastos somados por categoria.
+- **Sua semana**: um resumo curto da semana que está aberta.
 - **Dinheiro guardado**: o saldo de cada reserva.
 
 ---
@@ -104,6 +108,113 @@ Detalhes que valem saber:
   R$ 3.900, o app divide R$ 3.400 pelos dias.
 - Se os gastos passaram do que entrou, o valor aparece como R$ 0,00 e o app avisa que
   não há dinheiro livre para dividir por dia.
+
+---
+
+## Planejamento da semana
+
+O mês inteiro é muito tempo para se controlar de uma vez. Esta tela quebra o mês em
+semanas: ela mostra **quanto dá para gastar nesta semana** com o dinheiro que ainda
+resta no mês, deixa você anotar o que acha que vai gastar e, no fim da semana, pergunta
+quanto sobrou de verdade.
+
+### Abrir a semana
+
+A semana não começa sozinha: você abre quando quiser.
+
+1. Clique em **Abrir semana**.
+2. O app mostra com quanto dinheiro a semana começa.
+3. Escolha o primeiro dia da semana (o app já sugere um).
+4. Confirme.
+
+A semana vale por sete dias, ou até o fim do mês, o que vier primeiro. Uma semana aberta
+no dia 29 de julho termina no dia 31.
+
+Só existe uma semana aberta por vez em cada mês.
+
+### Com quanto a semana começa
+
+- **É a primeira semana do mês**: começa com o **dinheiro livre do mês**, o mesmo valor
+  que aparece no resumo (o que entra, menos gastos fixos, cartões, parcelas e o que
+  você guardou).
+- **Já teve outra semana antes**: começa com **o saldo que você informou** ao fechar a
+  semana anterior.
+
+### Quanto dá para gastar na semana
+
+O app divide o dinheiro pelos dias que faltam no mês e multiplica pelos dias da semana:
+
+```
+Pode gastar na semana = dinheiro da semana ÷ dias que faltam no mês × dias da semana
+```
+
+Exemplo: no dia 11 de julho você tem R$ 2.100 livres. Faltam 21 dias no mês, então dá
+R$ 100 por dia. A semana de 11 a 17 tem 7 dias, então **pode gastar R$ 700 na semana** e
+R$ 1.400 ficam para o resto do mês.
+
+A semana curta do fim do mês fica com tudo que sobrou: se você abre a semana no dia 29 e
+tem R$ 300, os três últimos dias recebem os R$ 300.
+
+### Anotar gastos prováveis
+
+Gasto provável é o que você **acha** que vai gastar na semana: mercado, gasolina,
+farmácia, o almoço de sábado. Serve para você ver o buraco antes de cair nele.
+
+1. Clique em **Novo gasto provável**.
+2. Escreva o que é (ex.: `mercado da semana`).
+3. Informe quanto acha que vai gastar.
+4. Escolha o dia, dentro da semana aberta.
+
+Os quatro números do topo mostram na hora:
+
+| Número | O que significa |
+|---|---|
+| **Começou com** | O dinheiro que a semana tinha ao abrir |
+| **Pode gastar na semana** | A fatia da semana, pela conta acima |
+| **Gastos prováveis** | A soma do que você anotou |
+| **Ainda livre na semana** | Quanto da fatia ainda não tem destino |
+
+Logo abaixo aparece **quanto dá para gastar por dia nesta semana**: o que ainda está
+livre dividido pelos dias que faltam até o fim da semana.
+
+Exemplo: dos R$ 700 da semana você anotou R$ 420 de gastos prováveis. Ficam R$ 280
+livres. Se ainda faltam 4 dias, o app mostra **R$ 70,00 por dia**.
+
+Se os gastos prováveis passarem da fatia da semana, os valores ficam vermelhos e o app
+avisa que você já planejou mais do que pode.
+
+### Fechar a semana
+
+Quando a semana acabar (ou quando você quiser encerrar), feche:
+
+1. Clique em **Fechar semana**.
+2. O app mostra quanto **deveria** sobrar, pelo que você anotou.
+3. Olhe sua conta e sua carteira e informe **quanto sobrou de verdade**.
+4. Confirme.
+
+A semana fechada vai para a lista **Semanas já fechadas no mês**, com o período, com
+quanto começou, quanto podia gastar, quanto sobrou de verdade e a **diferença do
+previsto**:
+
+- Diferença verde: sobrou mais do que você imaginava.
+- Diferença vermelha: sobrou menos, você gastou além do anotado.
+
+Exemplo: pelos gastos anotados deveria sobrar R$ 1.680, mas sobraram R$ 1.500.
+A diferença é **− R$ 180,00**.
+
+Depois de fechar, abra a próxima semana. Ela começa com o valor que você informou, e o
+app já sugere começar no dia seguinte ao fechamento. Como a conta usa o saldo real, o
+erro de uma semana não se arrasta: a semana seguinte já nasce com o valor certo.
+
+### Como isso aparece no resumo do mês
+
+O planejamento da semana **não muda** o "Livre no mês". Gasto provável é palpite, não
+conta lançada — se ele entrasse na soma, uma compra no cartão poderia ser contada duas
+vezes.
+
+No resumo do mês aparece um quadro **Sua semana**, só para olhar, com o período, quanto
+dá para gastar na semana, os gastos prováveis e quanto ainda está livre. Se nenhuma
+semana estiver aberta, o quadro convida você a abrir uma.
 
 ---
 
@@ -177,6 +288,31 @@ A lista de cartões mostra, para o mês escolhido:
 
 Se parou de usar um cartão, desmarque **Ainda uso este cartão**. Ele continua na lista,
 mas não aparece mais quando você lança uma compra nova.
+
+### Gráfico de gastos por mês
+
+Abaixo da lista de cartões fica um gráfico de linha que mostra quanto o cartão cobra
+em cada mês. Ele serve para você ver se o próximo mês vem mais pesado ou mais leve
+que o mês em que você está.
+
+Como ler:
+
+- Cada ponto é um mês. O ponto laranja, maior, é o mês que você está vendo agora.
+- A linha sobe quando o mês tem mais parcelas somadas e desce quando tem menos.
+- Passe o mouse em cima de um ponto para ver o valor exato daquele mês.
+- O gráfico mostra 12 meses: os 5 meses antes do mês escolhido, o mês escolhido
+  e os 6 meses seguintes.
+
+Para ver só um cartão, use a caixa de seleção no canto do gráfico. Ela começa em
+**Todos os cartões**, que soma tudo. Ao escolher um cartão, o gráfico passa a mostrar
+apenas as compras daquele cartão.
+
+O valor de cada mês é a soma das parcelas que caem nele. Exemplo: se você tem um
+notebook de R$ 4.800 em 12x (R$ 400 por mês) e, a partir de agosto, um celular de
+R$ 1.200 em 3x (R$ 400 por mês), o gráfico mostra R$ 400 em julho e R$ 800 em agosto,
+setembro e outubro. Depois disso a linha volta para R$ 400, porque o celular acabou.
+
+Quando você troca o mês na barra de cima do app, o gráfico anda junto.
 
 ---
 
@@ -296,9 +432,18 @@ Quando o total não divide certinho, a diferença de centavos vai para a última
 para a soma das parcelas dar exatamente o valor da compra.
 
 **Onde eu anoto o mercado, a farmácia, o lanche?**
-Você não anota. O app não é um caderno de gastos do dia a dia: ele mostra quanto está
-livre para você gastar. O que você gasta desse valor é com você.
+O app não é um caderno de gastos do dia a dia. O que existe é o **planejamento da
+semana**: lá você anota o que **acha** que vai gastar, para ver se cabe na semana.
+No fim, você não lança gasto por gasto — só informa quanto sobrou.
 
 **O valor por dia mudou de ontem para hoje. Por quê?**
 No mês de hoje, o app divide o dinheiro livre pelos dias que ainda faltam. Cada dia que
 passa, o mesmo dinheiro é dividido por menos dias, então o valor por dia sobe.
+
+**Esqueci de fechar a semana no domingo. Perdi alguma coisa?**
+Não. A semana fica aberta até você fechar. Feche quando lembrar, informando o saldo
+daquele dia, e abra a próxima a partir dali.
+
+**Gastei mais do que a semana permitia. E agora?**
+Feche a semana com o valor que realmente sobrou. A próxima semana vai começar com menos
+dinheiro e o app já mostra um valor por dia menor, sem você precisar refazer nada.

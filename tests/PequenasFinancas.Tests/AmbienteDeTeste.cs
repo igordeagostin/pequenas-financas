@@ -22,6 +22,7 @@ public sealed class AmbienteDeTeste : IDisposable
         Parcelas = new ServicoParcelas(Banco, Cartoes);
         Resumo = new ServicoResumo(
             Rendas, RendasExtras, GastosFixos, Cartoes, Parcelas, Reservas);
+        Semanas = new ServicoSemanas(Banco, Resumo);
     }
 
     public BancoJson Banco { get; }
@@ -43,6 +44,8 @@ public sealed class AmbienteDeTeste : IDisposable
     public ServicoParcelas Parcelas { get; }
 
     public ServicoResumo Resumo { get; }
+
+    public ServicoSemanas Semanas { get; }
 
     public void Dispose()
     {

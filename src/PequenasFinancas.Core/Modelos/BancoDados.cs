@@ -19,4 +19,6 @@ public sealed class BancoDados
     public List<Parcelamento> Parcelamentos { get; set; } = [];
 
     public List<Reserva> Reservas { get; set; } = [];
+
+    public List<SemanaPlanejada> Semanas { get; set; } = [];
 }

@@ -1,0 +1,462 @@
+@page "/semana"
+@namespace PequenasFinancas.App.Componentes.Paginas
+@implements IDisposable
+@inject EstadoAplicacao Estado
+@inject ServicoSemanas ServicoDeSemanas
+
+<CabecalhoPagina Titulo="Planejamento da semana"
+                 Explicacao="Quanto dá para gastar nesta semana com o dinheiro que ainda resta no mês.">
+    <Acoes>
+        @if (Resumo is null)
+        {
+            <button class="botao" @onclick="AbrirAbertura">
+                <Icone Nome="NomeIcone.Adicionar" /> Abrir semana
+            </button>
+        }
+        else
+        {
+            <button class="botao botao-secundario" @onclick="AbrirNovoGasto">
+                <Icone Nome="NomeIcone.Adicionar" /> Novo gasto provável
+            </button>
+            <button class="botao" @onclick="AbrirFechamento">Fechar semana</button>
+        }
+    </Acoes>
+</CabecalhoPagina>
+
+@if (Resumo is null)
+{
+    <div class="painel">
+        <EstadoVazio Simbolo="NomeIcone.Semana"
+                     Mensagem="@($"Nenhuma semana aberta em {MesSelecionado.NomeExtenso}.")">
+            <Acao>
+                <button class="botao" @onclick="AbrirAbertura">Abrir a semana</button>
+            </Acao>
+        </EstadoVazio>
+    </div>
+}
+else
+{
+    <div class="grade-resumo">
+        <CartaoValor Rotulo="Começou com" Simbolo="NomeIcone.DinheiroLivre" Valor="Resumo.SaldoInicial"
+                     Apoio="@DescreverSaldoInicial()" />
+
+        <CartaoValor Rotulo="Pode gastar na semana" Simbolo="NomeIcone.Semana" Valor="Resumo.PodeGastarNaSemana"
+                     Destaque="true" Apoio="@DescreverPeriodo()" />
+
+        <CartaoValor Rotulo="Gastos prováveis" Simbolo="NomeIcone.Saida" Valor="Resumo.TotalGastosProvaveis"
+                     EhEntrada="false" Apoio="@DescreverQuantidadeDeGastos()" />
+
+        <CartaoValor Rotulo="Ainda livre na semana" Simbolo="NomeIcone.Entrada" Valor="Resumo.AindaLivreNaSemana"
+                     ColorirPeloSinal="true" Apoio="@DescreverAindaLivre()" />
+    </div>
+
+    <div class="painel painel-por-dia">
+        <div class="painel-cabecalho">
+            <h2>Quanto dá para gastar por dia nesta semana</h2>
+            <span class="texto-suave texto-pequeno">@DescreverDiasQueFaltam()</span>
+        </div>
+
+        <div class="valor-por-dia @(Resumo.PassouDoPlanejado ? "texto-saida" : "texto-entrada")">
+            @Dinheiro.Formatar(Resumo.LivrePorDiaNaSemana)<small>por dia</small>
+        </div>
+
+        <p class="texto-suave texto-pequeno">@ExplicarGastoPorDia()</p>
+    </div>
+
+    <div class="painel">
+        <div class="painel-cabecalho">
+            <div>
+                <h2>Gastos prováveis da semana</h2>
+                <div class="texto-suave texto-pequeno">
+                    O que você acha que vai gastar até @Resumo.DataFim.ToString("dd/MM").
+                </div>
+            </div>
+            <button class="botao botao-secundario" @onclick="AbrirNovoGasto">
+                <Icone Nome="NomeIcone.Adicionar" /> Novo gasto provável
+            </button>
+        </div>
+
+        @if (Resumo.GastosProvaveis.Count == 0)
+        {
+            <EstadoVazio Simbolo="NomeIcone.Saida" Mensagem="Nenhum gasto provável anotado nesta semana.">
+                <Acao>
+                    <button class="botao" @onclick="AbrirNovoGasto">Anotar o primeiro</button>
+                </Acao>
+            </EstadoVazio>
+        }
+        else
+        {
+            <table class="tabela">
+                <thead>
+                    <tr>
+                        <th>Descrição</th>
+                        <th>Dia</th>
+                        <th class="direita">Valor</th>
+                        <th class="acoes"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (GastoProvavel gasto in Resumo.GastosProvaveis)
+                    {
+                        <tr>
+                            <td><strong>@gasto.Descricao</strong></td>
+                            <td class="texto-suave">@gasto.Data.ToString("dd/MM")</td>
+                            <td class="direita numero texto-saida">@Dinheiro.Formatar(gasto.Valor)</td>
+                            <td class="acoes">
+                                <button class="botao botao-secundario" @onclick="() => AbrirEdicaoDeGasto(gasto)">
+                                    Editar
+                                </button>
+                                <button class="botao botao-perigo" @onclick="() => ExcluirGasto(gasto)">
+                                    Excluir
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+}
+
+@if (SemanasFechadas.Count > 0)
+{
+    <div class="painel">
+        <div class="painel-cabecalho">
+            <h2>Semanas já fechadas em @MesSelecionado.NomeExtenso</h2>
+            <span class="texto-suave texto-pequeno">@DescreverQuantidadeDeSemanas()</span>
+        </div>
+
+        <table class="tabela">
+            <thead>
+                <tr>
+                    <th>Período</th>
+                    <th class="direita">Começou com</th>
+                    <th class="direita">Podia gastar</th>
+                    <th class="direita">Sobrou de verdade</th>
+                    <th class="direita">Diferença do previsto</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (ResumoSemana fechada in SemanasFechadas)
+                {
+                    <tr>
+                        <td>
+                            <strong>@DescreverPeriodoDe(fechada)</strong>
+                            <div class="texto-suave texto-pequeno">@DescreverFechamento(fechada)</div>
+                        </td>
+                        <td class="direita numero">@Dinheiro.Formatar(fechada.SaldoInicial)</td>
+                        <td class="direita numero">@Dinheiro.Formatar(fechada.PodeGastarNaSemana)</td>
+                        <td class="direita numero">@Dinheiro.Formatar(fechada.SaldoInformado ?? 0)</td>
+                        <td class="direita numero @(fechada.DiferencaDoPrevisto < 0 ? "texto-saida" : "texto-entrada")">
+                            @Dinheiro.FormatarComSinal(fechada.DiferencaDoPrevisto, fechada.DiferencaDoPrevisto >= 0)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<ModalFormulario Visivel="AberturaVisivel"
+                 Titulo="Abrir a semana"
+                 TextoDoBotao="Abrir semana"
+                 Erro="@ErroDaAbertura"
+                 AoConfirmar="ConfirmarAbertura"
+                 AoCancelar="FecharAbertura">
+    <div class="previa">
+        Esta semana começa com @Dinheiro.Formatar(SaldoParaComecar).
+    </div>
+
+    <div class="campo">
+        <label>Primeiro dia da semana</label>
+        <input type="date" @bind="DataDeInicio" @bind:event="oninput" />
+        <div class="ajuda">A semana vale por sete dias, ou até o fim do mês, o que vier antes.</div>
+    </div>
+</ModalFormulario>
+
+<ModalFormulario Visivel="GastoEmEdicao is not null"
+                 Titulo="@(EhGastoNovo ? "Novo gasto provável" : "Editar gasto provável")"
+                 Erro="@ErroDoGasto"
+                 AoConfirmar="ConfirmarGasto"
+                 AoCancelar="FecharGasto">
+    @if (GastoEmEdicao is GastoProvavel gasto)
+    {
+        <div class="campo">
+            <label>Descrição</label>
+            <input type="text" placeholder="Ex.: mercado da semana" @bind="gasto.Descricao" @bind:event="oninput" />
+        </div>
+
+        <div class="linha-campos">
+            <CampoMoeda Rotulo="Quanto acha que vai gastar" @bind-Valor="gasto.Valor" />
+
+            <div class="campo">
+                <label>Dia</label>
+                <input type="date" @bind="gasto.Data" @bind:event="oninput" />
+            </div>
+        </div>
+    }
+</ModalFormulario>
+
+<ModalFormulario Visivel="FechamentoVisivel"
+                 Titulo="Fechar a semana"
+                 TextoDoBotao="Fechar semana"
+                 Erro="@ErroDoFechamento"
+                 AoConfirmar="ConfirmarFechamento"
+                 AoCancelar="FecharFechamento">
+    <div class="previa">
+        Pelo que você anotou, deveria sobrar @Dinheiro.Formatar(SaldoPrevistoNoFim).
+    </div>
+
+    <div class="linha-campos">
+        <CampoMoeda Rotulo="Quanto sobrou de verdade" @bind-Valor="SaldoInformado"
+                    Ajuda="Olhe sua conta e sua carteira e informe o que ainda tem." />
+
+        <div class="campo">
+            <label>Data do fechamento</label>
+            <input type="date" @bind="DataDeFechamento" @bind:event="oninput" />
+        </div>
+    </div>
+
+    <div class="campo">
+        <div class="ajuda">A próxima semana começa com esse valor.</div>
+    </div>
+</ModalFormulario>
+
+@code {
+    private ResumoSemana? Resumo;
+    private IReadOnlyList<ResumoSemana> SemanasFechadas = [];
+    private GastoProvavel? GastoEmEdicao;
+    private bool EhGastoNovo;
+    private string? ErroDoGasto;
+    private bool AberturaVisivel;
+    private DateTime DataDeInicio;
+    private decimal SaldoParaComecar;
+    private string? ErroDaAbertura;
+    private bool FechamentoVisivel;
+    private decimal SaldoInformado;
+    private DateTime DataDeFechamento;
+    private string? ErroDoFechamento;
+
+    private Competencia MesSelecionado => Estado.MesSelecionado;
+
+    private decimal SaldoPrevistoNoFim => Resumo?.SaldoPrevistoNoFim ?? 0;
+
+    protected override void OnInitialized()
+    {
+        Estado.MesAlterado += AoTrocarDeMes;
+        Recarregar();
+    }
+
+    public void Dispose() => Estado.MesAlterado -= AoTrocarDeMes;
+
+    private void AoTrocarDeMes()
+    {
+        FecharAbertura();
+        FecharGasto();
+        FecharFechamento();
+        Recarregar();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void Recarregar()
+    {
+        SemanaPlanejada? aberta = ServicoDeSemanas.ObterAberta(MesSelecionado);
+
+        Resumo = aberta is null ? null : ServicoSemanas.CalcularResumo(aberta);
+
+        SemanasFechadas = [.. ServicoDeSemanas.ListarDoMes(MesSelecionado)
+            .Where(semana => semana.EstaFechada)
+            .Select(semana => ServicoSemanas.CalcularResumo(semana))];
+    }
+
+    private void AbrirAbertura()
+    {
+        ErroDaAbertura = null;
+        DataDeInicio = ServicoDeSemanas.SugerirInicio(MesSelecionado);
+        SaldoParaComecar = ServicoDeSemanas.CalcularSaldoParaComecar(MesSelecionado);
+        AberturaVisivel = true;
+    }
+
+    private void FecharAbertura()
+    {
+        AberturaVisivel = false;
+        ErroDaAbertura = null;
+    }
+
+    private void ConfirmarAbertura()
+    {
+        ErroDaAbertura = Validacoes.DataNoMes(DataDeInicio, MesSelecionado);
+
+        if (ErroDaAbertura is not null)
+        {
+            return;
+        }
+
+        ServicoDeSemanas.Abrir(MesSelecionado, DataDeInicio);
+        AberturaVisivel = false;
+        Recarregar();
+    }
+
+    private void AbrirNovoGasto()
+    {
+        if (ServicoDeSemanas.ObterAberta(MesSelecionado) is not SemanaPlanejada semana)
+        {
+            return;
+        }
+
+        EhGastoNovo = true;
+        ErroDoGasto = null;
+        GastoEmEdicao = new GastoProvavel { Data = ServicoSemanas.SugerirDataDoGasto(semana) };
+    }
+
+    private void AbrirEdicaoDeGasto(GastoProvavel gasto)
+    {
+        EhGastoNovo = false;
+        ErroDoGasto = null;
+        GastoEmEdicao = Clonador.Clonar(gasto);
+    }
+
+    private void FecharGasto()
+    {
+        GastoEmEdicao = null;
+        ErroDoGasto = null;
+    }
+
+    private void ConfirmarGasto()
+    {
+        if (GastoEmEdicao is null || Resumo is null)
+        {
+            return;
+        }
+
+        ErroDoGasto = Validacoes.Primeira(
+            Validacoes.Descricao(GastoEmEdicao.Descricao),
+            Validacoes.ValorPositivo(GastoEmEdicao.Valor),
+            Validacoes.DataEntre(GastoEmEdicao.Data, Resumo.DataInicio, Resumo.DataFim));
+
+        if (ErroDoGasto is not null)
+        {
+            return;
+        }
+
+        ServicoDeSemanas.RegistrarGastoProvavel(Resumo.SemanaId, GastoEmEdicao);
+        GastoEmEdicao = null;
+        Recarregar();
+    }
+
+    private void ExcluirGasto(GastoProvavel gasto)
+    {
+        if (Resumo is null)
+        {
+            return;
+        }
+
+        ServicoDeSemanas.ExcluirGastoProvavel(Resumo.SemanaId, gasto.Id);
+        Recarregar();
+    }
+
+    private void AbrirFechamento()
+    {
+        if (ServicoDeSemanas.ObterAberta(MesSelecionado) is not SemanaPlanejada semana)
+        {
+            return;
+        }
+
+        ErroDoFechamento = null;
+        SaldoInformado = Math.Max(0, SaldoPrevistoNoFim);
+        DataDeFechamento = ServicoSemanas.SugerirDataDeFechamento(semana);
+        FechamentoVisivel = true;
+    }
+
+    private void FecharFechamento()
+    {
+        FechamentoVisivel = false;
+        ErroDoFechamento = null;
+    }
+
+    private void ConfirmarFechamento()
+    {
+        if (Resumo is null)
+        {
+            return;
+        }
+
+        ErroDoFechamento = Validacoes.Primeira(
+            Validacoes.ValorNaoNegativo(SaldoInformado),
+            Validacoes.DataEntre(DataDeFechamento, Resumo.DataInicio, MesSelecionado.UltimoDia));
+
+        if (ErroDoFechamento is not null)
+        {
+            return;
+        }
+
+        ServicoDeSemanas.Fechar(Resumo.SemanaId, SaldoInformado, DataDeFechamento);
+        FechamentoVisivel = false;
+        Recarregar();
+    }
+
+    private string DescreverSaldoInicial()
+        => SemanasFechadas.Count == 0
+            ? "Dinheiro livre do mês quando a semana abriu"
+            : "Sobrou da semana anterior";
+
+    private string DescreverPeriodo() => Resumo is null ? string.Empty : DescreverPeriodoDe(Resumo);
+
+    private static string DescreverPeriodoDe(ResumoSemana semana)
+        => $"{semana.DataInicio:dd/MM} a {semana.DataFim:dd/MM}";
+
+    private static string DescreverFechamento(ResumoSemana semana)
+        => semana.DataFechamento is DateTime fechamento
+            ? $"fechada em {fechamento:dd/MM/yyyy}"
+            : string.Empty;
+
+    private string DescreverQuantidadeDeGastos()
+        => Resumo?.GastosProvaveis.Count switch
+        {
+            null or 0 => "Nada anotado ainda",
+            1 => "1 gasto anotado",
+            int quantidade => $"{quantidade} gastos anotados"
+        };
+
+    private string DescreverQuantidadeDeSemanas()
+        => SemanasFechadas.Count == 1 ? "1 semana fechada" : $"{SemanasFechadas.Count} semanas fechadas";
+
+    private string DescreverAindaLivre()
+        => Resumo is null
+            ? string.Empty
+            : Resumo.PassouDoPlanejado
+                ? "Os gastos prováveis passaram do limite da semana"
+                : $"Fica para o resto do mês: {Dinheiro.Formatar(Resumo.FicaParaORestoDoMes)}";
+
+    private string DescreverDiasQueFaltam()
+    {
+        if (Resumo is null)
+        {
+            return string.Empty;
+        }
+
+        return Resumo.DiasQueFaltamNaSemana switch
+        {
+            0 => "a semana já chegou ao fim",
+            1 => "falta 1 dia nesta semana",
+            int dias => $"faltam {dias} dias nesta semana"
+        };
+    }
+
+    private string ExplicarGastoPorDia()
+    {
+        if (Resumo is null)
+        {
+            return string.Empty;
+        }
+
+        if (Resumo.PassouDoPlanejado)
+        {
+            return "Os gastos prováveis já passaram do que dava para gastar nesta semana.";
+        }
+
+        return Resumo.DiasQueFaltamNaSemana <= 0
+            ? "A semana terminou. Feche a semana informando quanto sobrou de verdade."
+            : $"{Dinheiro.Formatar(Resumo.AindaLivreNaSemana)} livres divididos por {DescreverDiasQueFaltam()}.";
+    }
+}

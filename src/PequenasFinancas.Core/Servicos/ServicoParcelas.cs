@@ -37,6 +37,15 @@ public sealed class ServicoParcelas(BancoJson banco, ServicoCartoes servicoCarto
             : parcelas.Skip(primeiroIndiceEmAberto).Sum();
     }
 
+    public static decimal CalcularValorNoMes(IParcelado parcelado, Competencia competencia)
+    {
+        int indiceDaParcela = competencia.DiferencaEmMesesDe(parcelado.CompetenciaPrimeiraParcela);
+
+        return indiceDaParcela < 0 || indiceDaParcela >= parcelado.QuantidadeParcelas
+            ? 0
+            : RateioParcelas.Calcular(parcelado.ValorTotal, parcelado.QuantidadeParcelas)[indiceDaParcela];
+    }
+
     public static Competencia CalcularUltimaCompetencia(IParcelado parcelado)
         => parcelado.CompetenciaPrimeiraParcela.Adicionar(parcelado.QuantidadeParcelas - 1);
 

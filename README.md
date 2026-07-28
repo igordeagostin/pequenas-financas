@@ -36,6 +36,9 @@ O aplicativo **está em produção** e em uso no dia a dia.
   quanto foi guardado e quanto fica livre, com os gastos somados por categoria.
 - **Quanto dá para gastar por dia** — o dinheiro livre dividido pelos dias que ainda
   faltam no mês.
+- **Planejamento da semana** — abra a semana, veja a fatia dela dentro do que resta do
+  mês, anote os gastos prováveis e, ao fechar, informe quanto sobrou de verdade. A
+  próxima semana começa desse saldo.
 
 ![Nova compra no cartão](docs/imagens/nova-compra.png)
 

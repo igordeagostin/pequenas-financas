@@ -7,14 +7,16 @@
 <CabecalhoPagina Titulo="Compras no cartão"
                  Explicacao="Lance a compra uma vez e as parcelas aparecem sozinhas em cada mês.">
     <Acoes>
-        <button class="botao" @onclick="AbrirNovo" disabled="@(CartoesDisponiveis.Count == 0)">+ Nova compra</button>
+        <button class="botao" @onclick="AbrirNovo" disabled="@(CartoesDisponiveis.Count == 0)">
+            <Icone Nome="NomeIcone.Adicionar" /> Nova compra
+        </button>
     </Acoes>
 </CabecalhoPagina>
 
 @if (CartoesDisponiveis.Count == 0)
 {
     <div class="painel">
-        <EstadoVazio Icone="▭" Mensagem="Cadastre um cartão antes de lançar compras.">
+        <EstadoVazio Simbolo="NomeIcone.Cartao" Mensagem="Cadastre um cartão antes de lançar compras.">
             <Acao>
                 <a class="botao" href="cartoes">Ir para cartões</a>
             </Acao>
@@ -34,7 +36,7 @@ else
 
         @if (ComprasVisiveis.Count == 0)
         {
-            <EstadoVazio Icone="＄" Mensagem="Nenhuma compra para mostrar." />
+            <EstadoVazio Simbolo="NomeIcone.Compra" Mensagem="Nenhuma compra para mostrar." />
         }
         else
         {

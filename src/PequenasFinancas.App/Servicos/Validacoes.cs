@@ -1,3 +1,5 @@
+using PequenasFinancas.Core.Comum;
+
 namespace PequenasFinancas.App.Servicos;
 
 public static class Validacoes
@@ -12,6 +14,17 @@ public static class Validacoes
 
     public static string? ValorPositivo(decimal valor)
         => valor <= 0 ? "Informe um valor maior que zero." : null;
+
+    public static string? ValorNaoNegativo(decimal valor)
+        => valor < 0 ? "Informe um valor de zero para cima." : null;
+
+    public static string? DataNoMes(DateTime data, Competencia mes)
+        => Competencia.DaData(data) != mes ? $"A data precisa estar dentro de {mes.NomeExtenso}." : null;
+
+    public static string? DataEntre(DateTime data, DateTime inicio, DateTime fim)
+        => data.Date < inicio.Date || data.Date > fim.Date
+            ? $"A data precisa estar entre {inicio:dd/MM/yyyy} e {fim:dd/MM/yyyy}."
+            : null;
 
     public static string? QuantidadeParcelas(int quantidade)
         => quantidade < 1 ? "O número de parcelas deve ser 1 ou mais." : null;

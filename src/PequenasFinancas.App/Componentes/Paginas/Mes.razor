@@ -3,21 +3,22 @@
 @implements IDisposable
 @inject EstadoAplicacao Estado
 @inject ServicoResumo ServicoDeResumo
+@inject ServicoSemanas ServicoDeSemanas
 
 <CabecalhoPagina Titulo="@($"Resumo de {Estado.MesSelecionado.NomeExtenso}")"
                  Explicacao="Quanto entra, quanto sai e quanto fica livre para gastar no mês." />
 
 <div class="grade-resumo">
-    <CartaoValor Rotulo="Entra" Icone="↑" Valor="Resumo.TotalReceitas" EhEntrada="true"
+    <CartaoValor Rotulo="Entra" Simbolo="NomeIcone.Entrada" Valor="Resumo.TotalReceitas" EhEntrada="true"
                  Apoio="@DescreverReceitas()" />
 
-    <CartaoValor Rotulo="Sai" Icone="↓" Valor="Resumo.TotalGastos" EhEntrada="false"
+    <CartaoValor Rotulo="Sai" Simbolo="NomeIcone.Saida" Valor="Resumo.TotalGastos" EhEntrada="false"
                  Apoio="@DescreverGastos()" />
 
-    <CartaoValor Rotulo="Livre no mês" Icone="◎" Valor="Resumo.DinheiroLivre"
+    <CartaoValor Rotulo="Livre no mês" Simbolo="NomeIcone.DinheiroLivre" Valor="Resumo.DinheiroLivre"
                  ColorirPeloSinal="true" Destaque="true" Apoio="@DescreverDinheiroLivre()" />
 
-    <CartaoValor Rotulo="Guardado até aqui" Icone="◆" Valor="Resumo.TotalGuardadoAcumulado"
+    <CartaoValor Rotulo="Guardado até aqui" Simbolo="NomeIcone.Guardado" Valor="Resumo.TotalGuardadoAcumulado"
                  Apoio="@DescreverGuardado()" />
 </div>
 
@@ -44,7 +45,7 @@
 
             @if (Resumo.Lancamentos.Count == 0)
             {
-                <EstadoVazio Icone="◌" Mensagem="Nada lançado neste mês ainda.">
+                <EstadoVazio Mensagem="Nada lançado neste mês ainda.">
                     <Acao>
                         <a class="botao" href="rendas">Começar pela renda</a>
                     </Acao>
@@ -69,7 +70,7 @@
 
             @if (Resumo.Faturas.Count == 0)
             {
-                <EstadoVazio Icone="▭" Mensagem="Nenhuma parcela de cartão neste mês." />
+                <EstadoVazio Simbolo="NomeIcone.Cartao" Mensagem="Nenhuma parcela de cartão neste mês." />
             }
             else
             {
@@ -94,7 +95,7 @@
 
             @if (Resumo.GastosPorCategoria.Count == 0)
             {
-                <EstadoVazio Icone="◌" Mensagem="Nenhum gasto neste mês." />
+                <EstadoVazio Mensagem="Nenhum gasto neste mês." />
             }
             else
             {
@@ -113,13 +114,57 @@
 
         <div class="painel">
             <div class="painel-cabecalho">
+                <h2>Sua semana</h2>
+                <a class="texto-pequeno" href="semana">planejar</a>
+            </div>
+
+            @if (ResumoDaSemana is null)
+            {
+                <EstadoVazio Simbolo="NomeIcone.Semana" Mensagem="Nenhuma semana aberta neste mês.">
+                    <Acao>
+                        <a class="botao" href="semana">Abrir a semana</a>
+                    </Acao>
+                </EstadoVazio>
+            }
+            else
+            {
+                <div class="linha-lancamento">
+                    <div class="descricao">
+                        <strong>Pode gastar na semana</strong>
+                        <span>@DescreverPeriodoDaSemana()</span>
+                    </div>
+                    <div class="valor">@Dinheiro.Formatar(ResumoDaSemana.PodeGastarNaSemana)</div>
+                </div>
+
+                <div class="linha-lancamento">
+                    <div class="descricao">
+                        <strong>Gastos prováveis</strong>
+                        <span>@DescreverQuantidadeDeGastosProvaveis()</span>
+                    </div>
+                    <div class="valor texto-saida">@Dinheiro.Formatar(ResumoDaSemana.TotalGastosProvaveis)</div>
+                </div>
+
+                <div class="linha-lancamento">
+                    <div class="descricao">
+                        <strong>Ainda livre na semana</strong>
+                        <span>@Dinheiro.Formatar(ResumoDaSemana.LivrePorDiaNaSemana) por dia</span>
+                    </div>
+                    <div class="valor @(ResumoDaSemana.PassouDoPlanejado ? "texto-saida" : "texto-entrada")">
+                        @Dinheiro.Formatar(ResumoDaSemana.AindaLivreNaSemana)
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="painel">
+            <div class="painel-cabecalho">
                 <h2>Dinheiro guardado</h2>
                 <a class="texto-pequeno" href="reservas">gerenciar</a>
             </div>
 
             @if (Resumo.SaldosDeReservas.Count == 0)
             {
-                <EstadoVazio Icone="◆" Mensagem="Nenhuma reserva criada." />
+                <EstadoVazio Simbolo="NomeIcone.Guardado" Mensagem="Nenhuma reserva criada." />
             }
             else
             {
@@ -151,6 +196,7 @@
 
 @code {
     private ResumoMes Resumo = default!;
+    private ResumoSemana? ResumoDaSemana;
 
     protected override void OnInitialized()
     {
@@ -160,7 +206,14 @@
 
     public void Dispose() => Estado.MesAlterado -= AoTrocarDeMes;
 
-    private void CalcularResumo() => Resumo = ServicoDeResumo.Calcular(Estado.MesSelecionado);
+    private void CalcularResumo()
+    {
+        Resumo = ServicoDeResumo.Calcular(Estado.MesSelecionado);
+
+        ResumoDaSemana = ServicoDeSemanas.ObterAberta(Estado.MesSelecionado) is SemanaPlanejada semana
+            ? ServicoSemanas.CalcularResumo(semana)
+            : null;
+    }
 
     private void AoTrocarDeMes()
     {
@@ -170,6 +223,19 @@
 
     private static string DescreverQuantidadeDeParcelas(FaturaCartao fatura)
         => fatura.Parcelas.Count == 1 ? "1 parcela" : $"{fatura.Parcelas.Count} parcelas";
+
+    private string DescreverPeriodoDaSemana()
+        => ResumoDaSemana is null
+            ? string.Empty
+            : $"{ResumoDaSemana.DataInicio:dd/MM} a {ResumoDaSemana.DataFim:dd/MM}";
+
+    private string DescreverQuantidadeDeGastosProvaveis()
+        => ResumoDaSemana?.GastosProvaveis.Count switch
+        {
+            null or 0 => "nada anotado ainda",
+            1 => "1 gasto anotado",
+            int quantidade => $"{quantidade} gastos anotados"
+        };
 
     private string DescreverReceitas()
         => Resumo.TotalRendasExtras > 0

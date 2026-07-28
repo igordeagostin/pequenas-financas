@@ -1,7 +1,7 @@
 @namespace PequenasFinancas.App.Componentes.Compartilhados
 
 <div class="cartao-valor @(Destaque ? "destaque" : string.Empty)">
-    <div class="rotulo"><span>@Icone</span> @Rotulo</div>
+    <div class="rotulo"><Icone Nome="Simbolo" /> @Rotulo</div>
     <div class="valor @ClasseDeCor">@Dinheiro.Formatar(Valor)</div>
     @if (!string.IsNullOrWhiteSpace(Apoio))
     {
@@ -14,7 +14,7 @@
     public string Rotulo { get; set; } = string.Empty;
 
     [Parameter]
-    public string Icone { get; set; } = "•";
+    public NomeIcone Simbolo { get; set; } = NomeIcone.Vazio;
 
     [Parameter]
     public decimal Valor { get; set; }

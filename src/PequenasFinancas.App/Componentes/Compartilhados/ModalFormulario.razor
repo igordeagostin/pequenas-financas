@@ -6,7 +6,9 @@
         <div class="modal" @onclick:stopPropagation="true">
             <div class="modal-cabecalho">
                 <h2>@Titulo</h2>
-                <button class="botao botao-icone" title="Fechar" @onclick="AoCancelar">×</button>
+                <button class="botao botao-icone" title="Fechar" @onclick="AoCancelar">
+                    <Icone Nome="NomeIcone.Fechar" />
+                </button>
             </div>
 
             <div class="modal-corpo">

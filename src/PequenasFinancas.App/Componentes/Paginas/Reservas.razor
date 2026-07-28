@@ -6,21 +6,23 @@
 <CabecalhoPagina Titulo="Dinheiro guardado"
                  Explicacao="Crie lugares para separar dinheiro e registre quanto guardou em cada mês.">
     <Acoes>
-        <button class="botao" @onclick="AbrirNovo">+ Novo lugar para guardar</button>
+        <button class="botao" @onclick="AbrirNovo">
+            <Icone Nome="NomeIcone.Adicionar" /> Novo lugar para guardar
+        </button>
     </Acoes>
 </CabecalhoPagina>
 
 <div class="grade-resumo">
-    <CartaoValor Rotulo="Total guardado" Icone="◆" Valor="TotalGuardado"
+    <CartaoValor Rotulo="Total guardado" Simbolo="NomeIcone.Guardado" Valor="TotalGuardado"
                  Apoio="@($"Até {MesSelecionado.NomeExtenso}")" Destaque="true" />
-    <CartaoValor Rotulo="Guardado neste mês" Icone="↑" Valor="GuardadoNoMes" EhEntrada="true"
+    <CartaoValor Rotulo="Guardado neste mês" Simbolo="NomeIcone.Entrada" Valor="GuardadoNoMes" EhEntrada="true"
                  Apoio="Depósitos menos resgates do mês" />
 </div>
 
 @if (Itens.Count == 0)
 {
     <div class="painel">
-        <EstadoVazio Icone="◆" Mensagem="Você ainda não tem nenhum lugar para guardar dinheiro.">
+        <EstadoVazio Simbolo="NomeIcone.Guardado" Mensagem="Você ainda não tem nenhum lugar para guardar dinheiro.">
             <Acao>
                 <button class="botao" @onclick="AbrirNovo">Criar minha reserva</button>
             </Acao>
@@ -77,7 +79,7 @@ else
 
                 @if (movimentos.Count == 0)
                 {
-                    <EstadoVazio Icone="◌" Mensagem="Nenhum movimento registrado nesta reserva." />
+                    <EstadoVazio Mensagem="Nenhum movimento registrado nesta reserva." />
                 }
                 else
                 {

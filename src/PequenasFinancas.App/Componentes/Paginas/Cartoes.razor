@@ -7,14 +7,14 @@
 <CabecalhoPagina Titulo="Cartões"
                  Explicacao="Cadastre seus cartões de crédito para lançar as compras neles.">
     <Acoes>
-        <button class="botao" @onclick="AbrirNovo">+ Novo cartão</button>
+        <button class="botao" @onclick="AbrirNovo"><Icone Nome="NomeIcone.Adicionar" /> Novo cartão</button>
     </Acoes>
 </CabecalhoPagina>
 
 <div class="painel">
     @if (Itens.Count == 0)
     {
-        <EstadoVazio Icone="▭" Mensagem="Você ainda não cadastrou nenhum cartão.">
+        <EstadoVazio Simbolo="NomeIcone.Cartao" Mensagem="Você ainda não cadastrou nenhum cartão.">
             <Acao>
                 <button class="botao" @onclick="AbrirNovo">Cadastrar meu primeiro cartão</button>
             </Acao>
@@ -62,6 +62,30 @@
         </table>
     }
 </div>
+
+@if (Itens.Count > 0)
+{
+    <div class="painel">
+        <div class="painel-cabecalho">
+            <div>
+                <h2>Gastos por mês</h2>
+                <p class="texto-suave texto-pequeno">
+                    Quanto o cartão cobra em cada mês, dos @MesesAntesDoGrafico meses anteriores
+                    aos @MesesDepoisDoGrafico seguintes.
+                </p>
+            </div>
+            <select class="filtro" value="@CartaoDoGrafico" @onchange="TrocarCartaoDoGrafico">
+                <option value="">Todos os cartões</option>
+                @foreach (Cartao cartao in Itens)
+                {
+                    <option value="@cartao.Id">@cartao.Nome</option>
+                }
+            </select>
+        </div>
+
+        <GraficoLinha Pontos="PontosDoGrafico" Descricao="Gastos no cartão mês a mês" />
+    </div>
+}
 
 <ModalFormulario Visivel="FormularioAberto"
                  Titulo="@(EhCadastroNovo ? "Novo cartão" : "Editar cartão")"
@@ -116,7 +140,23 @@
                   AoCancelar="CancelarExclusao" />
 
 @code {
+    private const int MesesAntesDoGrafico = 5;
+    private const int MesesDepoisDoGrafico = 6;
+    private const int MesesNoGrafico = MesesAntesDoGrafico + MesesDepoisDoGrafico + 1;
+
+    private string CartaoDoGrafico = string.Empty;
+
     protected override ServicoCrud<Cartao> Servico => ServicoDeCartoes;
+
+    protected override void Recarregar()
+    {
+        base.Recarregar();
+
+        if (!Itens.Any(cartao => cartao.Id.ToString() == CartaoDoGrafico))
+        {
+            CartaoDoGrafico = string.Empty;
+        }
+    }
 
     protected override string? Conferir(Cartao cartao)
         => Validacoes.Primeira(
@@ -130,10 +170,17 @@
         => ServicoDeCompras.CalcularSaldoDevedor(cartao.Id, MesSelecionado);
 
     private decimal CalcularTotalDoMes(Cartao cartao)
-        => ServicoDeCompras.ListarDoCartao(cartao.Id)
-            .Where(compra => DescritorParcelamento.CaiNoMes(compra, MesSelecionado))
-            .Sum(compra => RateioParcelas.CalcularParcela(
-                compra.ValorTotal,
-                compra.QuantidadeParcelas,
-                MesSelecionado.DiferencaEmMesesDe(compra.CompetenciaPrimeiraParcela) + 1));
+        => ServicoDeCompras.CalcularTotalDoMes(cartao.Id, MesSelecionado);
+
+    private IReadOnlyList<PontoGrafico> PontosDoGrafico
+        => [.. ServicoDeCompras
+            .CalcularGastosPorMes(
+                CartaoFiltrado, MesSelecionado.Adicionar(-MesesAntesDoGrafico), MesesNoGrafico)
+            .Select(gasto => new PontoGrafico(
+                gasto.Competencia.NomeCurto, gasto.Valor, gasto.Competencia == MesSelecionado))];
+
+    private Guid? CartaoFiltrado => Guid.TryParse(CartaoDoGrafico, out Guid cartaoId) ? cartaoId : null;
+
+    private void TrocarCartaoDoGrafico(ChangeEventArgs evento)
+        => CartaoDoGrafico = evento.Value?.ToString() ?? string.Empty;
 }

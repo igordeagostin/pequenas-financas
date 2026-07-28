@@ -3,9 +3,13 @@
 @inject EstadoAplicacao Estado
 
 <div class="seletor-mes">
-    <button class="botao botao-icone" title="Mês anterior" @onclick="Estado.VoltarUmMes">‹</button>
+    <button class="botao botao-icone" title="Mês anterior" @onclick="Estado.VoltarUmMes">
+        <Icone Nome="NomeIcone.MesAnterior" />
+    </button>
     <div class="mes-atual">@Estado.MesSelecionado.NomeExtenso</div>
-    <button class="botao botao-icone" title="Próximo mês" @onclick="Estado.AvancarUmMes">›</button>
+    <button class="botao botao-icone" title="Próximo mês" @onclick="Estado.AvancarUmMes">
+        <Icone Nome="NomeIcone.ProximoMes" />
+    </button>
 
     @if (!Estado.EstaNoMesAtual)
     {

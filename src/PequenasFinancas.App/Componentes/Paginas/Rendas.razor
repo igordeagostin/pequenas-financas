@@ -7,7 +7,7 @@
 <CabecalhoPagina Titulo="Renda"
                  Explicacao="Cadastre o dinheiro que entra todo mês. Ele aparece sozinho nos próximos meses.">
     <Acoes>
-        <button class="botao" @onclick="AbrirNovo">+ Nova renda</button>
+        <button class="botao" @onclick="AbrirNovo"><Icone Nome="NomeIcone.Adicionar" /> Nova renda</button>
     </Acoes>
 </CabecalhoPagina>
 
@@ -19,7 +19,7 @@
 
     @if (Itens.Count == 0)
     {
-        <EstadoVazio Icone="↑" Mensagem="Comece cadastrando sua renda principal, como o salário.">
+        <EstadoVazio Simbolo="NomeIcone.Renda" Mensagem="Comece cadastrando sua renda principal, como o salário.">
             <Acao>
                 <button class="botao" @onclick="AbrirNovo">Cadastrar minha renda</button>
             </Acao>
@@ -77,12 +77,14 @@
                 Freelance, 13º, venda, presente — vale apenas para @MesSelecionado.NomeExtenso
             </div>
         </div>
-        <button class="botao botao-secundario" @onclick="AbrirNovaRendaExtra">+ Nova entrada</button>
+        <button class="botao botao-secundario" @onclick="AbrirNovaRendaExtra">
+            <Icone Nome="NomeIcone.Adicionar" /> Nova entrada
+        </button>
     </div>
 
     @if (RendasExtras.Count == 0)
     {
-        <EstadoVazio Icone="＋" Mensagem="Nenhuma entrada extra neste mês." />
+        <EstadoVazio Simbolo="NomeIcone.Entrada" Mensagem="Nenhuma entrada extra neste mês." />
     }
     else
     {

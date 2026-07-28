@@ -6,7 +6,7 @@
 <CabecalhoPagina Titulo="Gastos fixos"
                  Explicacao="Contas que se repetem todo mês, como aluguel, internet e escola.">
     <Acoes>
-        <button class="botao" @onclick="AbrirNovo">+ Novo gasto fixo</button>
+        <button class="botao" @onclick="AbrirNovo"><Icone Nome="NomeIcone.Adicionar" /> Novo gasto fixo</button>
     </Acoes>
 </CabecalhoPagina>
 
@@ -21,7 +21,7 @@
 
     @if (Itens.Count == 0)
     {
-        <EstadoVazio Icone="≡" Mensagem="Nenhum gasto fixo cadastrado ainda.">
+        <EstadoVazio Simbolo="NomeIcone.GastoFixo" Mensagem="Nenhum gasto fixo cadastrado ainda.">
             <Acao>
                 <button class="botao" @onclick="AbrirNovo">Cadastrar meu primeiro gasto fixo</button>
             </Acao>

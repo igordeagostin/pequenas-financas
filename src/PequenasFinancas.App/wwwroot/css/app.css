@@ -62,6 +62,13 @@ a {
     color: var(--text-suave);
 }
 
+.icone {
+    width: 1em;
+    height: 1em;
+    flex: none;
+    vertical-align: -.15em;
+}
+
 .texto-suave { color: var(--text-suave); }
 .texto-pequeno { font-size: 12px; }
 .texto-entrada { color: var(--success); }
@@ -129,11 +136,12 @@ a {
 }
 
 .item-menu .icone {
-    width: 22px;
-    text-align: center;
-    font-size: 18px;
-    line-height: 1;
+    font-size: 20px;
+    color: var(--text-suave);
 }
+
+.item-menu:hover .icone,
+.item-menu.active .icone { color: var(--primary); }
 
 .conteudo {
     display: flex;
@@ -197,6 +205,8 @@ a {
     cursor: pointer;
 }
 
+.botao .icone { font-size: 17px; }
+
 .botao:hover { filter: brightness(1.08); }
 .botao:disabled { opacity: .5; cursor: not-allowed; }
 
@@ -220,12 +230,12 @@ a {
     width: 36px;
     height: 36px;
     padding: 0;
-    font-size: 21px;
-    line-height: 1;
     background: var(--surface);
     border-color: var(--border);
     color: var(--text);
 }
+
+.botao-icone .icone { font-size: 19px; }
 
 .botao-icone:hover { background: var(--background); filter: none; }
 
@@ -283,9 +293,9 @@ a {
     letter-spacing: .04em;
 }
 
-.cartao-valor .rotulo span {
-    font-size: 18px;
-    line-height: 1;
+.cartao-valor .rotulo .icone {
+    font-size: 17px;
+    color: var(--primary);
 }
 
 .cartao-valor .valor {
@@ -418,7 +428,11 @@ a {
     color: var(--text-suave);
 }
 
-.estado-vazio .icone { font-size: 40px; line-height: 1; }
+.estado-vazio .icone {
+    font-size: 42px;
+    stroke-width: 1.4;
+    color: var(--border);
+}
 .estado-vazio p { margin: 8px 0 14px; }
 
 .barra {
@@ -442,6 +456,75 @@ a {
 }
 
 .linha-categoria .barra { grid-column: 1 / -1; }
+
+.filtro {
+    padding: 8px 11px;
+    border: 1px solid var(--border);
+    border-radius: var(--raio-pequeno);
+    background: var(--surface);
+    color: var(--text);
+    font: inherit;
+    cursor: pointer;
+}
+
+.filtro:focus {
+    outline: none;
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 3px var(--foco);
+}
+
+.grafico-linha {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+}
+
+.grafico-grade {
+    stroke: var(--border);
+    stroke-width: 1;
+}
+
+.grafico-area {
+    fill: var(--primary-claro);
+    stroke: none;
+}
+
+.grafico-traco {
+    fill: none;
+    stroke: var(--primary);
+    stroke-width: 2.5;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+
+.grafico-ponto {
+    r: 4;
+    fill: var(--surface);
+    stroke: var(--primary);
+    stroke-width: 2.5;
+}
+
+.grafico-ponto-destaque {
+    r: 6;
+    fill: var(--accent);
+    stroke: var(--surface);
+}
+
+.grafico-rotulo-valor {
+    fill: var(--text-suave);
+    font-size: 11px;
+    text-anchor: end;
+    dominant-baseline: middle;
+    font-variant-numeric: tabular-nums;
+}
+
+.grafico-rotulo-mes {
+    fill: var(--text-suave);
+    font-size: 11px;
+    text-anchor: middle;
+    font-variant-numeric: tabular-nums;
+}
 
 .campo { margin-bottom: 14px; }
 

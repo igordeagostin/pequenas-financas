@@ -6,7 +6,7 @@
 <CabecalhoPagina Titulo="Parcelados sem cartão"
                  Explicacao="Carnê, boleto, empréstimo ou acordo que você paga em parcelas, fora do cartão.">
     <Acoes>
-        <button class="botao" @onclick="AbrirNovo">+ Novo parcelado</button>
+        <button class="botao" @onclick="AbrirNovo"><Icone Nome="NomeIcone.Adicionar" /> Novo parcelado</button>
     </Acoes>
 </CabecalhoPagina>
 
@@ -21,7 +21,7 @@
 
     @if (ParcelamentosVisiveis.Count == 0)
     {
-        <EstadoVazio Icone="⋯" Mensagem="Nenhum parcelado para mostrar.">
+        <EstadoVazio Simbolo="NomeIcone.Parcelado" Mensagem="Nenhum parcelado para mostrar.">
             <Acao>
                 <button class="botao" @onclick="AbrirNovo">Cadastrar um parcelado</button>
             </Acao>
