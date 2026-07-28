@@ -59,7 +59,7 @@ else
                             <td>
                                 <strong>@compra.Descricao</strong>
                                 <div class="texto-suave texto-pequeno">
-                                    @compra.DataCompra.ToString("dd/MM/yyyy") · @Dinheiro.Formatar(compra.ValorTotal)
+                                    @Dinheiro.Formatar(compra.ValorTotal)
                                     @if (!string.IsNullOrWhiteSpace(compra.Categoria))
                                     {
                                         <text> · @compra.Categoria</text>
@@ -95,7 +95,7 @@ else
                  AoCancelar="FecharFormulario">
     @if (ItemEmEdicao is CompraCartao compra)
     {
-        <div class="previa">@MontarPrevia(compra)</div>
+        <div class="previa">@DescritorParcelamento.Previa(compra)</div>
 
         <div class="campo">
             <label>O que você comprou</label>
@@ -113,23 +113,13 @@ else
                 </select>
             </div>
 
-            <CampoMoeda Rotulo="Valor total da compra" @bind-Valor="compra.ValorTotal" />
-        </div>
-
-        <div class="linha-campos">
-            <div class="campo">
-                <label>Data da compra</label>
-                <input type="date" @bind="compra.DataCompra" @bind:event="oninput" />
-            </div>
-
-            <div class="campo">
-                <label>Em quantas vezes</label>
-                <input type="number" min="1" max="120" @bind="compra.QuantidadeParcelas" @bind:event="oninput" />
-            </div>
-
             <CampoMes Rotulo="Mês da 1ª parcela"
                       Valor="compra.CompetenciaPrimeiraParcela"
                       ValorChanged="mes => DefinirPrimeiraParcela(compra, mes)" />
+        </div>
+
+        <div class="linha-campos">
+            <CamposDoParcelamento Parcelado="compra" AoAlterar="StateHasChanged" />
         </div>
 
         <div class="campo">
@@ -160,8 +150,7 @@ else
     protected override CompraCartao CriarNovo() => new()
     {
         CartaoId = CartoesDisponiveis.FirstOrDefault()?.Id ?? Guid.Empty,
-        CompetenciaPrimeiraParcela = MesSelecionado,
-        DataCompra = DateTime.Today
+        CompetenciaPrimeiraParcela = MesSelecionado
     };
 
     protected override string? Conferir(CompraCartao compra)
@@ -182,9 +171,4 @@ else
 
     private static void DefinirPrimeiraParcela(CompraCartao compra, Competencia? mes)
         => compra.CompetenciaPrimeiraParcela = mes ?? compra.CompetenciaPrimeiraParcela;
-
-    private static string MontarPrevia(CompraCartao compra)
-        => compra.ValorTotal <= 0 || compra.QuantidadeParcelas < 1
-            ? "Preencha o valor e o número de parcelas."
-            : $"{DescritorParcelamento.Parcelas(compra)} · {DescritorParcelamento.Periodo(compra)}";
 }

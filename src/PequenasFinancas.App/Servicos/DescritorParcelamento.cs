@@ -14,6 +14,11 @@ public static class DescritorParcelamento
     public static string Parcelas(IParcelado parcelado)
         => Dinheiro.FormatarParcelamento(parcelado.ValorTotal, parcelado.QuantidadeParcelas);
 
+    public static string Previa(IParcelado parcelado)
+        => parcelado.ValorTotal <= 0 || parcelado.QuantidadeParcelas < 1
+            ? "Preencha o valor e o número de parcelas."
+            : $"{Parcelas(parcelado)} · {Periodo(parcelado)}";
+
     public static string SituacaoNoMes(IParcelado parcelado, Competencia mes)
     {
         int numeroDaParcela = mes.DiferencaEmMesesDe(parcelado.CompetenciaPrimeiraParcela) + 1;

@@ -1,0 +1,95 @@
+@namespace PequenasFinancas.App.Componentes.Compartilhados
+
+<div class="campo">
+    <label>Em quantas vezes</label>
+    <input type="number" min="1" max="@MaximoDeParcelas"
+           value="@Parcelado.QuantidadeParcelas" @oninput="AoDigitarQuantidade" />
+</div>
+
+<div class="campo">
+    <label>Você vai informar</label>
+    <select value="@Forma" @onchange="AoTrocarForma">
+        <option value="@FormaDeInformarValor.ValorDaParcela">Valor da parcela</option>
+        <option value="@FormaDeInformarValor.ValorTotal">Valor total</option>
+    </select>
+</div>
+
+<CampoMoeda Rotulo="@RotuloDoValor" Valor="ValorInformado" ValorChanged="AoInformarValor" />
+
+@code {
+    private const int MaximoDeParcelas = 120;
+
+    [Parameter, EditorRequired]
+    public IParcelado Parcelado { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback AoAlterar { get; set; }
+
+    private FormaDeInformarValor Forma { get; set; } = FormaDeInformarValor.ValorDaParcela;
+
+    private decimal ValorInformado { get; set; }
+
+    private IParcelado? ParceladoJaLido { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (ReferenceEquals(ParceladoJaLido, Parcelado))
+        {
+            return;
+        }
+
+        ParceladoJaLido = Parcelado;
+        ValorInformado = LerValorDoParcelado();
+    }
+
+    private string RotuloDoValor
+        => Forma == FormaDeInformarValor.ValorDaParcela ? "Valor de cada parcela" : "Valor total";
+
+    private Task AoDigitarQuantidade(ChangeEventArgs argumentos)
+    {
+        if (!int.TryParse(argumentos.Value?.ToString(), out int quantidade)
+            || quantidade < 1
+            || quantidade > MaximoDeParcelas)
+        {
+            return Task.CompletedTask;
+        }
+
+        Parcelado.QuantidadeParcelas = quantidade;
+
+        return AplicarValorInformado();
+    }
+
+    private Task AoTrocarForma(ChangeEventArgs argumentos)
+    {
+        if (!Enum.TryParse(argumentos.Value?.ToString(), out FormaDeInformarValor formaEscolhida))
+        {
+            return Task.CompletedTask;
+        }
+
+        Forma = formaEscolhida;
+        ValorInformado = LerValorDoParcelado();
+
+        return AoAlterar.InvokeAsync();
+    }
+
+    private Task AoInformarValor(decimal valor)
+    {
+        ValorInformado = valor;
+
+        return AplicarValorInformado();
+    }
+
+    private Task AplicarValorInformado()
+    {
+        Parcelado.ValorTotal = Forma == FormaDeInformarValor.ValorDaParcela
+            ? RateioParcelas.CalcularValorTotal(ValorInformado, Parcelado.QuantidadeParcelas)
+            : ValorInformado;
+
+        return AoAlterar.InvokeAsync();
+    }
+
+    private decimal LerValorDoParcelado()
+        => Forma == FormaDeInformarValor.ValorDaParcela
+            ? RateioParcelas.CalcularValorDeCadaParcela(Parcelado.ValorTotal, Parcelado.QuantidadeParcelas)
+            : Parcelado.ValorTotal;
+}

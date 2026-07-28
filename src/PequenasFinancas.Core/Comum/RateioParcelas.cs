@@ -6,14 +6,7 @@ public static class RateioParcelas
 
     public static IReadOnlyList<decimal> Calcular(decimal valorTotal, int quantidadeParcelas)
     {
-        if (quantidadeParcelas < 1)
-        {
-            throw new ArgumentOutOfRangeException(
-                nameof(quantidadeParcelas), quantidadeParcelas, "A quantidade de parcelas deve ser no mínimo 1.");
-        }
-
-        decimal valorDaParcela = Math.Round(
-            valorTotal / quantidadeParcelas, CasasDecimaisDoReal, MidpointRounding.AwayFromZero);
+        decimal valorDaParcela = CalcularValorDeCadaParcela(valorTotal, quantidadeParcelas);
 
         decimal[] parcelas = new decimal[quantidadeParcelas];
 
@@ -36,5 +29,29 @@ public static class RateioParcelas
         }
 
         return Calcular(valorTotal, quantidadeParcelas)[numeroDaParcela - 1];
+    }
+
+    public static decimal CalcularValorDeCadaParcela(decimal valorTotal, int quantidadeParcelas)
+    {
+        ExigirQuantidadeDeParcelasValida(quantidadeParcelas);
+
+        return Math.Round(
+            valorTotal / quantidadeParcelas, CasasDecimaisDoReal, MidpointRounding.AwayFromZero);
+    }
+
+    public static decimal CalcularValorTotal(decimal valorDeCadaParcela, int quantidadeParcelas)
+    {
+        ExigirQuantidadeDeParcelasValida(quantidadeParcelas);
+
+        return valorDeCadaParcela * quantidadeParcelas;
+    }
+
+    private static void ExigirQuantidadeDeParcelasValida(int quantidadeParcelas)
+    {
+        if (quantidadeParcelas < 1)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(quantidadeParcelas), quantidadeParcelas, "A quantidade de parcelas deve ser no mínimo 1.");
+        }
     }
 }

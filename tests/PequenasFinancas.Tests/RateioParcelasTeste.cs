@@ -41,8 +41,25 @@ public sealed class RateioParcelasTeste
     }
 
     [Fact]
+    public void ValorDeCadaParcelaVemArredondadoEmCentavos()
+    {
+        Assert.Equal(33.33m, RateioParcelas.CalcularValorDeCadaParcela(100.00m, 3));
+        Assert.Equal(400.00m, RateioParcelas.CalcularValorDeCadaParcela(4800.00m, 12));
+        Assert.Equal(87.90m, RateioParcelas.CalcularValorDeCadaParcela(87.90m, 1));
+    }
+
+    [Fact]
+    public void ValorTotalSaiDoValorDaParcelaVezesAQuantidade()
+    {
+        Assert.Equal(4800.00m, RateioParcelas.CalcularValorTotal(400.00m, 12));
+        Assert.Equal(87.90m, RateioParcelas.CalcularValorTotal(87.90m, 1));
+    }
+
+    [Fact]
     public void QuantidadeDeParcelasInvalidaEhRecusada()
     {
         Assert.Throws<ArgumentOutOfRangeException>(() => RateioParcelas.Calcular(100m, 0));
+        Assert.Throws<ArgumentOutOfRangeException>(() => RateioParcelas.CalcularValorDeCadaParcela(100m, 0));
+        Assert.Throws<ArgumentOutOfRangeException>(() => RateioParcelas.CalcularValorTotal(100m, 0));
     }
 }

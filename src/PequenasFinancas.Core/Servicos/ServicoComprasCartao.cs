@@ -32,7 +32,9 @@ public sealed class ServicoComprasCartao(BancoJson banco) : ServicoCrud<CompraCa
     }
 
     protected override IEnumerable<CompraCartao> Ordenar(IEnumerable<CompraCartao> itens)
-        => itens.OrderByDescending(compra => compra.DataCompra).ThenBy(compra => compra.Descricao);
+        => itens
+            .OrderByDescending(compra => compra.CompetenciaPrimeiraParcela)
+            .ThenBy(compra => compra.Descricao);
 
     private IReadOnlyList<CompraCartao> ListarDoFiltro(Guid? cartaoId)
         => cartaoId is null ? Listar() : ListarDoCartao(cartaoId.Value);

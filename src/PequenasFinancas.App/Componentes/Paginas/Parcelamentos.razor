@@ -88,7 +88,7 @@
                  AoCancelar="FecharFormulario">
     @if (ItemEmEdicao is Parcelamento parcelamento)
     {
-        <div class="previa">@MontarPrevia(parcelamento)</div>
+        <div class="previa">@DescritorParcelamento.Previa(parcelamento)</div>
 
         <div class="campo">
             <label>O que você parcelou</label>
@@ -150,9 +150,4 @@
 
     private static void DefinirPrimeiraParcela(Parcelamento parcelamento, Competencia? mes)
         => parcelamento.CompetenciaPrimeiraParcela = mes ?? parcelamento.CompetenciaPrimeiraParcela;
-
-    private static string MontarPrevia(Parcelamento parcelamento)
-        => parcelamento.ValorTotal <= 0 || parcelamento.QuantidadeParcelas < 1
-            ? "Preencha o valor e o número de parcelas."
-            : $"{DescritorParcelamento.Parcelas(parcelamento)} · {DescritorParcelamento.Periodo(parcelamento)}";
 }

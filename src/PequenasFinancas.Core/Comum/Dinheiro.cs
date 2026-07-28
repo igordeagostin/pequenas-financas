@@ -66,5 +66,5 @@ public static class Dinheiro
     public static string FormatarParcelamento(decimal valorTotal, int quantidadeParcelas)
         => quantidadeParcelas <= 1
             ? Formatar(valorTotal)
-            : $"{quantidadeParcelas}x de {Formatar(RateioParcelas.Calcular(valorTotal, quantidadeParcelas)[0])}";
+            : $"{quantidadeParcelas}x de {Formatar(RateioParcelas.CalcularValorDeCadaParcela(valorTotal, quantidadeParcelas))}";
 }

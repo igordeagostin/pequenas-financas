@@ -12,8 +12,6 @@ public sealed class CompraCartao : IParcelado
 
     public decimal ValorTotal { get; set; }
 
-    public DateTime DataCompra { get; set; } = DateTime.Today;
-
     public int QuantidadeParcelas { get; set; } = 1;
 
     public Competencia CompetenciaPrimeiraParcela { get; set; } = Competencia.Atual;

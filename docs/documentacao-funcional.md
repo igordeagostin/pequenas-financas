@@ -429,22 +429,43 @@ Você lança a compra **uma vez** e o app espalha as parcelas pelos meses sozinh
 1. Clique em **+ Nova compra**.
 2. Escreva o que você comprou.
 3. Escolha o cartão usado.
-4. Informe o valor total da compra (não o valor da parcela).
-5. Informe a data da compra.
-6. Informe em quantas vezes você parcelou.
-7. Escolha o mês da primeira parcela.
+4. Escolha o mês da primeira parcela.
+5. Informe em quantas vezes você parcelou.
+6. Em **Você vai informar**, escolha se vai digitar o valor da parcela ou o valor total.
+7. Digite o valor.
 
 Enquanto você preenche, o app mostra uma prévia: `12x de R$ 400,00 · 07/2026 → 06/2027`.
+
+### Valor da parcela ou valor total
+
+Você escolhe o que é mais fácil de saber na hora de lançar a compra:
+
+- **Valor da parcela** (é o que já vem escolhido): digite quanto a compra vai pesar por
+  mês. O app multiplica pelo número de parcelas para saber o total. Digitar `400` em
+  12 vezes dá uma compra de R$ 4.800.
+- **Valor total**: digite quanto a compra custou por inteiro. O app divide pelo número
+  de parcelas. Digitar `4.800` em 12 vezes dá parcelas de R$ 400.
+
+Se você trocar de uma opção para a outra, o app converte o valor sozinho: nada é
+perdido e a compra continua valendo o mesmo.
+
+Com **valor da parcela** escolhido, mudar o número de parcelas muda o total da compra,
+porque a parcela continua a mesma: 12x de R$ 400 são R$ 4.800; se você trocar para 10
+vezes, viram R$ 4.000.
+
+Compra à vista no cartão: use **1** no campo de parcelas. Com uma parcela só, o valor da
+parcela e o valor total são a mesma coisa.
+
+Quando você informa o valor total e ele não divide certinho, a última parcela fica com os
+centavos que sobram. Por exemplo, R$ 100 em 3 vezes vira R$ 33,33 + R$ 33,33 + R$ 33,34.
 
 Exemplo prático: um notebook de R$ 4.800 em 12 vezes, com a primeira parcela em julho
 de 2026, vira 12 parcelas de R$ 400. Em julho aparece `parcela 1/12`, em agosto
 `parcela 2/12`, e assim por diante até junho de 2027. Em julho de 2027 a compra
 some sozinha, porque já acabou.
 
-Compra à vista no cartão: use **1** no campo de parcelas.
-
-Quando o valor não divide certinho, a última parcela fica com os centavos que sobram.
-Por exemplo, R$ 100 em 3 vezes vira R$ 33,33 + R$ 33,33 + R$ 33,34.
+Você não precisa informar a data da compra: o que importa para o app é o mês em que cai
+a primeira parcela.
 
 A lista mostra:
 
