@@ -4,7 +4,12 @@ namespace PequenasFinancas.Core.Comum;
 
 public static class Dinheiro
 {
+    private const decimal CentavosNoReal = 100m;
+
     private static readonly CultureInfo CulturaBrasileira = new("pt-BR");
+
+    public static decimal ArredondarParaBaixo(decimal valor)
+        => Math.Floor(valor * CentavosNoReal) / CentavosNoReal;
 
     public static string Formatar(decimal valor) => valor.ToString("C2", CulturaBrasileira);
 

@@ -4,8 +4,6 @@ namespace PequenasFinancas.Core.Modelos;
 
 public sealed record ResumoMes
 {
-    private const decimal CentavosNoReal = 100m;
-
     public required Competencia Competencia { get; init; }
 
     public required bool EhMesEmAndamento { get; init; }
@@ -43,7 +41,7 @@ public sealed record ResumoMes
     public decimal LivrePorDia
         => DiasParaGastar <= 0 || DinheiroLivre <= 0
             ? 0
-            : Math.Floor(DinheiroLivre / DiasParaGastar * CentavosNoReal) / CentavosNoReal;
+            : Dinheiro.ArredondarParaBaixo(DinheiroLivre / DiasParaGastar);
 
     public decimal TotalGuardadoAcumulado => SaldosDeReservas.Sum(saldo => saldo.Saldo);
 
