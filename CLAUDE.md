@@ -111,6 +111,10 @@ trocar a credencial e limpar o histórico, não basta apagar em um commit novo.
 
 - Mensagens em português, no imperativo ("Adiciona resumo mensal").
 - **Proibido** incluir `Co-Authored-By: Claude` ou qualquer rodapé de geração automática.
+- **Commitar sempre ao terminar uma alteração**, sem esperar o usuário pedir. Não acumular
+  vários assuntos no mesmo commit: cada mudança concluída vira um commit próprio, pequeno e
+  com um único propósito. Se uma entrega mexeu em código e na documentação funcional do
+  mesmo assunto, os dois vão juntos no mesmo commit.
 
 ## Estrutura
 
