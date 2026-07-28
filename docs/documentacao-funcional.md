@@ -50,11 +50,10 @@ Campos que não são de dinheiro continuam aceitando só número inteiro: dia do
 Para o app ficar útil, faça nesta ordem:
 
 1. Cadastre sua **renda** (o salário, por exemplo).
-2. Cadastre seus **gastos fixos** (aluguel, internet…).
+2. Cadastre suas **contas e parcelas** (aluguel, internet, carnê da loja…).
 3. Cadastre seus **cartões**.
 4. Lance suas **compras no cartão**.
-5. Se tiver carnê ou boleto parcelado, cadastre em **parcelados sem cartão**.
-6. Crie um lugar para o seu **dinheiro guardado**.
+5. Crie um lugar para o seu **dinheiro guardado**.
 
 Depois disso, a tela **Resumo do mês** mostra tudo junto.
 
@@ -72,7 +71,7 @@ No topo aparecem cinco números:
 | Número | O que significa |
 |---|---|
 | **Entra** | Todo o dinheiro que você recebe no mês |
-| **Sai** | Gastos fixos + cartões + parcelas |
+| **Sai** | Contas e parcelas + cartões |
 | **Falta pagar** | Do que sai, quanto ainda não foi marcado como pago |
 | **Livre no mês** | Quanto sobra depois de pagar tudo |
 | **Guardado até aqui** | Quanto você tem separado em todas as reservas |
@@ -80,7 +79,7 @@ No topo aparecem cinco números:
 A conta do dinheiro livre é assim:
 
 ```
-Livre no mês = tudo que entra − gastos fixos − cartões − parcelas
+Livre no mês = tudo que entra − contas e parcelas − cartões
 ```
 
 O dinheiro que você guardou **não entra nessa conta**. Guardar não é gastar: o dinheiro
@@ -141,10 +140,9 @@ Detalhes que valem saber:
 Saber quanto sai no mês é uma coisa. Saber **o que você já pagou** é outra. Esta marcação
 serve para você não pagar a mesma conta duas vezes nem esquecer uma que ainda falta.
 
-Três coisas podem ser marcadas como pagas:
+Duas coisas podem ser marcadas como pagas:
 
-- **Gastos fixos** (o aluguel de julho, a internet de julho…).
-- **Parcelados sem cartão** (a parcela do sofá que cai em julho).
+- **Contas e parcelas** (o aluguel de julho, a internet de julho, a parcela do sofá de julho…).
 - **Faturas do cartão** (a fatura do Nubank de julho).
 
 ### Como marcar
@@ -161,8 +159,7 @@ Onde fica o botão:
 
 | O que você quer marcar | Onde clicar |
 |---|---|
-| Gasto fixo | Tela **Gastos fixos**, coluna **Pagamento** |
-| Parcelado sem cartão | Tela **Parcelados sem cartão**, coluna **Pagamento** |
+| Conta ou parcela | Tela **Contas e parcelas**, coluna **Pagamento** |
 | Fatura do cartão | Tela **Resumo do mês**, quadro **Faturas dos cartões** |
 
 ### A marca vale só para um mês
@@ -173,8 +170,8 @@ de novo.
 
 Por isso, antes de marcar, confira o mês que está escolhido na barra de cima.
 
-O botão só aparece quando aquela conta realmente cai no mês escolhido. Um gasto fixo que
-já terminou, ou uma parcela que ainda não começou, não têm nada a pagar naquele mês.
+O botão só aparece quando aquela conta realmente cai no mês escolhido. Uma conta que
+já terminou, ou uma que ainda não começou, não tem nada a pagar naquele mês.
 
 ### Marcar a fatura marca as parcelas
 
@@ -189,8 +186,8 @@ etiqueta **pago** na lista do resumo.
 
 O número **Falta pagar** mostra quanto do mês ainda não foi marcado.
 
-Exemplo: o mês tem R$ 2.100 de gastos (R$ 1.500 de aluguel, R$ 400 de fatura do cartão e
-R$ 200 de parcela do sofá). Você marca o aluguel e a fatura como pagos:
+Exemplo: o mês tem R$ 2.100 de gastos (R$ 1.500 de aluguel, R$ 200 de parcela do sofá e
+R$ 400 de fatura do cartão). Você marca o aluguel e a fatura como pagos:
 
 - Sai: R$ 2.100
 - Falta pagar: R$ 200
@@ -229,7 +226,7 @@ Só existe uma semana aberta por vez em cada mês.
 ### Com quanto a semana começa
 
 - **É a primeira semana do mês**: começa com o **dinheiro livre do mês**, o mesmo valor
-  que aparece no resumo (o que entra, menos gastos fixos, cartões e parcelas).
+  que aparece no resumo (o que entra, menos contas, parcelas e cartões).
 - **Já teve outra semana antes**: começa com **o saldo que você informou** ao fechar a
   semana anterior.
 
@@ -347,24 +344,73 @@ Essa entrada vale só para o mês da data que você escolher.
 
 ---
 
-## Gastos fixos
+## Contas e parcelas
 
-São as contas que se repetem todo mês: aluguel, internet, escola, plano de saúde.
+Aqui ficam todas as contas que você paga mês a mês, fora do cartão de crédito:
 
-Para cadastrar:
+- as que não têm fim à vista: aluguel, internet, escola, plano de saúde;
+- as que têm data para acabar: carnê da loja, boleto parcelado, empréstimo, acordo.
 
-1. Clique em **+ Novo gasto fixo**.
+As duas coisas se cadastram do mesmo jeito. A diferença é só o campo **Termina em**.
+
+### Cadastrar uma conta
+
+1. Clique em **+ Nova conta**.
 2. Escreva a descrição (ex.: `Aluguel`).
 3. Informe o valor por mês.
 4. Escreva a categoria (ex.: `Moradia`) — ela é usada no gráfico do resumo.
 5. Informe o dia do vencimento.
-6. Escolha o mês em que a conta começa e, se souber, o mês em que ela acaba.
+6. Em **Começa em**, escolha o primeiro mês em que você paga.
+7. **Termina em** é opcional: preencha só quando a conta tem data para acabar.
 
-Assim como a renda, você cadastra uma vez e a conta aparece em todos os meses.
+Você cadastra uma vez e a conta aparece sozinha em todos os meses do período.
 
-Quando uma conta acaba (por exemplo, você cancelou a academia), abra o cadastro
-e preencha o campo **Termina em** com o último mês que você pagou. O gasto continua
+### Cadastrar um parcelado
+
+Um carnê é uma conta com data para acabar. Conte os meses e preencha o **Termina em**.
+
+Exemplo: um sofá de R$ 1.200 em 6 vezes, começando em julho de 2026.
+
+- Valor por mês: `200`
+- Começa em: `07/2026`
+- Termina em: `12/2026`
+
+Pronto: a parcela de R$ 200 aparece de julho a dezembro e some sozinha em janeiro.
+
+Se a parcela for de valor quebrado, use o valor que está no carnê. O app não divide nada
+por você aqui — quem divide o total em parcelas é a tela **Compras no cartão**.
+
+### Quando uma conta acaba
+
+Se você cancelou algo que não tinha data para acabar (a academia, por exemplo), abra o
+cadastro e preencha **Termina em** com o último mês que você pagou. A conta continua
 aparecendo nos meses antigos e some dos meses seguintes.
+
+### Quanto já paguei e quanto falta
+
+No topo da tela ficam três números, sempre do mês escolhido lá em cima:
+
+| Número | O que significa |
+|---|---|
+| **Total de julho / 2026** | A soma de todas as contas que caem naquele mês |
+| **Já paguei** | A soma das que você marcou como pagas |
+| **Falta pagar** | O que sobra: total menos o que já foi pago |
+
+Embaixo de cada número aparece a contagem, para você saber quantas contas ainda estão sem
+marcar: *2 de 5 já marcadas*, *3 ainda sem marcar*.
+
+Exemplo: em julho você tem aluguel de R$ 1.500 e a parcela do sofá de R$ 200. Ao marcar
+só o aluguel, a tela mostra Total R$ 1.700, Já paguei R$ 1.500 e Falta pagar R$ 200.
+
+Quando você marca a última conta do mês, o app escreve **Tudo pago neste mês**.
+
+Esses três números contam **apenas as contas desta tela**. O cartão tem o quadro dele no
+resumo do mês.
+
+### Lista de contas
+
+A lista mostra todas as contas cadastradas, inclusive as que não valem no mês escolhido —
+essas aparecem com *não vale neste mês* no lugar do valor, e sem o botão de pagamento.
 
 Na coluna **Pagamento** você marca a conta como paga no mês escolhido. Veja
 **Marcar o que já foi pago**.
@@ -476,23 +522,6 @@ A lista mostra:
 
 Marque a caixa **mostrar só o que cai em…** para ver apenas as compras que pesam no
 mês escolhido.
-
----
-
-## Parcelados sem cartão
-
-Funciona igual às compras no cartão, mas para o que você paga **fora do crédito**:
-carnê de loja, boleto parcelado, empréstimo, acordo com alguém.
-
-1. Clique em **+ Novo parcelado**.
-2. Escreva o que você parcelou e para quem você paga.
-3. Informe o valor total, em quantas vezes e o mês da primeira parcela.
-
-No resumo do mês essas parcelas aparecem separadas das faturas dos cartões, para você
-saber o que é cartão e o que não é.
-
-Na coluna **Pagamento** você marca a parcela do mês escolhido como paga. Veja
-**Marcar o que já foi pago**.
 
 ---
 

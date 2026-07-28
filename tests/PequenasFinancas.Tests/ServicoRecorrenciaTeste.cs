@@ -7,9 +7,9 @@ namespace PequenasFinancas.Tests;
 public sealed class ServicoRecorrenciaTeste
 {
     [Fact]
-    public void GastoFixoValeDoMesDeInicioEmDiante()
+    public void ContaValeDoMesDeInicioEmDiante()
     {
-        GastoFixo aluguel = new()
+        Conta aluguel = new()
         {
             Descricao = "Aluguel",
             Valor = 1500.00m,
@@ -22,9 +22,9 @@ public sealed class ServicoRecorrenciaTeste
     }
 
     [Fact]
-    public void GastoFixoEncerradoDeixaDeValerDepoisDoMesFinal()
+    public void ContaEncerradaDeixaDeValerDepoisDoMesFinal()
     {
-        GastoFixo academia = new()
+        Conta academia = new()
         {
             Descricao = "Academia",
             Valor = 120.00m,
@@ -55,7 +55,7 @@ public sealed class ServicoRecorrenciaTeste
     [Fact]
     public void SomaApenasOsLancamentosVigentesNoMes()
     {
-        List<GastoFixo> gastos =
+        List<Conta> contas =
         [
             new() { Descricao = "Aluguel", Valor = 1500m, VigenciaInicio = new Competencia(2026, 1) },
             new() { Descricao = "Internet", Valor = 100m, VigenciaInicio = new Competencia(2026, 8) },
@@ -68,8 +68,8 @@ public sealed class ServicoRecorrenciaTeste
             }
         ];
 
-        Assert.Equal(1500m, ServicoRecorrencia.SomarNoMes(gastos, new Competencia(2026, 7)));
-        Assert.Equal(1620m, ServicoRecorrencia.SomarNoMes(gastos, new Competencia(2026, 5)));
-        Assert.Equal(1600m, ServicoRecorrencia.SomarNoMes(gastos, new Competencia(2026, 8)));
+        Assert.Equal(1500m, ServicoRecorrencia.SomarNoMes(contas, new Competencia(2026, 7)));
+        Assert.Equal(1620m, ServicoRecorrencia.SomarNoMes(contas, new Competencia(2026, 5)));
+        Assert.Equal(1600m, ServicoRecorrencia.SomarNoMes(contas, new Competencia(2026, 8)));
     }
 }

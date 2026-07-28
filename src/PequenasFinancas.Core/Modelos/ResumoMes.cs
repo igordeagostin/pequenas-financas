@@ -14,11 +14,9 @@ public sealed record ResumoMes
 
     public required decimal TotalRendasExtras { get; init; }
 
-    public required decimal TotalGastosFixos { get; init; }
+    public required decimal TotalContas { get; init; }
 
     public required decimal TotalCartoes { get; init; }
-
-    public required decimal TotalParcelamentos { get; init; }
 
     public required decimal TotalGuardado { get; init; }
 
@@ -34,7 +32,7 @@ public sealed record ResumoMes
 
     public decimal TotalReceitas => TotalRendas + TotalRendasExtras;
 
-    public decimal TotalGastos => TotalGastosFixos + TotalCartoes + TotalParcelamentos;
+    public decimal TotalGastos => TotalContas + TotalCartoes;
 
     public decimal TotalGastosAPagar => TotalGastos - TotalGastosPagos;
 

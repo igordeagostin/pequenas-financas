@@ -186,7 +186,7 @@ public sealed class ServicoSemanasTeste : IDisposable
             VigenciaInicio = MesAnalisado
         });
 
-        _ambiente.GastosFixos.Salvar(new GastoFixo
+        _ambiente.Contas.Salvar(new Conta
         {
             Descricao = "Aluguel",
             Valor = 1500.00m,
@@ -235,7 +235,7 @@ public sealed class ServicoSemanasTeste : IDisposable
             VigenciaInicio = new Competencia(2026, 1)
         });
 
-        _ambiente.GastosFixos.Salvar(new GastoFixo
+        _ambiente.Contas.Salvar(new Conta
         {
             Descricao = "Aluguel",
             Valor = 1000.00m,

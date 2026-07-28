@@ -1,0 +1,193 @@
+@page "/contas"
+@namespace PequenasFinancas.App.Componentes.Paginas
+@inherits PaginaCadastro<Conta>
+@inject ServicoContas ServicoDeContas
+
+<CabecalhoPagina Titulo="Contas e parcelas"
+                 Explicacao="Tudo que você paga mês a mês, com ou sem data para acabar: aluguel, internet, escola, carnê, empréstimo.">
+    <Acoes>
+        <button class="botao" @onclick="AbrirNovo"><Icone Nome="NomeIcone.Adicionar" /> Nova conta</button>
+    </Acoes>
+</CabecalhoPagina>
+
+<div class="grade-resumo">
+    <CartaoValor Rotulo="@($"Total de {MesSelecionado.NomeExtenso}")" Simbolo="NomeIcone.Conta"
+                 Valor="ResumoDoMes.Total" EhEntrada="false" Apoio="@DescreverQuantidadeDoMes()" />
+
+    <CartaoValor Rotulo="Já paguei" Simbolo="NomeIcone.Pago" Valor="ResumoDoMes.Pago"
+                 Apoio="@DescreverPago()" />
+
+    <CartaoValor Rotulo="Falta pagar" Simbolo="NomeIcone.APagar" Valor="ResumoDoMes.APagar"
+                 Destaque="true" Apoio="@DescreverAPagar()" />
+</div>
+
+<div class="painel">
+    <div class="painel-cabecalho">
+        <h2>Suas contas</h2>
+        <span class="texto-suave texto-pequeno">
+            @Itens.Count @(Itens.Count == 1 ? "conta cadastrada" : "contas cadastradas")
+        </span>
+    </div>
+
+    @if (Itens.Count == 0)
+    {
+        <EstadoVazio Simbolo="NomeIcone.Conta" Mensagem="Nenhuma conta cadastrada ainda.">
+            <Acao>
+                <button class="botao" @onclick="AbrirNovo">Cadastrar minha primeira conta</button>
+            </Acao>
+        </EstadoVazio>
+    }
+    else
+    {
+        <table class="tabela">
+            <thead>
+                <tr>
+                    <th>Descrição</th>
+                    <th>Categoria</th>
+                    <th>Vence</th>
+                    <th>Período</th>
+                    <th class="direita">Valor neste mês</th>
+                    <th>Pagamento</th>
+                    <th class="acoes"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Conta conta in Itens)
+                {
+                    bool valeNesteMes = ServicoRecorrencia.EstaVigenteEm(conta, MesSelecionado);
+
+                    <tr>
+                        <td><strong>@conta.Descricao</strong></td>
+                        <td>
+                            @if (!string.IsNullOrWhiteSpace(conta.Categoria))
+                            {
+                                <span class="etiqueta">@conta.Categoria</span>
+                            }
+                        </td>
+                        <td class="texto-suave">dia @conta.DiaVencimento</td>
+                        <td class="texto-suave">@DescreverPeriodo(conta)</td>
+                        <td class="direita numero @(valeNesteMes ? "texto-saida" : "texto-suave")">
+                            @(valeNesteMes
+                                ? Dinheiro.Formatar(ServicoRecorrencia.ValorNoMes(conta, MesSelecionado))
+                                : "não vale neste mês")
+                        </td>
+                        <td>
+                            @if (valeNesteMes)
+                            {
+                                <MarcadorPago Tipo="TipoPagavel.Conta" ItemId="conta.Id"
+                                              Mes="MesSelecionado" AoAlterar="Recarregar" />
+                            }
+                        </td>
+                        <td class="acoes">
+                            <button class="botao botao-secundario" @onclick="() => AbrirEdicao(conta)">Editar</button>
+                            <button class="botao botao-perigo" @onclick="() => PedirExclusao(conta)">Excluir</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+<ModalFormulario Visivel="FormularioAberto"
+                 Titulo="@(EhCadastroNovo ? "Nova conta" : "Editar conta")"
+                 Erro="@MensagemDeErro"
+                 AoConfirmar="ConfirmarFormulario"
+                 AoCancelar="FecharFormulario">
+    @if (ItemEmEdicao is Conta conta)
+    {
+        <div class="campo">
+            <label>Descrição</label>
+            <input type="text" placeholder="Ex.: Aluguel" @bind="conta.Descricao" @bind:event="oninput" />
+        </div>
+
+        <div class="linha-campos">
+            <CampoMoeda Rotulo="Valor por mês" @bind-Valor="conta.Valor" />
+
+            <div class="campo">
+                <label>Categoria</label>
+                <input type="text" placeholder="Ex.: Moradia" @bind="conta.Categoria" @bind:event="oninput" />
+            </div>
+
+            <div class="campo">
+                <label>Dia do vencimento</label>
+                <input type="number" min="1" max="31" @bind="conta.DiaVencimento" @bind:event="oninput" />
+            </div>
+        </div>
+
+        <div class="linha-campos">
+            <CampoMes Rotulo="Começa em" Valor="conta.VigenciaInicio"
+                      ValorChanged="mes => DefinirInicio(conta, mes)" />
+
+            <CampoMes Rotulo="Termina em (opcional)" Valor="conta.VigenciaFim"
+                      ValorChanged="mes => conta.VigenciaFim = mes"
+                      Ajuda="Preencha quando a conta tem data para acabar, como um carnê de 12 vezes." />
+        </div>
+    }
+</ModalFormulario>
+
+<ModalConfirmacao Visivel="ItemParaExcluir is not null"
+                  Descricao="@(ItemParaExcluir is null ? string.Empty : DescreverParaExclusao(ItemParaExcluir))"
+                  AoConfirmar="ConfirmarExclusao"
+                  AoCancelar="CancelarExclusao" />
+
+@code {
+    private ResumoContas ResumoDoMes = default!;
+
+    protected override ServicoCrud<Conta> Servico => ServicoDeContas;
+
+    protected override void Recarregar()
+    {
+        base.Recarregar();
+        ResumoDoMes = ServicoDeContas.ResumirMes(MesSelecionado);
+    }
+
+    protected override Conta CriarNovo() => new() { VigenciaInicio = MesSelecionado };
+
+    protected override string? Conferir(Conta conta)
+        => Validacoes.Primeira(
+            Validacoes.Descricao(conta.Descricao),
+            Validacoes.ValorPositivo(conta.Valor),
+            Validacoes.DiaDoMes(conta.DiaVencimento),
+            ConferirPeriodo(conta));
+
+    protected override string DescreverParaExclusao(Conta conta) => $"a conta {conta.Descricao}";
+
+    private string DescreverQuantidadeDoMes()
+        => ResumoDoMes.Quantidade switch
+        {
+            0 => "Nenhuma conta cai neste mês",
+            1 => "1 conta cai neste mês",
+            int quantidade => $"{quantidade} contas caem neste mês"
+        };
+
+    private string DescreverPago()
+        => ResumoDoMes.Quantidade == 0
+            ? "Nada a pagar neste mês"
+            : $"{ResumoDoMes.QuantidadePaga} de {ResumoDoMes.Quantidade} já marcadas";
+
+    private string DescreverAPagar()
+    {
+        if (ResumoDoMes.Quantidade == 0)
+        {
+            return "Nada a pagar neste mês";
+        }
+
+        return ResumoDoMes.TudoPago
+            ? "Tudo pago neste mês"
+            : $"{ResumoDoMes.QuantidadeAPagar} ainda sem marcar";
+    }
+
+    private static string? ConferirPeriodo(Conta conta)
+        => conta.VigenciaFim is Competencia fim && fim < conta.VigenciaInicio
+            ? "O mês final não pode ser antes do mês inicial."
+            : null;
+
+    private static void DefinirInicio(Conta conta, Competencia? mes)
+        => conta.VigenciaInicio = mes ?? conta.VigenciaInicio;
+
+    private static string DescreverPeriodo(Conta conta)
+        => conta.VigenciaFim is Competencia fim
+            ? $"{conta.VigenciaInicio.NomeCurto} até {fim.NomeCurto}"
+            : $"desde {conta.VigenciaInicio.NomeCurto}";
+}

@@ -35,8 +35,7 @@ public sealed class ServicoPagamentos(BancoJson banco)
     private IEnumerable<IPagavelPorMes> ListarPagaveis(TipoPagavel tipo)
         => tipo switch
         {
-            TipoPagavel.GastoFixo => _banco.Dados.GastosFixos,
-            TipoPagavel.Parcelamento => _banco.Dados.Parcelamentos,
+            TipoPagavel.Conta => _banco.Dados.Contas,
             TipoPagavel.FaturaCartao => _banco.Dados.Cartoes,
             _ => []
         };

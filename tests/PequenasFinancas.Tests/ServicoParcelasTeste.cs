@@ -45,20 +45,29 @@ public sealed class ServicoParcelasTeste : IDisposable
     }
 
     [Fact]
-    public void ParcelamentoForaDoCartaoNaoEntraNaFaturaDoCartao()
+    public void CadaCartaoRecebeSomenteAsParcelasDasSuasCompras()
     {
-        CadastrarCompraDeNotebookEm12Vezes();
-        CadastrarCarneDeSofaEm6Vezes();
+        CompraCartao compraDoNubank = CadastrarCompraDeNotebookEm12Vezes();
 
-        Assert.Single(_ambiente.Parcelas.ObterParcelasDeCartao(PrimeiraParcela));
+        Cartao outroCartao = new() { Nome = "Inter", DiaVencimento = 10 };
+        _ambiente.Cartoes.Salvar(outroCartao);
 
-        ParcelaCalculada parcelaDoCarne = _ambiente.Parcelas
-            .ObterParcelasForaDoCartao(PrimeiraParcela)
+        _ambiente.ComprasCartao.Salvar(new CompraCartao
+        {
+            CartaoId = outroCartao.Id,
+            Descricao = "Geladeira",
+            ValorTotal = 2400.00m,
+            QuantidadeParcelas = 6,
+            CompetenciaPrimeiraParcela = PrimeiraParcela,
+            Categoria = "Casa"
+        });
+
+        ParcelaCalculada parcelaDoNubank = _ambiente.Parcelas
+            .ObterParcelasDoCartao(compraDoNubank.CartaoId, PrimeiraParcela)
             .Single();
 
-        Assert.Equal("Sofá", parcelaDoCarne.Descricao);
-        Assert.Equal(200.00m, parcelaDoCarne.Valor);
-        Assert.Null(parcelaDoCarne.CartaoId);
+        Assert.Equal("Notebook", parcelaDoNubank.Descricao);
+        Assert.Equal(2, _ambiente.Parcelas.ObterParcelasDeCartao(PrimeiraParcela).Count);
     }
 
     [Fact]
@@ -98,15 +107,4 @@ public sealed class ServicoParcelasTeste : IDisposable
 
         return compra;
     }
-
-    private void CadastrarCarneDeSofaEm6Vezes()
-        => _ambiente.Parcelamentos.Salvar(new Parcelamento
-        {
-            Descricao = "Sofá",
-            Credor = "Loja de móveis",
-            ValorTotal = 1200.00m,
-            QuantidadeParcelas = 6,
-            CompetenciaPrimeiraParcela = PrimeiraParcela,
-            Categoria = "Casa"
-        });
 }

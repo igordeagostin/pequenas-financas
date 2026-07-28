@@ -1,6 +1,5 @@
 @namespace PequenasFinancas.App.Componentes.Compartilhados
 @inject ServicoPagamentos ServicoDePagamentos
-@inject EstadoAplicacao Estado
 
 <button type="button" class="botao botao-marcador @(EstaPago ? "pago" : string.Empty)"
         title="@Dica" @onclick="Alternar">
@@ -14,21 +13,24 @@
     [Parameter, EditorRequired]
     public Guid ItemId { get; set; }
 
+    [Parameter, EditorRequired]
+    public Competencia Mes { get; set; }
+
     [Parameter]
     public EventCallback AoAlterar { get; set; }
 
-    private bool EstaPago => ServicoDePagamentos.EstaPago(Tipo, ItemId, Estado.MesSelecionado);
+    private bool EstaPago => ServicoDePagamentos.EstaPago(Tipo, ItemId, Mes);
 
     private string Texto => EstaPago ? "Pago" : "Marcar pago";
 
     private string Dica
         => EstaPago
-            ? $"Pago em {Estado.MesSelecionado.NomeCurto}. Clique para desmarcar."
-            : $"Marcar como pago em {Estado.MesSelecionado.NomeCurto}.";
+            ? $"Pago em {Mes.NomeCurto}. Clique para desmarcar."
+            : $"Marcar como pago em {Mes.NomeCurto}.";
 
     private async Task Alternar()
     {
-        ServicoDePagamentos.Alternar(Tipo, ItemId, Estado.MesSelecionado);
+        ServicoDePagamentos.Alternar(Tipo, ItemId, Mes);
         await AoAlterar.InvokeAsync();
     }
 }

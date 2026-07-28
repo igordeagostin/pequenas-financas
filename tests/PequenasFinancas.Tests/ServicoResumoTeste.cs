@@ -11,16 +11,15 @@ public sealed class ServicoResumoTeste : IDisposable
     private readonly AmbienteDeTeste _ambiente = new();
 
     [Fact]
-    public void DinheiroLivreDescontaGastosFixosCartaoEParcelamentos()
+    public void DinheiroLivreDescontaContasECartao()
     {
         MontarMesCompleto();
 
         ResumoMes resumo = _ambiente.Resumo.Calcular(MesAnalisado);
 
         Assert.Equal(6000.00m, resumo.TotalReceitas);
-        Assert.Equal(1500.00m, resumo.TotalGastosFixos);
+        Assert.Equal(1700.00m, resumo.TotalContas);
         Assert.Equal(400.00m, resumo.TotalCartoes);
-        Assert.Equal(200.00m, resumo.TotalParcelamentos);
         Assert.Equal(3900.00m, resumo.DinheiroLivre);
     }
 
@@ -192,7 +191,7 @@ public sealed class ServicoResumoTeste : IDisposable
         Assert.Equal(4, lancamentos.Count);
         Assert.Single(lancamentos, lancamento => lancamento.EhEntrada);
         Assert.Contains(lancamentos, lancamento => lancamento.Detalhe == "Nubank · parcela 1/12");
-        Assert.Contains(lancamentos, lancamento => lancamento.Detalhe == "Parcelado · parcela 1/6");
+        Assert.Equal(2, lancamentos.Count(lancamento => lancamento.Origem == OrigemLancamento.Conta));
     }
 
     [Fact]
@@ -205,7 +204,7 @@ public sealed class ServicoResumoTeste : IDisposable
             VigenciaInicio = MesAnalisado
         });
 
-        _ambiente.GastosFixos.Salvar(new GastoFixo
+        _ambiente.Contas.Salvar(new Conta
         {
             Descricao = "Aluguel",
             Valor = 1500.00m,
@@ -232,7 +231,7 @@ public sealed class ServicoResumoTeste : IDisposable
             VigenciaInicio = new Competencia(2026, 1)
         });
 
-        _ambiente.GastosFixos.Salvar(new GastoFixo
+        _ambiente.Contas.Salvar(new Conta
         {
             Descricao = "Aluguel",
             Valor = 1500.00m,
@@ -253,14 +252,13 @@ public sealed class ServicoResumoTeste : IDisposable
             Categoria = "Eletrônicos"
         });
 
-        _ambiente.Parcelamentos.Salvar(new Parcelamento
+        _ambiente.Contas.Salvar(new Conta
         {
-            Descricao = "Sofá",
-            Credor = "Loja de móveis",
-            ValorTotal = 1200.00m,
-            QuantidadeParcelas = 6,
-            CompetenciaPrimeiraParcela = MesAnalisado,
-            Categoria = "Casa"
+            Descricao = "Carnê do sofá",
+            Valor = 200.00m,
+            Categoria = "Casa",
+            VigenciaInicio = MesAnalisado,
+            VigenciaFim = MesAnalisado.Adicionar(5)
         });
     }
 

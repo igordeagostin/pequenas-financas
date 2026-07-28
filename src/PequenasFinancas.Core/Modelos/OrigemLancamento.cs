@@ -4,7 +4,6 @@ public enum OrigemLancamento
 {
     Renda,
     RendaExtra,
-    GastoFixo,
-    CompraCartao,
-    Parcelamento
+    Conta,
+    CompraCartao
 }

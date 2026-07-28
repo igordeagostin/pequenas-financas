@@ -2,7 +2,7 @@ using PequenasFinancas.Core.Comum;
 
 namespace PequenasFinancas.Core.Modelos;
 
-public sealed class GastoFixo : IRecorrente, IPagavelPorMes
+public sealed class Conta : IRecorrente, IPagavelPorMes
 {
     public Guid Id { get; set; } = Guid.NewGuid();
 

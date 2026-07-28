@@ -15,14 +15,13 @@ public sealed class AmbienteDeTeste : IDisposable
         Cartoes = new ServicoCartoes(Banco);
         Rendas = new ServicoRendas(Banco);
         RendasExtras = new ServicoRendasExtras(Banco);
-        GastosFixos = new ServicoGastosFixos(Banco);
+        Contas = new ServicoContas(Banco);
         ComprasCartao = new ServicoComprasCartao(Banco);
-        Parcelamentos = new ServicoParcelamentos(Banco);
         Reservas = new ServicoReservas(Banco);
         Pagamentos = new ServicoPagamentos(Banco);
         Parcelas = new ServicoParcelas(Banco, Cartoes, Pagamentos);
         Resumo = new ServicoResumo(
-            Rendas, RendasExtras, GastosFixos, Cartoes, Parcelas, Reservas);
+            Rendas, RendasExtras, Contas, Cartoes, Parcelas, Reservas);
         Semanas = new ServicoSemanas(Banco, Resumo);
     }
 
@@ -34,11 +33,9 @@ public sealed class AmbienteDeTeste : IDisposable
 
     public ServicoRendasExtras RendasExtras { get; }
 
-    public ServicoGastosFixos GastosFixos { get; }
+    public ServicoContas Contas { get; }
 
     public ServicoComprasCartao ComprasCartao { get; }
-
-    public ServicoParcelamentos Parcelamentos { get; }
 
     public ServicoReservas Reservas { get; }
 

@@ -12,11 +12,9 @@ public sealed class BancoDados
 
     public List<RendaExtra> RendasExtras { get; set; } = [];
 
-    public List<GastoFixo> GastosFixos { get; set; } = [];
+    public List<Conta> Contas { get; set; } = [];
 
     public List<CompraCartao> ComprasCartao { get; set; } = [];
-
-    public List<Parcelamento> Parcelamentos { get; set; } = [];
 
     public List<Reserva> Reservas { get; set; } = [];
 

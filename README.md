@@ -24,12 +24,12 @@ O aplicativo **está em produção** e em uso no dia a dia.
 
 - **Renda** — cadastre o salário uma vez e ele aparece sozinho em todos os meses.
   Também dá para lançar entradas que vieram só naquele mês (freela, 13º, uma venda).
-- **Gastos fixos** — aluguel, internet, escola: cadastre uma vez, com mês de início e
-  de fim, e a conta se repete pelos meses.
-- **Cartões de crédito** — cadastre seus cartões com limite, fechamento e vencimento.
+- **Contas e parcelas** — aluguel, internet, escola, carnê, empréstimo: cadastre uma vez,
+  com mês de início e de fim, e a conta se repete pelos meses. A tela mostra quanto do mês
+  já foi pago e quanto ainda falta.
+- **Cartões de crédito** — cadastre seus cartões com o dia do vencimento da fatura.
 - **Compras no cartão** — lance a compra uma vez, informe em quantas vezes e em qual
   cartão. As parcelas aparecem sozinhas em cada mês, com o progresso (`3/12`).
-- **Parcelados sem cartão** — carnê, boleto ou empréstimo, separados das faturas.
 - **Dinheiro guardado** — crie reservas e registre quanto guardou (ou resgatou) em
   qualquer mês, com saldo acumulado e barra de progresso até o objetivo.
 - **Resumo do mês** — abre sempre no mês atual e mostra quanto entra, quanto sai,
@@ -46,9 +46,8 @@ O aplicativo **está em produção** e em uso no dia a dia.
 
 ```
 Livre no mês = renda + entradas extras
-             − gastos fixos
+             − contas e parcelas
              − parcelas dos cartões
-             − parcelas fora do cartão
              − dinheiro guardado no mês
 
 Por dia      = livre no mês ÷ dias que ainda faltam

@@ -17,12 +17,6 @@ public sealed class ServicoParcelas(
             .OfType<ParcelaCalculada>()
             .OrderByDescending(parcela => parcela.Valor)];
 
-    public IReadOnlyList<ParcelaCalculada> ObterParcelasForaDoCartao(Competencia competencia)
-        => [.. _banco.Dados.Parcelamentos
-            .Select(parcelamento => MontarParcelaForaDoCartao(parcelamento, competencia))
-            .OfType<ParcelaCalculada>()
-            .OrderByDescending(parcela => parcela.Valor)];
-
     public IReadOnlyList<ParcelaCalculada> ObterParcelasDoCartao(Guid cartaoId, Competencia competencia)
         => [.. ObterParcelasDeCartao(competencia).Where(parcela => parcela.CartaoId == cartaoId)];
 
@@ -66,15 +60,6 @@ public sealed class ServicoParcelas(
             NomeCartao = _servicoCartoes.ObterNome(compra.CartaoId),
             EstaPago = _servicoPagamentos.EstaPago(TipoPagavel.FaturaCartao, compra.CartaoId, competencia)
         };
-    }
-
-    private static ParcelaCalculada? MontarParcelaForaDoCartao(Parcelamento parcelamento, Competencia competencia)
-    {
-        ParcelaCalculada? parcela = MontarParcela(parcelamento, competencia, OrigemLancamento.Parcelamento);
-
-        return parcela is null
-            ? null
-            : parcela with { EstaPago = ServicoPagamentos.EstaPago(parcelamento, competencia) };
     }
 
     private static ParcelaCalculada? MontarParcela(

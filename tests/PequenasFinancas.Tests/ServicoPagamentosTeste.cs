@@ -10,53 +10,38 @@ public sealed class ServicoPagamentosTeste : IDisposable
     private readonly AmbienteDeTeste _ambiente = new();
 
     [Fact]
-    public void GastoFixoMarcadoComoPagoValeSoNoMesMarcado()
+    public void ContaMarcadaComoPagaValeSoNoMesMarcado()
     {
-        GastoFixo gasto = CriarGastoFixo();
+        Conta conta = CriarConta();
 
-        _ambiente.Pagamentos.Alternar(TipoPagavel.GastoFixo, gasto.Id, MesAnalisado);
+        _ambiente.Pagamentos.Alternar(TipoPagavel.Conta, conta.Id, MesAnalisado);
 
-        Assert.True(_ambiente.Pagamentos.EstaPago(TipoPagavel.GastoFixo, gasto.Id, MesAnalisado));
-        Assert.False(_ambiente.Pagamentos.EstaPago(TipoPagavel.GastoFixo, gasto.Id, MesAnalisado.Proxima()));
+        Assert.True(_ambiente.Pagamentos.EstaPago(TipoPagavel.Conta, conta.Id, MesAnalisado));
+        Assert.False(_ambiente.Pagamentos.EstaPago(TipoPagavel.Conta, conta.Id, MesAnalisado.Proxima()));
     }
 
     [Fact]
     public void MarcarDuasVezesVoltaAoEstadoNaoPago()
     {
-        GastoFixo gasto = CriarGastoFixo();
+        Conta conta = CriarConta();
 
-        _ambiente.Pagamentos.Alternar(TipoPagavel.GastoFixo, gasto.Id, MesAnalisado);
-        _ambiente.Pagamentos.Alternar(TipoPagavel.GastoFixo, gasto.Id, MesAnalisado);
+        _ambiente.Pagamentos.Alternar(TipoPagavel.Conta, conta.Id, MesAnalisado);
+        _ambiente.Pagamentos.Alternar(TipoPagavel.Conta, conta.Id, MesAnalisado);
 
-        Assert.False(_ambiente.Pagamentos.EstaPago(TipoPagavel.GastoFixo, gasto.Id, MesAnalisado));
-        Assert.Empty(_ambiente.GastosFixos.Listar().Single().MesesPagos);
+        Assert.False(_ambiente.Pagamentos.EstaPago(TipoPagavel.Conta, conta.Id, MesAnalisado));
+        Assert.Empty(_ambiente.Contas.Listar().Single().MesesPagos);
     }
 
     [Fact]
-    public void GastoFixoPagoAparecePagoNoLancamentoDoMes()
+    public void ContaPagaApareceComoPagaNoLancamentoDoMes()
     {
-        GastoFixo gasto = CriarGastoFixo();
+        Conta conta = CriarConta();
 
-        _ambiente.Pagamentos.Alternar(TipoPagavel.GastoFixo, gasto.Id, MesAnalisado);
+        _ambiente.Pagamentos.Alternar(TipoPagavel.Conta, conta.Id, MesAnalisado);
 
         LancamentoDoMes lancamento = _ambiente.Resumo.Calcular(MesAnalisado).Lancamentos.Single();
 
         Assert.True(lancamento.EstaPago);
-    }
-
-    [Fact]
-    public void ParceladoPagoMarcaSomenteAParcelaDoMes()
-    {
-        Parcelamento parcelamento = CriarParcelamento();
-
-        _ambiente.Pagamentos.Alternar(TipoPagavel.Parcelamento, parcelamento.Id, MesAnalisado);
-
-        ParcelaCalculada parcelaDeJulho = _ambiente.Parcelas.ObterParcelasForaDoCartao(MesAnalisado).Single();
-        ParcelaCalculada parcelaDeAgosto = _ambiente.Parcelas
-            .ObterParcelasForaDoCartao(MesAnalisado.Proxima()).Single();
-
-        Assert.True(parcelaDeJulho.EstaPago);
-        Assert.False(parcelaDeAgosto.EstaPago);
     }
 
     [Fact]
@@ -85,11 +70,11 @@ public sealed class ServicoPagamentosTeste : IDisposable
     [Fact]
     public void FaltaPagarDescontaSoOQueFoiMarcado()
     {
-        GastoFixo gasto = CriarGastoFixo();
-        CriarParcelamento();
+        Conta conta = CriarConta();
+        CriarCarneDoSofa();
         Cartao cartao = CriarCartaoComDuasCompras();
 
-        _ambiente.Pagamentos.Alternar(TipoPagavel.GastoFixo, gasto.Id, MesAnalisado);
+        _ambiente.Pagamentos.Alternar(TipoPagavel.Conta, conta.Id, MesAnalisado);
         _ambiente.Pagamentos.Alternar(TipoPagavel.FaturaCartao, cartao.Id, MesAnalisado);
 
         ResumoMes resumo = _ambiente.Resumo.Calcular(MesAnalisado);
@@ -103,16 +88,62 @@ public sealed class ServicoPagamentosTeste : IDisposable
     [Fact]
     public void MesTodoMarcadoFicaComoTudoPago()
     {
-        GastoFixo gasto = CriarGastoFixo();
-        Parcelamento parcelamento = CriarParcelamento();
+        Conta conta = CriarConta();
+        Conta carne = CriarCarneDoSofa();
 
-        _ambiente.Pagamentos.Alternar(TipoPagavel.GastoFixo, gasto.Id, MesAnalisado);
-        _ambiente.Pagamentos.Alternar(TipoPagavel.Parcelamento, parcelamento.Id, MesAnalisado);
+        _ambiente.Pagamentos.Alternar(TipoPagavel.Conta, conta.Id, MesAnalisado);
+        _ambiente.Pagamentos.Alternar(TipoPagavel.Conta, carne.Id, MesAnalisado);
 
         ResumoMes resumo = _ambiente.Resumo.Calcular(MesAnalisado);
 
         Assert.True(resumo.TudoPago);
         Assert.Equal(0m, resumo.TotalGastosAPagar);
+    }
+
+    [Fact]
+    public void ResumoDoMesSeparaOQueFoiPagoDoQueFalta()
+    {
+        Conta conta = CriarConta();
+        CriarCarneDoSofa();
+
+        _ambiente.Pagamentos.Alternar(TipoPagavel.Conta, conta.Id, MesAnalisado);
+
+        ResumoContas resumo = _ambiente.Contas.ResumirMes(MesAnalisado);
+
+        Assert.Equal(1700.00m, resumo.Total);
+        Assert.Equal(1500.00m, resumo.Pago);
+        Assert.Equal(200.00m, resumo.APagar);
+        Assert.Equal(2, resumo.Quantidade);
+        Assert.Equal(1, resumo.QuantidadePaga);
+        Assert.Equal(1, resumo.QuantidadeAPagar);
+        Assert.False(resumo.TudoPago);
+    }
+
+    [Fact]
+    public void ResumoDoMesNaoContaContaQueNaoValeNaqueleMes()
+    {
+        Conta conta = CriarConta();
+        CriarCarneDoSofa();
+
+        _ambiente.Pagamentos.Alternar(TipoPagavel.Conta, conta.Id, MesAnalisado);
+
+        ResumoContas resumoDepoisDoCarne = _ambiente.Contas.ResumirMes(MesAnalisado.Adicionar(6));
+
+        Assert.Equal(1500.00m, resumoDepoisDoCarne.Total);
+        Assert.Equal(0m, resumoDepoisDoCarne.Pago);
+        Assert.Equal(1500.00m, resumoDepoisDoCarne.APagar);
+        Assert.Equal(1, resumoDepoisDoCarne.Quantidade);
+    }
+
+    [Fact]
+    public void ResumoDoMesSemContaVigenteFicaZerado()
+    {
+        ResumoContas resumo = _ambiente.Contas.ResumirMes(MesAnalisado);
+
+        Assert.Equal(0m, resumo.Total);
+        Assert.Equal(0m, resumo.APagar);
+        Assert.Equal(0, resumo.Quantidade);
+        Assert.False(resumo.TudoPago);
     }
 
     [Fact]
@@ -125,9 +156,9 @@ public sealed class ServicoPagamentosTeste : IDisposable
             VigenciaInicio = MesAnalisado
         });
 
-        GastoFixo gasto = CriarGastoFixo();
+        Conta conta = CriarConta();
 
-        _ambiente.Pagamentos.Alternar(TipoPagavel.GastoFixo, gasto.Id, MesAnalisado);
+        _ambiente.Pagamentos.Alternar(TipoPagavel.Conta, conta.Id, MesAnalisado);
 
         ResumoMes resumo = _ambiente.Resumo.Calcular(MesAnalisado);
 
@@ -138,27 +169,27 @@ public sealed class ServicoPagamentosTeste : IDisposable
     [Fact]
     public void MarcacaoSobreviveARecargaDoArquivo()
     {
-        GastoFixo gasto = CriarGastoFixo();
+        Conta conta = CriarConta();
 
-        _ambiente.Pagamentos.Alternar(TipoPagavel.GastoFixo, gasto.Id, MesAnalisado);
+        _ambiente.Pagamentos.Alternar(TipoPagavel.Conta, conta.Id, MesAnalisado);
         _ambiente.Banco.Carregar();
 
-        Assert.True(_ambiente.Pagamentos.EstaPago(TipoPagavel.GastoFixo, gasto.Id, MesAnalisado));
+        Assert.True(_ambiente.Pagamentos.EstaPago(TipoPagavel.Conta, conta.Id, MesAnalisado));
     }
 
     [Fact]
     public void MarcarUmItemInexistenteNaoQuebra()
     {
-        _ambiente.Pagamentos.Alternar(TipoPagavel.GastoFixo, Guid.NewGuid(), MesAnalisado);
+        _ambiente.Pagamentos.Alternar(TipoPagavel.Conta, Guid.NewGuid(), MesAnalisado);
 
-        Assert.False(_ambiente.Pagamentos.EstaPago(TipoPagavel.GastoFixo, Guid.NewGuid(), MesAnalisado));
+        Assert.False(_ambiente.Pagamentos.EstaPago(TipoPagavel.Conta, Guid.NewGuid(), MesAnalisado));
     }
 
     public void Dispose() => _ambiente.Dispose();
 
-    private GastoFixo CriarGastoFixo()
+    private Conta CriarConta()
     {
-        GastoFixo gasto = new()
+        Conta conta = new()
         {
             Descricao = "Aluguel",
             Valor = 1500.00m,
@@ -166,26 +197,25 @@ public sealed class ServicoPagamentosTeste : IDisposable
             VigenciaInicio = MesAnalisado
         };
 
-        _ambiente.GastosFixos.Salvar(gasto);
+        _ambiente.Contas.Salvar(conta);
 
-        return gasto;
+        return conta;
     }
 
-    private Parcelamento CriarParcelamento()
+    private Conta CriarCarneDoSofa()
     {
-        Parcelamento parcelamento = new()
+        Conta carne = new()
         {
-            Descricao = "Sofá",
-            Credor = "Loja de móveis",
-            ValorTotal = 1200.00m,
-            QuantidadeParcelas = 6,
-            CompetenciaPrimeiraParcela = MesAnalisado,
-            Categoria = "Casa"
+            Descricao = "Carnê do sofá",
+            Valor = 200.00m,
+            Categoria = "Casa",
+            VigenciaInicio = MesAnalisado,
+            VigenciaFim = MesAnalisado.Adicionar(5)
         };
 
-        _ambiente.Parcelamentos.Salvar(parcelamento);
+        _ambiente.Contas.Salvar(carne);
 
-        return parcelamento;
+        return carne;
     }
 
     private Cartao CriarCartaoComDuasCompras()

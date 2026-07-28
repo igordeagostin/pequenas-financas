@@ -86,7 +86,7 @@
                             <span>vence dia @fatura.DiaVencimento · @DescreverQuantidadeDeParcelas(fatura)</span>
                         </div>
                         <MarcadorPago Tipo="TipoPagavel.FaturaCartao" ItemId="fatura.CartaoId"
-                                      AoAlterar="CalcularResumo" />
+                                      Mes="Estado.MesSelecionado" AoAlterar="CalcularResumo" />
                         <div class="valor @(fatura.EstaPaga ? "texto-suave" : "texto-saida")">
                             @Dinheiro.Formatar(fatura.Total)
                         </div>
@@ -244,9 +244,8 @@
             : "Renda do mês";
 
     private string DescreverGastos()
-        => $"Fixos {Dinheiro.Formatar(Resumo.TotalGastosFixos)} · "
-         + $"cartão {Dinheiro.Formatar(Resumo.TotalCartoes)} · "
-         + $"parcelas {Dinheiro.Formatar(Resumo.TotalParcelamentos)}";
+        => $"Contas {Dinheiro.Formatar(Resumo.TotalContas)} · "
+         + $"cartão {Dinheiro.Formatar(Resumo.TotalCartoes)}";
 
     private string DescreverPagamentos()
     {
