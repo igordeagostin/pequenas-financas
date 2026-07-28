@@ -376,14 +376,14 @@ Na coluna **Pagamento** você marca a conta como paga no mês escolhido. Veja
 Antes de lançar uma compra no cartão, cadastre o cartão.
 
 1. Clique em **+ Novo cartão**.
-2. Escreva o nome (ex.: `Nubank`) e a bandeira.
-3. Informe o limite.
-4. Informe o dia em que a fatura fecha e o dia do vencimento.
-5. Escolha uma cor — o app mostra uma bolinha nessa cor ao lado do nome do cartão,
+2. Escreva o nome (ex.: `Nubank`).
+3. Informe o dia do vencimento da fatura.
+4. Escolha uma cor — o app mostra uma bolinha nessa cor ao lado do nome do cartão,
    para você reconhecer o cartão de longe nas listas.
 
 A lista de cartões mostra, para o mês escolhido:
 
+- **Vencimento**: o dia do mês em que a fatura desse cartão vence.
 - **Falta pagar**: tudo que ainda vai ser cobrado desse cartão daqui para a frente.
 - **Neste mês**: quanto esse cartão vai cobrar no mês que você está vendo.
 

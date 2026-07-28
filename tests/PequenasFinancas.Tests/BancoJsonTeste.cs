@@ -11,7 +11,7 @@ public sealed class BancoJsonTeste : IDisposable
     [Fact]
     public void DadosGravadosContinuamDisponiveisAoAbrirOAppDeNovo()
     {
-        _ambiente.Cartoes.Salvar(new Cartao { Nome = "Nubank", Limite = 5000m });
+        _ambiente.Cartoes.Salvar(new Cartao { Nome = "Nubank" });
 
         BancoJson bancoReaberto = new(_ambiente.Banco.CaminhoDoArquivo);
         bancoReaberto.Carregar();

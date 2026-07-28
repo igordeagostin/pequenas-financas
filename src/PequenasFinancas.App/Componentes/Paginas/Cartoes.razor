@@ -26,8 +26,7 @@
             <thead>
                 <tr>
                     <th>Cartão</th>
-                    <th>Fecha / vence</th>
-                    <th class="direita">Limite</th>
+                    <th>Vencimento</th>
                     <th class="direita">Falta pagar</th>
                     <th class="direita">Neste mês</th>
                     <th class="acoes"></th>
@@ -45,13 +44,8 @@
                                     <span class="etiqueta">Sem uso</span>
                                 }
                             </div>
-                            @if (!string.IsNullOrWhiteSpace(cartao.Bandeira))
-                            {
-                                <div class="texto-suave texto-pequeno">@cartao.Bandeira</div>
-                            }
                         </td>
-                        <td class="texto-suave">dia @cartao.DiaFechamento / dia @cartao.DiaVencimento</td>
-                        <td class="direita numero">@Dinheiro.Formatar(cartao.Limite)</td>
+                        <td class="texto-suave">dia @cartao.DiaVencimento</td>
                         <td class="direita numero">@Dinheiro.Formatar(CalcularFaltaPagar(cartao))</td>
                         <td class="direita numero">@Dinheiro.Formatar(CalcularTotalDoMes(cartao))</td>
                         <td class="acoes">
@@ -103,20 +97,6 @@
 
         <div class="linha-campos">
             <div class="campo">
-                <label>Bandeira</label>
-                <input type="text" placeholder="Ex.: Mastercard" @bind="cartao.Bandeira" @bind:event="oninput" />
-            </div>
-
-            <CampoMoeda Rotulo="Limite" @bind-Valor="cartao.Limite" />
-        </div>
-
-        <div class="linha-campos">
-            <div class="campo">
-                <label>Dia em que a fatura fecha</label>
-                <input type="number" min="1" max="31" @bind="cartao.DiaFechamento" @bind:event="oninput" />
-            </div>
-
-            <div class="campo">
                 <label>Dia do vencimento</label>
                 <input type="number" min="1" max="31" @bind="cartao.DiaVencimento" @bind:event="oninput" />
             </div>
@@ -163,7 +143,6 @@
     protected override string? Conferir(Cartao cartao)
         => Validacoes.Primeira(
             Validacoes.Nome(cartao.Nome),
-            Validacoes.DiaDoMes(cartao.DiaFechamento),
             Validacoes.DiaDoMes(cartao.DiaVencimento));
 
     protected override string DescreverParaExclusao(Cartao cartao) => $"o cartão {cartao.Nome}";
