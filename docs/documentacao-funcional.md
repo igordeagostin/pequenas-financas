@@ -52,17 +52,18 @@ No topo aparecem quatro números:
 |---|---|
 | **Entra** | Todo o dinheiro que você recebe no mês |
 | **Sai** | Gastos fixos + cartões + parcelas |
-| **Livre no mês** | Quanto fica livre de verdade, já tirando o que você guardou |
+| **Livre no mês** | Quanto sobra depois de pagar tudo |
 | **Guardado até aqui** | Quanto você tem separado em todas as reservas |
 
 A conta do dinheiro livre é assim:
 
 ```
-Livre no mês = tudo que entra − gastos fixos − cartões − parcelas − o que você guardou
+Livre no mês = tudo que entra − gastos fixos − cartões − parcelas
 ```
 
-Se você guardou dinheiro no mês, o app mostra também quanto ficaria livre **antes** de guardar.
-Quando os gastos passam do que entrou, o valor fica vermelho.
+O dinheiro que você guardou **não entra nessa conta**. Guardar não é gastar: o dinheiro
+continua sendo seu, só mudou de lugar. Quando os gastos passam do que entrou, o valor
+fica vermelho.
 
 Mais abaixo a tela mostra:
 
@@ -104,8 +105,8 @@ Detalhes que valem saber:
 
 - O valor sempre é arredondado **para baixo**, para a soma dos dias nunca passar do que
   você tem. Por isso pode faltar alguns centavos no fim do mês — a favor do seu bolso.
-- O dinheiro que você guardou no mês já foi descontado. Se você guardou R$ 500 dos
-  R$ 3.900, o app divide R$ 3.400 pelos dias.
+- O dinheiro que você guardou não entra na conta. Se sobraram R$ 3.900 e você guardou
+  R$ 500, o app continua dividindo R$ 3.900 pelos dias.
 - Se os gastos passaram do que entrou, o valor aparece como R$ 0,00 e o app avisa que
   não há dinheiro livre para dividir por dia.
 
@@ -135,8 +136,7 @@ Só existe uma semana aberta por vez em cada mês.
 ### Com quanto a semana começa
 
 - **É a primeira semana do mês**: começa com o **dinheiro livre do mês**, o mesmo valor
-  que aparece no resumo (o que entra, menos gastos fixos, cartões, parcelas e o que
-  você guardou).
+  que aparece no resumo (o que entra, menos gastos fixos, cartões e parcelas).
 - **Já teve outra semana antes**: começa com **o saldo que você informou** ao fechar a
   semana anterior.
 
@@ -279,7 +279,8 @@ Antes de lançar uma compra no cartão, cadastre o cartão.
 2. Escreva o nome (ex.: `Nubank`) e a bandeira.
 3. Informe o limite.
 4. Informe o dia em que a fatura fecha e o dia do vencimento.
-5. Escolha uma cor — ela é usada nas etiquetas do cartão pelo app.
+5. Escolha uma cor — o app mostra uma bolinha nessa cor ao lado do nome do cartão,
+   para você reconhecer o cartão de longe nas listas.
 
 A lista de cartões mostra, para o mês escolhido:
 
@@ -376,8 +377,20 @@ Aqui você separa dinheiro para um objetivo: reserva de emergência, viagem, tro
 
 1. Clique em **+ Novo lugar para guardar**.
 2. Dê um nome (ex.: `Emergência`).
-3. Se quiser, informe quanto pretende juntar. O app mostra uma barra de progresso.
+3. Informe o **saldo inicial**: quanto você já tinha guardado ali antes de começar a usar
+   o app. Se ainda não tem nada, deixe zero.
 4. Escolha uma cor.
+
+### Saldo inicial
+
+O saldo inicial serve para você não precisar cadastrar tudo que guardou no passado.
+
+Exemplo: você já tem R$ 2.000 na poupança. Crie a reserva `Emergência` com saldo inicial
+de R$ 2.000. Se depois você guardar R$ 500 em julho, o saldo passa a mostrar R$ 2.500.
+
+O saldo inicial **não conta como dinheiro guardado no mês**, porque ele já existia antes.
+Ele aparece só no saldo total da reserva. Para mudar o valor depois, clique em **Editar**
+na reserva.
 
 ### Guardar mais dinheiro
 
@@ -393,16 +406,15 @@ Clique em **Resgatar** e informe o valor. O saldo diminui.
 
 ### Como isso mexe no dinheiro livre
 
-O que você guarda no mês **é descontado do dinheiro livre**, porque esse dinheiro saiu da
-sua conta corrente e foi para a reserva.
+O que você guarda **não mexe no dinheiro livre do mês**. Guardar não é gastar: o dinheiro
+continua sendo seu, só saiu da conta e foi para a reserva.
 
 Exemplo: entrou R$ 6.000, os gastos foram R$ 2.100 e você guardou R$ 500.
 
-- Antes de guardar: R$ 3.900
-- Livre no mês: R$ 3.400
+- Livre no mês: R$ 3.900
+- Guardado no mês: R$ 500
 
-O resumo mostra os dois valores, para você não se perder. E o **quanto dá para gastar por
-dia** também cai, porque ele usa o valor já descontado.
+O **quanto dá para gastar por dia** também não muda quando você guarda dinheiro.
 
 O saldo da reserva vai somando mês a mês. Se você guardou R$ 1.200 em maio e R$ 500 em
 julho, ao olhar julho o saldo mostra R$ 1.700.

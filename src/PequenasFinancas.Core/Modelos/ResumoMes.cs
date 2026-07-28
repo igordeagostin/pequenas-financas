@@ -34,9 +34,7 @@ public sealed record ResumoMes
 
     public decimal TotalGastos => TotalGastosFixos + TotalCartoes + TotalParcelamentos;
 
-    public decimal SobraAntesDeGuardar => TotalReceitas - TotalGastos;
-
-    public decimal DinheiroLivre => SobraAntesDeGuardar - TotalGuardado;
+    public decimal DinheiroLivre => TotalReceitas - TotalGastos;
 
     public decimal LivrePorDia
         => DiasParaGastar <= 0 || DinheiroLivre <= 0
@@ -78,12 +76,7 @@ public sealed record SaldoReserva
 
     public required string Cor { get; init; }
 
-    public required decimal Objetivo { get; init; }
-
     public required decimal Saldo { get; init; }
 
     public required decimal MovimentadoNoMes { get; init; }
-
-    public decimal PercentualDoObjetivo
-        => Objetivo <= 0 ? 0 : Math.Min(100, Math.Round(Saldo / Objetivo * 100, 1));
 }

@@ -6,7 +6,7 @@ public sealed class Reserva : IRegistro
 
     public string Nome { get; set; } = string.Empty;
 
-    public decimal Objetivo { get; set; }
+    public decimal SaldoInicial { get; set; }
 
     public string Cor { get; set; } = "#14B8A6";
 

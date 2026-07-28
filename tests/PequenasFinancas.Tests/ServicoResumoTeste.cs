@@ -21,11 +21,11 @@ public sealed class ServicoResumoTeste : IDisposable
         Assert.Equal(1500.00m, resumo.TotalGastosFixos);
         Assert.Equal(400.00m, resumo.TotalCartoes);
         Assert.Equal(200.00m, resumo.TotalParcelamentos);
-        Assert.Equal(3900.00m, resumo.SobraAntesDeGuardar);
+        Assert.Equal(3900.00m, resumo.DinheiroLivre);
     }
 
     [Fact]
-    public void DinheiroGuardadoNoMesDiminuiODinheiroLivre()
+    public void DinheiroGuardadoNoMesNaoMexeNoDinheiroLivre()
     {
         MontarMesCompleto();
         GuardarNaReserva(500.00m);
@@ -33,8 +33,7 @@ public sealed class ServicoResumoTeste : IDisposable
         ResumoMes resumo = _ambiente.Resumo.Calcular(MesAnalisado);
 
         Assert.Equal(500.00m, resumo.TotalGuardado);
-        Assert.Equal(3900.00m, resumo.SobraAntesDeGuardar);
-        Assert.Equal(3400.00m, resumo.DinheiroLivre);
+        Assert.Equal(3900.00m, resumo.DinheiroLivre);
         Assert.False(resumo.NoVermelho);
     }
 
@@ -63,15 +62,15 @@ public sealed class ServicoResumoTeste : IDisposable
     }
 
     [Fact]
-    public void DinheiroGuardadoNoMesDiminuiOGastoPorDia()
+    public void DinheiroGuardadoNoMesNaoMexeNoGastoPorDia()
     {
         MontarMesCompleto();
         GuardarNaReserva(500.00m);
 
         ResumoMes resumo = _ambiente.Resumo.Calcular(MesAnalisado, new DateTime(2026, 7, 27));
 
-        Assert.Equal(3400.00m, resumo.DinheiroLivre);
-        Assert.Equal(680.00m, resumo.LivrePorDia);
+        Assert.Equal(3900.00m, resumo.DinheiroLivre);
+        Assert.Equal(780.00m, resumo.LivrePorDia);
     }
 
     [Fact]
@@ -90,7 +89,7 @@ public sealed class ServicoResumoTeste : IDisposable
 
         Assert.Equal(800.00m, resumo.TotalRendasExtras);
         Assert.Equal(6800.00m, resumo.TotalReceitas);
-        Assert.Equal(4700.00m, resumo.SobraAntesDeGuardar);
+        Assert.Equal(4700.00m, resumo.DinheiroLivre);
     }
 
     [Fact]
@@ -118,6 +117,22 @@ public sealed class ServicoResumoTeste : IDisposable
         Assert.Equal(500.00m, saldoEmJulho.Saldo);
         Assert.Equal(800.00m, saldoEmAgosto.Saldo);
         Assert.Equal(300.00m, saldoEmAgosto.MovimentadoNoMes);
+    }
+
+    [Fact]
+    public void SaldoInicialEntraNoGuardadoSemContarComoMovimentoDoMes()
+    {
+        MontarMesCompleto();
+
+        Reserva reserva = new() { Nome = "Emergência", SaldoInicial = 2000.00m };
+        _ambiente.Reservas.Salvar(reserva);
+
+        GuardarNaReserva(500.00m);
+
+        ResumoMes resumo = _ambiente.Resumo.Calcular(MesAnalisado);
+
+        Assert.Equal(2500.00m, resumo.SaldosDeReservas.Single().Saldo);
+        Assert.Equal(500.00m, resumo.TotalGuardado);
     }
 
     [Fact]
@@ -264,7 +279,7 @@ public sealed class ServicoResumoTeste : IDisposable
 
     private Reserva CriarReservaDeEmergencia()
     {
-        Reserva reserva = new() { Nome = "Emergência", Objetivo = 10000.00m };
+        Reserva reserva = new() { Nome = "Emergência" };
         _ambiente.Reservas.Salvar(reserva);
 
         return reserva;

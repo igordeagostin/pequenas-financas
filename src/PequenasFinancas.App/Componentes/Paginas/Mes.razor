@@ -181,12 +181,6 @@
                             }
                         </span>
                         <span class="numero">@Dinheiro.Formatar(reserva.Saldo)</span>
-                        @if (reserva.Objetivo > 0)
-                        {
-                            <div class="barra">
-                                <div style="@Estilos.Largura(reserva.PercentualDoObjetivo, reserva.Cor)"></div>
-                            </div>
-                        }
                     </div>
                 }
             }
@@ -248,9 +242,7 @@
          + $"parcelas {Dinheiro.Formatar(Resumo.TotalParcelamentos)}";
 
     private string DescreverDinheiroLivre()
-        => Resumo.TotalGuardado != 0
-            ? $"Antes de guardar: {Dinheiro.Formatar(Resumo.SobraAntesDeGuardar)}"
-            : Resumo.NoVermelho ? "Os gastos passaram do que entrou" : "Depois de pagar tudo";
+        => Resumo.NoVermelho ? "Os gastos passaram do que entrou" : "Depois de pagar tudo";
 
     private string DescreverDiasParaGastar()
     {

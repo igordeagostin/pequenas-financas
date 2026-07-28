@@ -75,7 +75,6 @@ public sealed class ServicoResumo(
             ReservaId = reserva.Id,
             Nome = reserva.Nome,
             Cor = reserva.Cor,
-            Objetivo = reserva.Objetivo,
             Saldo = ServicoReservas.CalcularSaldo(reserva, competencia),
             MovimentadoNoMes = ServicoReservas.CalcularMovimentadoNoMes(reserva, competencia)
         })];

@@ -44,9 +44,9 @@ else
                     </h2>
                     <div class="texto-suave texto-pequeno">
                         Guardado: <strong class="numero">@Dinheiro.Formatar(saldo)</strong>
-                        @if (reserva.Objetivo > 0)
+                        @if (reserva.SaldoInicial > 0)
                         {
-                            <text> de @Dinheiro.Formatar(reserva.Objetivo)</text>
+                            <text> · saldo inicial @Dinheiro.Formatar(reserva.SaldoInicial)</text>
                         }
                         @if (noMes != 0)
                         {
@@ -65,13 +65,6 @@ else
                     <button class="botao botao-perigo" @onclick="() => PedirExclusao(reserva)">Excluir</button>
                 </div>
             </div>
-
-            @if (reserva.Objetivo > 0)
-            {
-                <div class="barra">
-                    <div style="@Estilos.Largura(CalcularPercentual(saldo, reserva.Objetivo), reserva.Cor)"></div>
-                </div>
-            }
 
             @if (ReservaAberta == reserva.Id)
             {
@@ -134,8 +127,8 @@ else
         </div>
 
         <div class="linha-campos">
-            <CampoMoeda Rotulo="Quanto quer juntar (opcional)" @bind-Valor="reserva.Objetivo"
-                        Ajuda="Deixe zero se não tem uma meta." />
+            <CampoMoeda Rotulo="Saldo inicial" @bind-Valor="reserva.SaldoInicial"
+                        Ajuda="Quanto você já tinha guardado aqui antes de começar a usar o app." />
 
             <div class="campo">
                 <label>Cor</label>
@@ -174,8 +167,6 @@ else
                   AoCancelar="CancelarExclusao" />
 
 @code {
-    private const decimal PercentualMaximo = 100m;
-
     private Guid? ReservaAberta;
     private Guid ReservaDoMovimento;
     private MovimentoReserva? MovimentoEmEdicao;
@@ -195,9 +186,6 @@ else
 
     private string TituloDoMovimento
         => MovimentoEmEdicao?.Tipo == TipoMovimentoReserva.Resgate ? "Resgatar dinheiro" : "Guardar dinheiro";
-
-    private static decimal CalcularPercentual(decimal saldo, decimal objetivo)
-        => objetivo <= 0 ? 0 : Math.Min(PercentualMaximo, Math.Round(saldo / objetivo * PercentualMaximo, 1));
 
     private void AlternarMovimentos(Reserva reserva)
         => ReservaAberta = ReservaAberta == reserva.Id ? null : reserva.Id;

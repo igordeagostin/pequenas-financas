@@ -41,7 +41,7 @@ public sealed class ServicoReservas(BancoJson banco) : ServicoCrud<Reserva>(banc
         => [.. (Obter(reservaId)?.Movimentos ?? []).OrderByDescending(movimento => movimento.Data)];
 
     public static decimal CalcularSaldo(Reserva reserva, Competencia ate)
-        => reserva.Movimentos
+        => reserva.SaldoInicial + reserva.Movimentos
             .Where(movimento => movimento.Competencia <= ate)
             .Sum(movimento => movimento.ValorComSinal);
 
