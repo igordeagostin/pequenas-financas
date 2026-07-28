@@ -2,7 +2,8 @@
 
 <div class="campo">
     <label>@Rotulo</label>
-    <input type="number" step="0.01" min="0" placeholder="0,00" @bind="ValorInterno" @bind:event="oninput" />
+    <input type="text" inputmode="decimal" placeholder="0,00"
+           value="@TextoDigitado" @oninput="AoDigitar" @onblur="AoSairDoCampo" />
     @if (!string.IsNullOrWhiteSpace(Ajuda))
     {
         <div class="ajuda">@Ajuda</div>
@@ -22,13 +23,37 @@
     [Parameter]
     public EventCallback<decimal> ValorChanged { get; set; }
 
-    private decimal ValorInterno
+    private string TextoDigitado { get; set; } = string.Empty;
+
+    protected override void OnParametersSet()
     {
-        get => Valor;
-        set
+        if (TextoRepresentaValorAtual())
         {
-            Valor = value;
-            ValorChanged.InvokeAsync(value);
+            return;
         }
+
+        TextoDigitado = FormatarValorAtual();
     }
+
+    private Task AoDigitar(ChangeEventArgs argumentos)
+    {
+        var texto = argumentos.Value?.ToString() ?? string.Empty;
+        TextoDigitado = texto;
+
+        if (!Dinheiro.TentarConverter(texto, out var valorDigitado) || valorDigitado < 0m)
+        {
+            return Task.CompletedTask;
+        }
+
+        Valor = valorDigitado;
+        return ValorChanged.InvokeAsync(valorDigitado);
+    }
+
+    private void AoSairDoCampo() => TextoDigitado = FormatarValorAtual();
+
+    private bool TextoRepresentaValorAtual()
+        => Dinheiro.TentarConverter(TextoDigitado, out var valorDoTexto) && valorDoTexto == Valor;
+
+    private string FormatarValorAtual()
+        => Valor == 0m ? string.Empty : Dinheiro.FormatarParaEdicao(Valor);
 }

@@ -24,6 +24,27 @@ Seus dados ficam salvos no seu computador, num arquivo só seu. Nada vai para a 
 
 ---
 
+## Como digitar valores em dinheiro
+
+Em todo campo de dinheiro do app você pode separar os centavos com **vírgula ou ponto**,
+do jeito que for mais rápido para você. Os dois valem a mesma coisa.
+
+- `699,6` e `699.6` viram **R$ 699,60**.
+- `1234,56` e `1234.56` viram **R$ 1.234,56**.
+- `1.234,56` também funciona: o ponto é lido como separador de milhar.
+- `87` vira **R$ 87,00**.
+
+Quando você sai do campo, o app arruma o que foi digitado e mostra sempre com vírgula e
+duas casas: `699,6` aparece como `699,60`.
+
+Se você digitar uma letra ou algo que não é número, o app ignora e volta para o último
+valor válido assim que você sai do campo.
+
+Campos que não são de dinheiro continuam aceitando só número inteiro: dia do mês
+(de 1 a 31) e quantidade de parcelas.
+
+---
+
 ## Primeiros passos
 
 Para o app ficar útil, faça nesta ordem:
