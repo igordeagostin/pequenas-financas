@@ -1,9 +1,5 @@
 namespace PequenasFinancas.Core.Modelos;
 
-/// <summary>
-/// Conteúdo completo do arquivo dados.json. Cada coleção guarda apenas o cadastro:
-/// as parcelas de cada mês são calculadas na hora de exibir.
-/// </summary>
 public sealed class BancoDados
 {
     public const int VersaoAtual = 1;
@@ -21,8 +17,6 @@ public sealed class BancoDados
     public List<CompraCartao> ComprasCartao { get; set; } = [];
 
     public List<Parcelamento> Parcelamentos { get; set; } = [];
-
-    public List<GastoAvulso> GastosAvulsos { get; set; } = [];
 
     public List<Reserva> Reservas { get; set; } = [];
 }

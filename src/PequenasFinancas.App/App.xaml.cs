@@ -7,10 +7,8 @@ using PequenasFinancas.Core.Servicos;
 
 namespace PequenasFinancas.App;
 
-/// <summary>Ponto de entrada do aplicativo: prepara os serviços e abre a janela principal.</summary>
 public partial class App : Application
 {
-    /// <summary>Chave usada pela janela para achar os serviços do Blazor.</summary>
     public const string ChaveDosServicos = "servicos";
 
     private const string CulturaDoApp = "pt-BR";
@@ -49,7 +47,6 @@ public partial class App : Application
         servicos.AddSingleton<ServicoRendas>();
         servicos.AddSingleton<ServicoRendasExtras>();
         servicos.AddSingleton<ServicoGastosFixos>();
-        servicos.AddSingleton<ServicoGastosAvulsos>();
         servicos.AddSingleton<ServicoComprasCartao>();
         servicos.AddSingleton<ServicoParcelamentos>();
         servicos.AddSingleton<ServicoReservas>();

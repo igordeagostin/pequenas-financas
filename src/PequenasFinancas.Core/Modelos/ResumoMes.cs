@@ -2,10 +2,15 @@ using PequenasFinancas.Core.Comum;
 
 namespace PequenasFinancas.Core.Modelos;
 
-/// <summary>Retrato financeiro de um mês: o que entrou, o que saiu e quanto sobra.</summary>
 public sealed record ResumoMes
 {
+    private const decimal CentavosNoReal = 100m;
+
     public required Competencia Competencia { get; init; }
+
+    public required bool EhMesEmAndamento { get; init; }
+
+    public required int DiasParaGastar { get; init; }
 
     public required decimal TotalRendas { get; init; }
 
@@ -17,9 +22,6 @@ public sealed record ResumoMes
 
     public required decimal TotalParcelamentos { get; init; }
 
-    public required decimal TotalGastosAvulsos { get; init; }
-
-    /// <summary>Quanto foi guardado no mês (depósitos menos resgates).</summary>
     public required decimal TotalGuardado { get; init; }
 
     public required IReadOnlyList<FaturaCartao> Faturas { get; init; }
@@ -32,20 +34,22 @@ public sealed record ResumoMes
 
     public decimal TotalReceitas => TotalRendas + TotalRendasExtras;
 
-    public decimal TotalGastos => TotalGastosFixos + TotalCartoes + TotalParcelamentos + TotalGastosAvulsos;
+    public decimal TotalGastos => TotalGastosFixos + TotalCartoes + TotalParcelamentos;
 
-    /// <summary>Quanto sobra do que entrou depois de pagar tudo, antes de separar dinheiro na reserva.</summary>
     public decimal SobraAntesDeGuardar => TotalReceitas - TotalGastos;
 
-    /// <summary>Quanto sobra de fato, já descontado o dinheiro guardado no mês.</summary>
-    public decimal SobraFinal => SobraAntesDeGuardar - TotalGuardado;
+    public decimal DinheiroLivre => SobraAntesDeGuardar - TotalGuardado;
+
+    public decimal LivrePorDia
+        => DiasParaGastar <= 0 || DinheiroLivre <= 0
+            ? 0
+            : Math.Floor(DinheiroLivre / DiasParaGastar * CentavosNoReal) / CentavosNoReal;
 
     public decimal TotalGuardadoAcumulado => SaldosDeReservas.Sum(saldo => saldo.Saldo);
 
-    public bool NoVermelho => SobraFinal < 0;
+    public bool NoVermelho => DinheiroLivre < 0;
 }
 
-/// <summary>Total das parcelas de um cartão em um mês.</summary>
 public sealed record FaturaCartao
 {
     public required Guid CartaoId { get; init; }
@@ -78,10 +82,8 @@ public sealed record SaldoReserva
 
     public required decimal Objetivo { get; init; }
 
-    /// <summary>Saldo acumulado até o fim do mês consultado.</summary>
     public required decimal Saldo { get; init; }
 
-    /// <summary>Quanto foi guardado (ou resgatado) dentro do mês consultado.</summary>
     public required decimal MovimentadoNoMes { get; init; }
 
     public decimal PercentualDoObjetivo

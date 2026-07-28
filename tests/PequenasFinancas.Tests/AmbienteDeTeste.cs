@@ -3,10 +3,6 @@ using PequenasFinancas.Core.Servicos;
 
 namespace PequenasFinancas.Tests;
 
-/// <summary>
-/// Banco em pasta temporária com todos os serviços montados, para os testes não
-/// tocarem no arquivo real do usuário.
-/// </summary>
 public sealed class AmbienteDeTeste : IDisposable
 {
     private readonly string _pastaTemporaria;
@@ -20,13 +16,12 @@ public sealed class AmbienteDeTeste : IDisposable
         Rendas = new ServicoRendas(Banco);
         RendasExtras = new ServicoRendasExtras(Banco);
         GastosFixos = new ServicoGastosFixos(Banco);
-        GastosAvulsos = new ServicoGastosAvulsos(Banco);
         ComprasCartao = new ServicoComprasCartao(Banco);
         Parcelamentos = new ServicoParcelamentos(Banco);
         Reservas = new ServicoReservas(Banco);
         Parcelas = new ServicoParcelas(Banco, Cartoes);
         Resumo = new ServicoResumo(
-            Rendas, RendasExtras, GastosFixos, GastosAvulsos, Cartoes, Parcelas, Reservas);
+            Rendas, RendasExtras, GastosFixos, Cartoes, Parcelas, Reservas);
     }
 
     public BancoJson Banco { get; }
@@ -38,8 +33,6 @@ public sealed class AmbienteDeTeste : IDisposable
     public ServicoRendasExtras RendasExtras { get; }
 
     public ServicoGastosFixos GastosFixos { get; }
-
-    public ServicoGastosAvulsos GastosAvulsos { get; }
 
     public ServicoComprasCartao ComprasCartao { get; }
 

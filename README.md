@@ -6,11 +6,13 @@
 ![.NET](https://img.shields.io/badge/.NET-10-512BD4)
 ![plataforma](https://img.shields.io/badge/plataforma-Windows-0078D4)
 
-Aplicativo de computador para o **registro simples das finanças do dia a dia**.
+Aplicativo de computador para saber **quanto dinheiro livre você tem no mês**.
 
-Sem complicação de sistema contábil e sem cadastro na internet: você anota o que entra,
-o que sai e o que ficou parcelado, e o app responde a única pergunta que importa —
-**quanto sobra no fim do mês.**
+Sem complicação de sistema contábil e sem cadastro na internet: você cadastra o que entra,
+o que já está comprometido e o que ficou parcelado, e o app responde as duas perguntas que
+importam — **quanto sobra livre no mês e quanto dá para gastar por dia.**
+
+Ele não é um caderno de gastos: você não anota o mercado nem o cafezinho.
 
 ## Status
 
@@ -28,26 +30,32 @@ O aplicativo **está em produção** e em uso no dia a dia.
 - **Compras no cartão** — lance a compra uma vez, informe em quantas vezes e em qual
   cartão. As parcelas aparecem sozinhas em cada mês, com o progresso (`3/12`).
 - **Parcelados sem cartão** — carnê, boleto ou empréstimo, separados das faturas.
-- **Gastos do mês** — aquele gasto solto, pago à vista.
 - **Dinheiro guardado** — crie reservas e registre quanto guardou (ou resgatou) em
   qualquer mês, com saldo acumulado e barra de progresso até o objetivo.
-- **Resumo do mês** — abre sempre no mês atual e mostra quanto entrou, quanto saiu,
-  quanto foi guardado e quanto sobra, com os gastos somados por categoria.
+- **Resumo do mês** — abre sempre no mês atual e mostra quanto entra, quanto sai,
+  quanto foi guardado e quanto fica livre, com os gastos somados por categoria.
+- **Quanto dá para gastar por dia** — o dinheiro livre dividido pelos dias que ainda
+  faltam no mês.
 
 ![Nova compra no cartão](docs/imagens/nova-compra.png)
 
-## Como a sobra é calculada
+## Como o dinheiro livre é calculado
 
 ```
-Sobra = renda + entradas extras
-      − gastos fixos
-      − parcelas dos cartões
-      − parcelas fora do cartão
-      − gastos do mês
-      − dinheiro guardado no mês
+Livre no mês = renda + entradas extras
+             − gastos fixos
+             − parcelas dos cartões
+             − parcelas fora do cartão
+             − dinheiro guardado no mês
+
+Por dia      = livre no mês ÷ dias que ainda faltam
 ```
 
-O resumo mostra também quanto sobraria **antes** de separar dinheiro na reserva.
+No mês em andamento os dias contados vão de hoje até o fim do mês; nos outros meses, o mês
+inteiro. O valor por dia é arredondado para baixo, para a soma dos dias nunca passar do que
+existe.
+
+O resumo mostra também quanto ficaria livre **antes** de separar dinheiro na reserva.
 
 As parcelas não são gravadas uma a uma: elas são calculadas a partir da compra. Quando o
 valor não divide certinho, a última parcela absorve os centavos, para a soma bater com o

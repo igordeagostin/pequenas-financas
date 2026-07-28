@@ -2,7 +2,11 @@
 
 Este guia explica, em palavras simples, o que cada tela do aplicativo faz.
 
-O objetivo do app é um só: **saber quanto sobra do seu dinheiro no fim do mês.**
+O objetivo do app é um só: **saber quanto dinheiro livre você tem no mês e quanto dá
+para gastar por dia.**
+
+Ele não serve para anotar cada compra do dia a dia. Você cadastra o que entra e o que já
+está comprometido (contas, cartão, parcelas) e o app responde quanto ainda está livre.
 
 ---
 
@@ -43,27 +47,63 @@ No topo aparecem quatro números:
 
 | Número | O que significa |
 |---|---|
-| **Entrou** | Todo o dinheiro que você recebeu no mês |
-| **Saiu** | Gastos fixos + cartões + parcelas + gastos soltos |
-| **Sobra do mês** | Quanto sobrou de verdade, já tirando o que você guardou |
+| **Entra** | Todo o dinheiro que você recebe no mês |
+| **Sai** | Gastos fixos + cartões + parcelas |
+| **Livre no mês** | Quanto fica livre de verdade, já tirando o que você guardou |
 | **Guardado até aqui** | Quanto você tem separado em todas as reservas |
 
-A conta da sobra é assim:
+A conta do dinheiro livre é assim:
 
 ```
-Sobra = tudo que entrou − gastos fixos − cartões − parcelas − gastos soltos − o que você guardou
+Livre no mês = tudo que entra − gastos fixos − cartões − parcelas − o que você guardou
 ```
 
-Se você guardou dinheiro no mês, o app mostra também quanto sobraria **antes** de guardar.
+Se você guardou dinheiro no mês, o app mostra também quanto ficaria livre **antes** de guardar.
 Quando os gastos passam do que entrou, o valor fica vermelho.
 
 Mais abaixo a tela mostra:
 
-- **Tudo que aconteceu no mês**: uma lista com cada entrada e cada saída.
+- **Quanto dá para gastar por dia**: explicado na próxima seção.
+- **Tudo que entra e sai no mês**: uma lista com cada entrada e cada saída.
   Verde é dinheiro que entra, vermelho é dinheiro que sai.
 - **Faturas dos cartões**: quanto cada cartão vai cobrar neste mês.
-- **Para onde foi o dinheiro**: seus gastos somados por categoria.
+- **Para onde vai o dinheiro**: seus gastos somados por categoria.
 - **Dinheiro guardado**: o saldo de cada reserva.
+
+---
+
+## Quanto dá para gastar por dia
+
+Logo abaixo dos quatro números, o resumo mostra um valor grande: **quanto você pode
+gastar por dia** sem estourar o mês.
+
+A conta é simples:
+
+```
+Por dia = dinheiro livre do mês ÷ dias que ainda faltam
+```
+
+Os dias contados mudam conforme o mês que você está olhando:
+
+- **No mês de hoje**: conta de hoje até o último dia do mês, incluindo hoje.
+  Se hoje é dia 27 e o mês tem 31 dias, são 5 dias.
+- **Em qualquer outro mês** (passado ou futuro): conta o mês inteiro.
+  Em julho, 31 dias.
+
+Exemplo: sobraram R$ 3.900 livres e faltam 5 dias para o mês acabar.
+O app mostra **R$ 780,00 por dia**.
+
+Outro exemplo: você está olhando agosto, que ainda nem começou. Se ficam R$ 3.900 livres
+e agosto tem 31 dias, o app mostra **R$ 125,80 por dia**.
+
+Detalhes que valem saber:
+
+- O valor sempre é arredondado **para baixo**, para a soma dos dias nunca passar do que
+  você tem. Por isso pode faltar alguns centavos no fim do mês — a favor do seu bolso.
+- O dinheiro que você guardou no mês já foi descontado. Se você guardou R$ 500 dos
+  R$ 3.900, o app divide R$ 3.400 pelos dias.
+- Se os gastos passaram do que entrou, o valor aparece como R$ 0,00 e o app avisa que
+  não há dinheiro livre para dividir por dia.
 
 ---
 
@@ -192,18 +232,6 @@ saber o que é cartão e o que não é.
 
 ---
 
-## Gastos do mês
-
-Para aquele gasto solto, pago na hora, que não se repete e não passou no cartão:
-uma farmácia, um conserto, um presente.
-
-1. Clique em **+ Novo gasto**.
-2. Escreva no que você gastou, o valor, a data e a categoria.
-
-O gasto vale só para o mês da data escolhida.
-
----
-
 ## Dinheiro guardado
 
 Aqui você separa dinheiro para um objetivo: reserva de emergência, viagem, troca de carro.
@@ -227,17 +255,18 @@ Você pode guardar dinheiro quantas vezes quiser, em qualquer mês:
 
 Clique em **Resgatar** e informe o valor. O saldo diminui.
 
-### Como isso mexe na sobra do mês
+### Como isso mexe no dinheiro livre
 
-O que você guarda no mês **é descontado da sobra**, porque esse dinheiro saiu da sua conta
-corrente e foi para a reserva.
+O que você guarda no mês **é descontado do dinheiro livre**, porque esse dinheiro saiu da
+sua conta corrente e foi para a reserva.
 
 Exemplo: entrou R$ 6.000, os gastos foram R$ 2.100 e você guardou R$ 500.
 
-- Sobra antes de guardar: R$ 3.900
-- Sobra do mês: R$ 3.400
+- Antes de guardar: R$ 3.900
+- Livre no mês: R$ 3.400
 
-O resumo mostra os dois valores, para você não se perder.
+O resumo mostra os dois valores, para você não se perder. E o **quanto dá para gastar por
+dia** também cai, porque ele usa o valor já descontado.
 
 O saldo da reserva vai somando mês a mês. Se você guardou R$ 1.200 em maio e R$ 500 em
 julho, ao olhar julho o saldo mostra R$ 1.700.
@@ -265,3 +294,11 @@ Pelo app, não. Mas existe uma cópia do arquivo anterior na pasta `backups`.
 **O valor da parcela ficou com um centavo diferente. Por quê?**
 Quando o total não divide certinho, a diferença de centavos vai para a última parcela,
 para a soma das parcelas dar exatamente o valor da compra.
+
+**Onde eu anoto o mercado, a farmácia, o lanche?**
+Você não anota. O app não é um caderno de gastos do dia a dia: ele mostra quanto está
+livre para você gastar. O que você gasta desse valor é com você.
+
+**O valor por dia mudou de ontem para hoje. Por quê?**
+No mês de hoje, o app divide o dinheiro livre pelos dias que ainda faltam. Cada dia que
+passa, o mesmo dinheiro é dividido por menos dias, então o valor por dia sobe.

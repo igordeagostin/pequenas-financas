@@ -5,27 +5,40 @@
 @inject ServicoResumo ServicoDeResumo
 
 <CabecalhoPagina Titulo="@($"Resumo de {Estado.MesSelecionado.NomeExtenso}")"
-                 Explicacao="Quanto entrou, quanto saiu e quanto sobra no fim do mês." />
+                 Explicacao="Quanto entra, quanto sai e quanto fica livre para gastar no mês." />
 
 <div class="grade-resumo">
-    <CartaoValor Rotulo="Entrou" Icone="↑" Valor="Resumo.TotalReceitas" EhEntrada="true"
+    <CartaoValor Rotulo="Entra" Icone="↑" Valor="Resumo.TotalReceitas" EhEntrada="true"
                  Apoio="@DescreverReceitas()" />
 
-    <CartaoValor Rotulo="Saiu" Icone="↓" Valor="Resumo.TotalGastos" EhEntrada="false"
+    <CartaoValor Rotulo="Sai" Icone="↓" Valor="Resumo.TotalGastos" EhEntrada="false"
                  Apoio="@DescreverGastos()" />
 
-    <CartaoValor Rotulo="Sobra do mês" Icone="◎" Valor="Resumo.SobraFinal"
-                 ColorirPeloSinal="true" Destaque="true" Apoio="@DescreverSobra()" />
+    <CartaoValor Rotulo="Livre no mês" Icone="◎" Valor="Resumo.DinheiroLivre"
+                 ColorirPeloSinal="true" Destaque="true" Apoio="@DescreverDinheiroLivre()" />
 
     <CartaoValor Rotulo="Guardado até aqui" Icone="◆" Valor="Resumo.TotalGuardadoAcumulado"
                  Apoio="@DescreverGuardado()" />
+</div>
+
+<div class="painel painel-por-dia">
+    <div class="painel-cabecalho">
+        <h2>Quanto dá para gastar por dia</h2>
+        <span class="texto-suave texto-pequeno">@DescreverDiasParaGastar()</span>
+    </div>
+
+    <div class="valor-por-dia @(Resumo.NoVermelho ? "texto-saida" : "texto-entrada")">
+        @Dinheiro.Formatar(Resumo.LivrePorDia)<small>por dia</small>
+    </div>
+
+    <p class="texto-suave texto-pequeno">@ExplicarGastoPorDia()</p>
 </div>
 
 <div class="duas-colunas">
     <div>
         <div class="painel">
             <div class="painel-cabecalho">
-                <h2>Tudo que aconteceu no mês</h2>
+                <h2>Tudo que entra e sai no mês</h2>
                 <span class="texto-suave texto-pequeno">@Resumo.Lancamentos.Count lançamentos</span>
             </div>
 
@@ -76,7 +89,7 @@
 
         <div class="painel">
             <div class="painel-cabecalho">
-                <h2>Para onde foi o dinheiro</h2>
+                <h2>Para onde vai o dinheiro</h2>
             </div>
 
             @if (Resumo.GastosPorCategoria.Count == 0)
@@ -168,10 +181,22 @@
          + $"cartão {Dinheiro.Formatar(Resumo.TotalCartoes)} · "
          + $"parcelas {Dinheiro.Formatar(Resumo.TotalParcelamentos)}";
 
-    private string DescreverSobra()
+    private string DescreverDinheiroLivre()
         => Resumo.TotalGuardado != 0
             ? $"Antes de guardar: {Dinheiro.Formatar(Resumo.SobraAntesDeGuardar)}"
             : Resumo.NoVermelho ? "Os gastos passaram do que entrou" : "Depois de pagar tudo";
+
+    private string DescreverDiasParaGastar()
+    {
+        string dias = Resumo.DiasParaGastar == 1 ? "1 dia" : $"{Resumo.DiasParaGastar} dias";
+
+        return Resumo.EhMesEmAndamento ? $"{dias} até o fim do mês" : $"{dias} no mês";
+    }
+
+    private string ExplicarGastoPorDia()
+        => Resumo.NoVermelho
+            ? "Os gastos passaram do que entrou, então não há dinheiro livre para dividir por dia."
+            : $"{Dinheiro.Formatar(Resumo.DinheiroLivre)} livres divididos por {DescreverDiasParaGastar()}.";
 
     private string DescreverGuardado()
         => Resumo.TotalGuardado != 0

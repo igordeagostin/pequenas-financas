@@ -2,9 +2,6 @@ using System.Globalization;
 
 namespace PequenasFinancas.Core.Comum;
 
-/// <summary>
-/// Mês/ano de referência dos lançamentos. É a unidade pela qual o app é dividido.
-/// </summary>
 public readonly record struct Competencia : IComparable<Competencia>
 {
     private const int PrimeiroMes = 1;
@@ -33,16 +30,16 @@ public readonly record struct Competencia : IComparable<Competencia>
 
     public int Mes { get; }
 
-    /// <summary>Competência do mês corrente — usada para abrir o app sempre no mês atual.</summary>
     public static Competencia Atual => DaData(DateTime.Today);
 
     public static Competencia DaData(DateTime data) => new(data.Year, data.Month);
 
     public DateTime PrimeiroDia => new(Ano, Mes, 1);
 
-    public DateTime UltimoDia => new(Ano, Mes, DateTime.DaysInMonth(Ano, Mes));
+    public DateTime UltimoDia => new(Ano, Mes, QuantidadeDeDias);
 
-    /// <summary>Ex.: "Julho / 2026".</summary>
+    public int QuantidadeDeDias => DateTime.DaysInMonth(Ano, Mes);
+
     public string NomeExtenso
     {
         get
@@ -52,7 +49,6 @@ public readonly record struct Competencia : IComparable<Competencia>
         }
     }
 
-    /// <summary>Ex.: "07/2026".</summary>
     public string NomeCurto => $"{Mes:D2}/{Ano}";
 
     public Competencia Adicionar(int meses)
@@ -65,7 +61,6 @@ public readonly record struct Competencia : IComparable<Competencia>
 
     public Competencia Anterior() => Adicionar(-1);
 
-    /// <summary>Quantos meses esta competência está à frente de <paramref name="referencia"/>.</summary>
     public int DiferencaEmMesesDe(Competencia referencia)
         => ((Ano - referencia.Ano) * MesesNoAno) + (Mes - referencia.Mes);
 

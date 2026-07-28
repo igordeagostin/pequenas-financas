@@ -3,27 +3,23 @@ using PequenasFinancas.Core.Modelos;
 
 namespace PequenasFinancas.Core.Servicos;
 
-/// <summary>
-/// Monta o retrato do mês: o que entra, o que sai, o que é guardado e quanto sobra.
-/// É o único lugar que calcula a sobra do mês.
-/// </summary>
 public sealed class ServicoResumo(
     ServicoRendas servicoRendas,
     ServicoRendasExtras servicoRendasExtras,
     ServicoGastosFixos servicoGastosFixos,
-    ServicoGastosAvulsos servicoGastosAvulsos,
     ServicoCartoes servicoCartoes,
     ServicoParcelas servicoParcelas,
     ServicoReservas servicoReservas)
 {
     private const string CategoriaPadrao = "Sem categoria";
 
-    public ResumoMes Calcular(Competencia competencia)
+    public ResumoMes Calcular(Competencia competencia) => Calcular(competencia, DateTime.Today);
+
+    public ResumoMes Calcular(Competencia competencia, DateTime hoje)
     {
         IReadOnlyList<FonteRenda> rendasVigentes = servicoRendas.ListarVigentes(competencia);
         IReadOnlyList<RendaExtra> rendasExtras = servicoRendasExtras.ListarDoMes(competencia);
         IReadOnlyList<GastoFixo> gastosFixosVigentes = servicoGastosFixos.ListarVigentes(competencia);
-        IReadOnlyList<GastoAvulso> gastosAvulsos = servicoGastosAvulsos.ListarDoMes(competencia);
         IReadOnlyList<ParcelaCalculada> parcelasDeCartao = servicoParcelas.ObterParcelasDeCartao(competencia);
         IReadOnlyList<ParcelaCalculada> parcelasForaDoCartao = servicoParcelas.ObterParcelasForaDoCartao(competencia);
         IReadOnlyList<SaldoReserva> saldosDeReservas = MontarSaldosDeReservas(competencia);
@@ -31,22 +27,28 @@ public sealed class ServicoResumo(
         return new ResumoMes
         {
             Competencia = competencia,
+            EhMesEmAndamento = competencia == Competencia.DaData(hoje),
+            DiasParaGastar = ContarDiasParaGastar(competencia, hoje),
             TotalRendas = rendasVigentes.Sum(renda => ServicoRecorrencia.ValorNoMes(renda, competencia)),
             TotalRendasExtras = rendasExtras.Sum(renda => renda.Valor),
             TotalGastosFixos = gastosFixosVigentes.Sum(gasto => ServicoRecorrencia.ValorNoMes(gasto, competencia)),
             TotalCartoes = parcelasDeCartao.Sum(parcela => parcela.Valor),
             TotalParcelamentos = parcelasForaDoCartao.Sum(parcela => parcela.Valor),
-            TotalGastosAvulsos = gastosAvulsos.Sum(gasto => gasto.Valor),
             TotalGuardado = saldosDeReservas.Sum(saldo => saldo.MovimentadoNoMes),
             Faturas = MontarFaturas(parcelasDeCartao),
             Lancamentos = MontarLancamentos(
                 competencia, rendasVigentes, rendasExtras, gastosFixosVigentes,
-                gastosAvulsos, parcelasDeCartao, parcelasForaDoCartao),
+                parcelasDeCartao, parcelasForaDoCartao),
             GastosPorCategoria = MontarGastosPorCategoria(
-                competencia, gastosFixosVigentes, gastosAvulsos, parcelasDeCartao, parcelasForaDoCartao),
+                competencia, gastosFixosVigentes, parcelasDeCartao, parcelasForaDoCartao),
             SaldosDeReservas = saldosDeReservas
         };
     }
+
+    private static int ContarDiasParaGastar(Competencia competencia, DateTime hoje)
+        => competencia == Competencia.DaData(hoje)
+            ? competencia.QuantidadeDeDias - hoje.Day + 1
+            : competencia.QuantidadeDeDias;
 
     private IReadOnlyList<FaturaCartao> MontarFaturas(IReadOnlyList<ParcelaCalculada> parcelasDeCartao)
         => [.. servicoCartoes.Listar()
@@ -83,7 +85,6 @@ public sealed class ServicoResumo(
         IEnumerable<FonteRenda> rendas,
         IEnumerable<RendaExtra> rendasExtras,
         IEnumerable<GastoFixo> gastosFixos,
-        IEnumerable<GastoAvulso> gastosAvulsos,
         IEnumerable<ParcelaCalculada> parcelasDeCartao,
         IEnumerable<ParcelaCalculada> parcelasForaDoCartao)
     {
@@ -139,17 +140,6 @@ public sealed class ServicoResumo(
                 EhEntrada = false,
                 Detalhe = $"Parcelado · parcela {parcela.Progresso}",
                 Categoria = parcela.Categoria
-            }),
-            .. gastosAvulsos.Select(gasto => new LancamentoDoMes
-            {
-                OrigemId = gasto.Id,
-                Origem = OrigemLancamento.GastoAvulso,
-                Descricao = gasto.Descricao,
-                Valor = gasto.Valor,
-                EhEntrada = false,
-                Detalhe = "Gasto do mês",
-                Categoria = gasto.Categoria,
-                DiaDoMes = gasto.Data.Day
             })
         ];
 
@@ -160,14 +150,12 @@ public sealed class ServicoResumo(
     private static IReadOnlyList<TotalPorCategoria> MontarGastosPorCategoria(
         Competencia competencia,
         IEnumerable<GastoFixo> gastosFixos,
-        IEnumerable<GastoAvulso> gastosAvulsos,
         IEnumerable<ParcelaCalculada> parcelasDeCartao,
         IEnumerable<ParcelaCalculada> parcelasForaDoCartao)
     {
         IEnumerable<(string Categoria, decimal Valor)> gastos =
         [
             .. gastosFixos.Select(gasto => (gasto.Categoria, ServicoRecorrencia.ValorNoMes(gasto, competencia))),
-            .. gastosAvulsos.Select(gasto => (gasto.Categoria, gasto.Valor)),
             .. parcelasDeCartao.Select(parcela => (parcela.Categoria, parcela.Valor)),
             .. parcelasForaDoCartao.Select(parcela => (parcela.Categoria, parcela.Valor))
         ];
