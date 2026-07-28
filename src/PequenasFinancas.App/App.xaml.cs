@@ -1,13 +1,62 @@
-﻿using System.Configuration;
-using System.Data;
+using System.Globalization;
 using System.Windows;
+using Microsoft.Extensions.DependencyInjection;
+using PequenasFinancas.App.Servicos;
+using PequenasFinancas.Core.Dados;
+using PequenasFinancas.Core.Servicos;
 
 namespace PequenasFinancas.App;
 
-/// <summary>
-/// Interaction logic for App.xaml
-/// </summary>
+/// <summary>Ponto de entrada do aplicativo: prepara os serviços e abre a janela principal.</summary>
 public partial class App : Application
 {
-}
+    /// <summary>Chave usada pela janela para achar os serviços do Blazor.</summary>
+    public const string ChaveDosServicos = "servicos";
 
+    private const string CulturaDoApp = "pt-BR";
+
+    protected override void OnStartup(StartupEventArgs argumentos)
+    {
+        base.OnStartup(argumentos);
+
+        AplicarCulturaBrasileira();
+        Resources.Add(ChaveDosServicos, ConstruirProvedorDeServicos());
+
+        new MainWindow().Show();
+    }
+
+    private static void AplicarCulturaBrasileira()
+    {
+        CultureInfo cultura = new(CulturaDoApp);
+
+        CultureInfo.DefaultThreadCurrentCulture = cultura;
+        CultureInfo.DefaultThreadCurrentUICulture = cultura;
+        CultureInfo.CurrentCulture = cultura;
+        CultureInfo.CurrentUICulture = cultura;
+    }
+
+    private static IServiceProvider ConstruirProvedorDeServicos()
+    {
+        ServiceCollection servicos = new();
+
+        servicos.AddWpfBlazorWebView();
+#if DEBUG
+        servicos.AddBlazorWebViewDeveloperTools();
+#endif
+
+        servicos.AddSingleton<BancoJson>();
+        servicos.AddSingleton<ServicoCartoes>();
+        servicos.AddSingleton<ServicoRendas>();
+        servicos.AddSingleton<ServicoRendasExtras>();
+        servicos.AddSingleton<ServicoGastosFixos>();
+        servicos.AddSingleton<ServicoGastosAvulsos>();
+        servicos.AddSingleton<ServicoComprasCartao>();
+        servicos.AddSingleton<ServicoParcelamentos>();
+        servicos.AddSingleton<ServicoReservas>();
+        servicos.AddSingleton<ServicoParcelas>();
+        servicos.AddSingleton<ServicoResumo>();
+        servicos.AddSingleton<EstadoAplicacao>();
+
+        return servicos.BuildServiceProvider();
+    }
+}

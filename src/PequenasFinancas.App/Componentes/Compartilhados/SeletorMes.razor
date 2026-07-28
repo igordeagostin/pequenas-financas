@@ -1,0 +1,22 @@
+@namespace PequenasFinancas.App.Componentes.Compartilhados
+@implements IDisposable
+@inject EstadoAplicacao Estado
+
+<div class="seletor-mes">
+    <button class="botao botao-icone" title="Mês anterior" @onclick="Estado.VoltarUmMes">‹</button>
+    <div class="mes-atual">@Estado.MesSelecionado.NomeExtenso</div>
+    <button class="botao botao-icone" title="Próximo mês" @onclick="Estado.AvancarUmMes">›</button>
+
+    @if (!Estado.EstaNoMesAtual)
+    {
+        <button class="botao botao-discreto" @onclick="Estado.IrParaOMesAtual">Voltar para hoje</button>
+    }
+</div>
+
+@code {
+    protected override void OnInitialized() => Estado.MesAlterado += AoTrocarDeMes;
+
+    public void Dispose() => Estado.MesAlterado -= AoTrocarDeMes;
+
+    private void AoTrocarDeMes() => InvokeAsync(StateHasChanged);
+}

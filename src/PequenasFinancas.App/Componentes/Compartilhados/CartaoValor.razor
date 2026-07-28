@@ -1,0 +1,53 @@
+@namespace PequenasFinancas.App.Componentes.Compartilhados
+
+<div class="cartao-valor @(Destaque ? "destaque" : string.Empty)">
+    <div class="rotulo"><span>@Icone</span> @Rotulo</div>
+    <div class="valor @ClasseDeCor">@Dinheiro.Formatar(Valor)</div>
+    @if (!string.IsNullOrWhiteSpace(Apoio))
+    {
+        <div class="apoio">@Apoio</div>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Rotulo { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Icone { get; set; } = "•";
+
+    [Parameter]
+    public decimal Valor { get; set; }
+
+    [Parameter]
+    public string? Apoio { get; set; }
+
+    [Parameter]
+    public bool Destaque { get; set; }
+
+    /// <summary>Pinta o valor de verde quando entra dinheiro, de vermelho quando sai.</summary>
+    [Parameter]
+    public bool? EhEntrada { get; set; }
+
+    /// <summary>Pinta conforme o valor: verde quando sobra dinheiro, vermelho quando falta.</summary>
+    [Parameter]
+    public bool ColorirPeloSinal { get; set; }
+
+    private string ClasseDeCor
+    {
+        get
+        {
+            if (ColorirPeloSinal)
+            {
+                return Valor < 0 ? "texto-saida" : "texto-entrada";
+            }
+
+            return EhEntrada switch
+            {
+                true => "texto-entrada",
+                false => "texto-saida",
+                _ => string.Empty
+            };
+        }
+    }
+}

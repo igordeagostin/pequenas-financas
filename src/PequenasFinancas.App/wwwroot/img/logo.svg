@@ -1,0 +1,46 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#14B8A6"/>
+      <stop offset="100%" stop-color="#0F766E"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" rx="120" fill="url(#bg)"/>
+
+  <!-- P -->
+  <path
+    fill="white"
+    fill-rule="evenodd"
+    d="
+      M170 110
+      C170 99 179 90 190 90
+      L245 90
+      C327 90 386 147 386 226
+      C386 305 327 362 245 362
+      L214 362
+      L214 410
+      C214 421 205 430 194 430
+      L170 430
+      Z
+
+      M214 134
+      L214 318
+      L245 318
+      C300 318 342 278 342 226
+      C342 174 300 134 245 134
+      Z
+    "/>
+
+  <!-- Growth cut -->
+  <path
+    d="M235 282 L278 246 L308 263 L344 220"
+    fill="none"
+    stroke="#0F766E"
+    stroke-width="16"
+    stroke-linecap="round"
+    stroke-linejoin="round"/>
+
+  <circle cx="344" cy="220" r="8" fill="#0F766E"/>
+</svg>

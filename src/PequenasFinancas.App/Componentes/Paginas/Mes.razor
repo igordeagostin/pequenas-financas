@@ -1,0 +1,187 @@
+@page "/"
+@namespace PequenasFinancas.App.Componentes.Paginas
+@implements IDisposable
+@inject EstadoAplicacao Estado
+@inject ServicoResumo ServicoDeResumo
+
+<CabecalhoPagina Titulo="@($"Resumo de {Estado.MesSelecionado.NomeExtenso}")"
+                 Explicacao="Quanto entrou, quanto saiu e quanto sobra no fim do mês." />
+
+<div class="grade-resumo">
+    <CartaoValor Rotulo="Entrou" Icone="↑" Valor="Resumo.TotalReceitas" EhEntrada="true"
+                 Apoio="@DescreverReceitas()" />
+
+    <CartaoValor Rotulo="Saiu" Icone="↓" Valor="Resumo.TotalGastos" EhEntrada="false"
+                 Apoio="@DescreverGastos()" />
+
+    <CartaoValor Rotulo="Sobra do mês" Icone="◎" Valor="Resumo.SobraFinal"
+                 ColorirPeloSinal="true" Destaque="true" Apoio="@DescreverSobra()" />
+
+    <CartaoValor Rotulo="Guardado até aqui" Icone="◆" Valor="Resumo.TotalGuardadoAcumulado"
+                 Apoio="@DescreverGuardado()" />
+</div>
+
+<div class="duas-colunas">
+    <div>
+        <div class="painel">
+            <div class="painel-cabecalho">
+                <h2>Tudo que aconteceu no mês</h2>
+                <span class="texto-suave texto-pequeno">@Resumo.Lancamentos.Count lançamentos</span>
+            </div>
+
+            @if (Resumo.Lancamentos.Count == 0)
+            {
+                <EstadoVazio Icone="◌" Mensagem="Nada lançado neste mês ainda.">
+                    <Acao>
+                        <a class="botao" href="rendas">Começar pela renda</a>
+                    </Acao>
+                </EstadoVazio>
+            }
+            else
+            {
+                @foreach (LancamentoDoMes lancamento in Resumo.Lancamentos)
+                {
+                    <LinhaLancamento Lancamento="lancamento" />
+                }
+            }
+        </div>
+    </div>
+
+    <div>
+        <div class="painel">
+            <div class="painel-cabecalho">
+                <h2>Faturas dos cartões</h2>
+                <span class="texto-suave texto-pequeno numero">@Dinheiro.Formatar(Resumo.TotalCartoes)</span>
+            </div>
+
+            @if (Resumo.Faturas.Count == 0)
+            {
+                <EstadoVazio Icone="▭" Mensagem="Nenhuma parcela de cartão neste mês." />
+            }
+            else
+            {
+                @foreach (FaturaCartao fatura in Resumo.Faturas)
+                {
+                    <div class="linha-lancamento">
+                        <div class="marcador" style="background: @fatura.Cor"></div>
+                        <div class="descricao">
+                            <strong>@fatura.Nome</strong>
+                            <span>vence dia @fatura.DiaVencimento · @DescreverQuantidadeDeParcelas(fatura)</span>
+                        </div>
+                        <div class="valor texto-saida">@Dinheiro.Formatar(fatura.Total)</div>
+                    </div>
+                }
+            }
+        </div>
+
+        <div class="painel">
+            <div class="painel-cabecalho">
+                <h2>Para onde foi o dinheiro</h2>
+            </div>
+
+            @if (Resumo.GastosPorCategoria.Count == 0)
+            {
+                <EstadoVazio Icone="◌" Mensagem="Nenhum gasto neste mês." />
+            }
+            else
+            {
+                @foreach (TotalPorCategoria categoria in Resumo.GastosPorCategoria)
+                {
+                    <div class="linha-categoria">
+                        <span>@categoria.Categoria</span>
+                        <span class="numero">@Dinheiro.Formatar(categoria.Total)</span>
+                        <div class="barra">
+                            <div style="@Estilos.Largura(CalcularLargura(categoria.Total))"></div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+
+        <div class="painel">
+            <div class="painel-cabecalho">
+                <h2>Dinheiro guardado</h2>
+                <a class="texto-pequeno" href="reservas">gerenciar</a>
+            </div>
+
+            @if (Resumo.SaldosDeReservas.Count == 0)
+            {
+                <EstadoVazio Icone="◆" Mensagem="Nenhuma reserva criada." />
+            }
+            else
+            {
+                @foreach (SaldoReserva reserva in Resumo.SaldosDeReservas)
+                {
+                    <div class="linha-categoria">
+                        <span>
+                            @reserva.Nome
+                            @if (reserva.MovimentadoNoMes != 0)
+                            {
+                                <span class="texto-suave texto-pequeno">
+                                    (@Dinheiro.FormatarComSinal(reserva.MovimentadoNoMes, reserva.MovimentadoNoMes > 0) neste mês)
+                                </span>
+                            }
+                        </span>
+                        <span class="numero">@Dinheiro.Formatar(reserva.Saldo)</span>
+                        @if (reserva.Objetivo > 0)
+                        {
+                            <div class="barra">
+                                <div style="@Estilos.Largura(reserva.PercentualDoObjetivo, reserva.Cor)"></div>
+                            </div>
+                        }
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private ResumoMes Resumo = default!;
+
+    protected override void OnInitialized()
+    {
+        Estado.MesAlterado += AoTrocarDeMes;
+        CalcularResumo();
+    }
+
+    public void Dispose() => Estado.MesAlterado -= AoTrocarDeMes;
+
+    private void CalcularResumo() => Resumo = ServicoDeResumo.Calcular(Estado.MesSelecionado);
+
+    private void AoTrocarDeMes()
+    {
+        CalcularResumo();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private static string DescreverQuantidadeDeParcelas(FaturaCartao fatura)
+        => fatura.Parcelas.Count == 1 ? "1 parcela" : $"{fatura.Parcelas.Count} parcelas";
+
+    private string DescreverReceitas()
+        => Resumo.TotalRendasExtras > 0
+            ? $"Inclui {Dinheiro.Formatar(Resumo.TotalRendasExtras)} de entradas extras"
+            : "Renda do mês";
+
+    private string DescreverGastos()
+        => $"Fixos {Dinheiro.Formatar(Resumo.TotalGastosFixos)} · "
+         + $"cartão {Dinheiro.Formatar(Resumo.TotalCartoes)} · "
+         + $"parcelas {Dinheiro.Formatar(Resumo.TotalParcelamentos)}";
+
+    private string DescreverSobra()
+        => Resumo.TotalGuardado != 0
+            ? $"Antes de guardar: {Dinheiro.Formatar(Resumo.SobraAntesDeGuardar)}"
+            : Resumo.NoVermelho ? "Os gastos passaram do que entrou" : "Depois de pagar tudo";
+
+    private string DescreverGuardado()
+        => Resumo.TotalGuardado != 0
+            ? $"{Dinheiro.FormatarComSinal(Resumo.TotalGuardado, Resumo.TotalGuardado > 0)} neste mês"
+            : "Nada guardado neste mês";
+
+    private decimal CalcularLargura(decimal valor)
+    {
+        decimal maiorGasto = Resumo.GastosPorCategoria.Max(categoria => categoria.Total);
+
+        return maiorGasto <= 0 ? 0 : Math.Round(valor / maiorGasto * 100, 1);
+    }
+}

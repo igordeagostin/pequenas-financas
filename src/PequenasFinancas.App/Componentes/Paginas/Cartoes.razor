@@ -1,0 +1,139 @@
+@page "/cartoes"
+@namespace PequenasFinancas.App.Componentes.Paginas
+@inherits PaginaCadastro<Cartao>
+@inject ServicoCartoes ServicoDeCartoes
+@inject ServicoComprasCartao ServicoDeCompras
+
+<CabecalhoPagina Titulo="Cartões"
+                 Explicacao="Cadastre seus cartões de crédito para lançar as compras neles.">
+    <Acoes>
+        <button class="botao" @onclick="AbrirNovo">+ Novo cartão</button>
+    </Acoes>
+</CabecalhoPagina>
+
+<div class="painel">
+    @if (Itens.Count == 0)
+    {
+        <EstadoVazio Icone="▭" Mensagem="Você ainda não cadastrou nenhum cartão.">
+            <Acao>
+                <button class="botao" @onclick="AbrirNovo">Cadastrar meu primeiro cartão</button>
+            </Acao>
+        </EstadoVazio>
+    }
+    else
+    {
+        <table class="tabela">
+            <thead>
+                <tr>
+                    <th>Cartão</th>
+                    <th>Fecha / vence</th>
+                    <th class="direita">Limite</th>
+                    <th class="direita">Falta pagar</th>
+                    <th class="direita">Neste mês</th>
+                    <th class="acoes"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Cartao cartao in Itens)
+                {
+                    <tr>
+                        <td>
+                            <span class="etiqueta etiqueta-cartao" style="background: @cartao.Cor">@cartao.Nome</span>
+                            @if (!string.IsNullOrWhiteSpace(cartao.Bandeira))
+                            {
+                                <span class="texto-suave texto-pequeno"> @cartao.Bandeira</span>
+                            }
+                            @if (!cartao.Ativo)
+                            {
+                                <span class="etiqueta">Sem uso</span>
+                            }
+                        </td>
+                        <td class="texto-suave">dia @cartao.DiaFechamento / dia @cartao.DiaVencimento</td>
+                        <td class="direita numero">@Dinheiro.Formatar(cartao.Limite)</td>
+                        <td class="direita numero">@Dinheiro.Formatar(CalcularFaltaPagar(cartao))</td>
+                        <td class="direita numero">@Dinheiro.Formatar(CalcularTotalDoMes(cartao))</td>
+                        <td class="acoes">
+                            <button class="botao botao-secundario" @onclick="() => AbrirEdicao(cartao)">Editar</button>
+                            <button class="botao botao-perigo" @onclick="() => PedirExclusao(cartao)">Excluir</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+<ModalFormulario Visivel="FormularioAberto"
+                 Titulo="@(EhCadastroNovo ? "Novo cartão" : "Editar cartão")"
+                 Erro="@MensagemDeErro"
+                 AoConfirmar="ConfirmarFormulario"
+                 AoCancelar="FecharFormulario">
+    @if (ItemEmEdicao is Cartao cartao)
+    {
+        <div class="campo">
+            <label>Nome do cartão</label>
+            <input type="text" placeholder="Ex.: Nubank" @bind="cartao.Nome" @bind:event="oninput" />
+        </div>
+
+        <div class="linha-campos">
+            <div class="campo">
+                <label>Bandeira</label>
+                <input type="text" placeholder="Ex.: Mastercard" @bind="cartao.Bandeira" @bind:event="oninput" />
+            </div>
+
+            <CampoMoeda Rotulo="Limite" @bind-Valor="cartao.Limite" />
+        </div>
+
+        <div class="linha-campos">
+            <div class="campo">
+                <label>Dia em que a fatura fecha</label>
+                <input type="number" min="1" max="31" @bind="cartao.DiaFechamento" @bind:event="oninput" />
+            </div>
+
+            <div class="campo">
+                <label>Dia do vencimento</label>
+                <input type="number" min="1" max="31" @bind="cartao.DiaVencimento" @bind:event="oninput" />
+            </div>
+
+            <div class="campo">
+                <label>Cor</label>
+                <input type="color" @bind="cartao.Cor" @bind:event="oninput" />
+            </div>
+        </div>
+
+        <div class="campo">
+            <label>
+                <input type="checkbox" style="width:auto" @bind="cartao.Ativo" />
+                Ainda uso este cartão
+            </label>
+        </div>
+    }
+</ModalFormulario>
+
+<ModalConfirmacao Visivel="ItemParaExcluir is not null"
+                  Descricao="@(ItemParaExcluir is null ? string.Empty : DescreverParaExclusao(ItemParaExcluir))"
+                  AoConfirmar="ConfirmarExclusao"
+                  AoCancelar="CancelarExclusao" />
+
+@code {
+    protected override ServicoCrud<Cartao> Servico => ServicoDeCartoes;
+
+    protected override string? Conferir(Cartao cartao)
+        => Validacoes.Primeira(
+            Validacoes.Nome(cartao.Nome),
+            Validacoes.DiaDoMes(cartao.DiaFechamento),
+            Validacoes.DiaDoMes(cartao.DiaVencimento));
+
+    protected override string DescreverParaExclusao(Cartao cartao) => $"o cartão {cartao.Nome}";
+
+    private decimal CalcularFaltaPagar(Cartao cartao)
+        => ServicoDeCompras.CalcularSaldoDevedor(cartao.Id, MesSelecionado);
+
+    private decimal CalcularTotalDoMes(Cartao cartao)
+        => ServicoDeCompras.ListarDoCartao(cartao.Id)
+            .Where(compra => DescritorParcelamento.CaiNoMes(compra, MesSelecionado))
+            .Sum(compra => RateioParcelas.CalcularParcela(
+                compra.ValorTotal,
+                compra.QuantidadeParcelas,
+                MesSelecionado.DiferencaEmMesesDe(compra.CompetenciaPrimeiraParcela) + 1));
+}

@@ -1,0 +1,27 @@
+@namespace PequenasFinancas.App.Componentes.Layout
+@inherits LayoutComponentBase
+@implements IDisposable
+@inject EstadoAplicacao Estado
+
+<div class="aplicacao">
+    <MenuNavegacao />
+
+    <div class="conteudo">
+        <header class="topo">
+            <SeletorMes />
+            <span class="texto-suave texto-pequeno">Dados salvos no seu computador</span>
+        </header>
+
+        <main class="area-rolavel">
+            @Body
+        </main>
+    </div>
+</div>
+
+@code {
+    protected override void OnInitialized() => Estado.MesAlterado += AoTrocarDeMes;
+
+    public void Dispose() => Estado.MesAlterado -= AoTrocarDeMes;
+
+    private void AoTrocarDeMes() => InvokeAsync(StateHasChanged);
+}

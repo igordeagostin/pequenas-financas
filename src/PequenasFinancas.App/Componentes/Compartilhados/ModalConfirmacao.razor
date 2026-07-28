@@ -1,0 +1,24 @@
+@namespace PequenasFinancas.App.Componentes.Compartilhados
+
+<ModalFormulario Visivel="Visivel"
+                 Titulo="Confirmar exclusão"
+                 TextoDoBotao="Excluir"
+                 AoConfirmar="AoConfirmar"
+                 AoCancelar="AoCancelar">
+    <p>Quer mesmo excluir <strong>@Descricao</strong>?</p>
+    <p class="texto-suave">Depois de excluir não dá para voltar atrás.</p>
+</ModalFormulario>
+
+@code {
+    [Parameter]
+    public bool Visivel { get; set; }
+
+    [Parameter]
+    public string Descricao { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback AoConfirmar { get; set; }
+
+    [Parameter]
+    public EventCallback AoCancelar { get; set; }
+}

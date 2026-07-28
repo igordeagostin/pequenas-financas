@@ -1,0 +1,16 @@
+@namespace PequenasFinancas.App.Componentes
+
+<Router AppAssembly="@typeof(Rotas).Assembly">
+    <Found Context="rota">
+        <RouteView RouteData="@rota" DefaultLayout="@typeof(LayoutPrincipal)" />
+        <FocusOnNavigate RouteData="@rota" Selector="h1" />
+    </Found>
+    <NotFound>
+        <LayoutView Layout="@typeof(LayoutPrincipal)">
+            <div class="painel">
+                <h1>Página não encontrada</h1>
+                <p class="texto-suave">Use o menu ao lado para voltar ao resumo do mês.</p>
+            </div>
+        </LayoutView>
+    </NotFound>
+</Router>

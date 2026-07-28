@@ -1,0 +1,250 @@
+@page "/reservas"
+@namespace PequenasFinancas.App.Componentes.Paginas
+@inherits PaginaCadastro<Reserva>
+@inject ServicoReservas ServicoDeReservas
+
+<CabecalhoPagina Titulo="Dinheiro guardado"
+                 Explicacao="Crie lugares para separar dinheiro e registre quanto guardou em cada mês.">
+    <Acoes>
+        <button class="botao" @onclick="AbrirNovo">+ Novo lugar para guardar</button>
+    </Acoes>
+</CabecalhoPagina>
+
+<div class="grade-resumo">
+    <CartaoValor Rotulo="Total guardado" Icone="◆" Valor="TotalGuardado"
+                 Apoio="@($"Até {MesSelecionado.NomeExtenso}")" Destaque="true" />
+    <CartaoValor Rotulo="Guardado neste mês" Icone="↑" Valor="GuardadoNoMes" EhEntrada="true"
+                 Apoio="Depósitos menos resgates do mês" />
+</div>
+
+@if (Itens.Count == 0)
+{
+    <div class="painel">
+        <EstadoVazio Icone="◆" Mensagem="Você ainda não tem nenhum lugar para guardar dinheiro.">
+            <Acao>
+                <button class="botao" @onclick="AbrirNovo">Criar minha reserva</button>
+            </Acao>
+        </EstadoVazio>
+    </div>
+}
+else
+{
+    @foreach (Reserva reserva in Itens)
+    {
+        decimal saldo = ServicoReservas.CalcularSaldo(reserva, MesSelecionado);
+        decimal noMes = ServicoReservas.CalcularMovimentadoNoMes(reserva, MesSelecionado);
+
+        <div class="painel">
+            <div class="painel-cabecalho">
+                <div>
+                    <h2>
+                        <span class="etiqueta etiqueta-cartao" style="background: @reserva.Cor">@reserva.Nome</span>
+                    </h2>
+                    <div class="texto-suave texto-pequeno">
+                        Guardado: <strong class="numero">@Dinheiro.Formatar(saldo)</strong>
+                        @if (reserva.Objetivo > 0)
+                        {
+                            <text> de @Dinheiro.Formatar(reserva.Objetivo)</text>
+                        }
+                        @if (noMes != 0)
+                        {
+                            <text> · neste mês @Dinheiro.FormatarComSinal(noMes, noMes > 0)</text>
+                        }
+                    </div>
+                </div>
+
+                <div>
+                    <button class="botao" @onclick="() => AbrirDeposito(reserva)">Guardar dinheiro</button>
+                    <button class="botao botao-secundario" @onclick="() => AbrirResgate(reserva)">Resgatar</button>
+                    <button class="botao botao-secundario" @onclick="() => AlternarMovimentos(reserva)">
+                        @(ReservaAberta == reserva.Id ? "Ocultar" : "Ver") movimentos
+                    </button>
+                    <button class="botao botao-secundario" @onclick="() => AbrirEdicao(reserva)">Editar</button>
+                    <button class="botao botao-perigo" @onclick="() => PedirExclusao(reserva)">Excluir</button>
+                </div>
+            </div>
+
+            @if (reserva.Objetivo > 0)
+            {
+                <div class="barra">
+                    <div style="@Estilos.Largura(CalcularPercentual(saldo, reserva.Objetivo), reserva.Cor)"></div>
+                </div>
+            }
+
+            @if (ReservaAberta == reserva.Id)
+            {
+                IReadOnlyList<MovimentoReserva> movimentos = ServicoDeReservas.ListarMovimentos(reserva.Id);
+
+                @if (movimentos.Count == 0)
+                {
+                    <EstadoVazio Icone="◌" Mensagem="Nenhum movimento registrado nesta reserva." />
+                }
+                else
+                {
+                    <table class="tabela">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Movimento</th>
+                                <th>Observação</th>
+                                <th class="direita">Valor</th>
+                                <th class="acoes"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (MovimentoReserva movimento in movimentos)
+                            {
+                                bool ehDeposito = movimento.Tipo == TipoMovimentoReserva.Deposito;
+
+                                <tr>
+                                    <td class="texto-suave">@movimento.Data.ToString("dd/MM/yyyy")</td>
+                                    <td>@(ehDeposito ? "Guardou" : "Resgatou")</td>
+                                    <td class="texto-suave">@movimento.Observacao</td>
+                                    <td class="direita numero @(ehDeposito ? "texto-entrada" : "texto-saida")">
+                                        @Dinheiro.FormatarComSinal(movimento.Valor, ehDeposito)
+                                    </td>
+                                    <td class="acoes">
+                                        <button class="botao botao-perigo"
+                                                @onclick="() => ExcluirMovimento(reserva, movimento)">
+                                            Excluir
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            }
+        </div>
+    }
+}
+
+<ModalFormulario Visivel="FormularioAberto"
+                 Titulo="@(EhCadastroNovo ? "Novo lugar para guardar" : "Editar reserva")"
+                 Erro="@MensagemDeErro"
+                 AoConfirmar="ConfirmarFormulario"
+                 AoCancelar="FecharFormulario">
+    @if (ItemEmEdicao is Reserva reserva)
+    {
+        <div class="campo">
+            <label>Nome</label>
+            <input type="text" placeholder="Ex.: Reserva de emergência" @bind="reserva.Nome" @bind:event="oninput" />
+        </div>
+
+        <div class="linha-campos">
+            <CampoMoeda Rotulo="Quanto quer juntar (opcional)" @bind-Valor="reserva.Objetivo"
+                        Ajuda="Deixe zero se não tem uma meta." />
+
+            <div class="campo">
+                <label>Cor</label>
+                <input type="color" @bind="reserva.Cor" @bind:event="oninput" />
+            </div>
+        </div>
+    }
+</ModalFormulario>
+
+<ModalFormulario Visivel="MovimentoEmEdicao is not null"
+                 Titulo="@TituloDoMovimento"
+                 Erro="@ErroDoMovimento"
+                 AoConfirmar="ConfirmarMovimento"
+                 AoCancelar="FecharMovimento">
+    @if (MovimentoEmEdicao is MovimentoReserva movimento)
+    {
+        <div class="linha-campos">
+            <CampoMoeda Rotulo="Valor" @bind-Valor="movimento.Valor" />
+
+            <div class="campo">
+                <label>Data</label>
+                <input type="date" @bind="movimento.Data" @bind:event="oninput" />
+            </div>
+        </div>
+
+        <div class="campo">
+            <label>Observação (opcional)</label>
+            <input type="text" placeholder="Ex.: sobra do mês" @bind="movimento.Observacao" @bind:event="oninput" />
+        </div>
+    }
+</ModalFormulario>
+
+<ModalConfirmacao Visivel="ItemParaExcluir is not null"
+                  Descricao="@(ItemParaExcluir is null ? string.Empty : DescreverParaExclusao(ItemParaExcluir))"
+                  AoConfirmar="ConfirmarExclusao"
+                  AoCancelar="CancelarExclusao" />
+
+@code {
+    private const decimal PercentualMaximo = 100m;
+
+    private Guid? ReservaAberta;
+    private Guid ReservaDoMovimento;
+    private MovimentoReserva? MovimentoEmEdicao;
+    private string? ErroDoMovimento;
+
+    protected override ServicoCrud<Reserva> Servico => ServicoDeReservas;
+
+    protected override string? Conferir(Reserva reserva) => Validacoes.Nome(reserva.Nome);
+
+    protected override string DescreverParaExclusao(Reserva reserva)
+        => $"a reserva {reserva.Nome} e todos os seus movimentos";
+
+    private decimal TotalGuardado => ServicoDeReservas.CalcularSaldoTotal(MesSelecionado);
+
+    private decimal GuardadoNoMes
+        => Itens.Sum(reserva => ServicoReservas.CalcularMovimentadoNoMes(reserva, MesSelecionado));
+
+    private string TituloDoMovimento
+        => MovimentoEmEdicao?.Tipo == TipoMovimentoReserva.Resgate ? "Resgatar dinheiro" : "Guardar dinheiro";
+
+    private static decimal CalcularPercentual(decimal saldo, decimal objetivo)
+        => objetivo <= 0 ? 0 : Math.Min(PercentualMaximo, Math.Round(saldo / objetivo * PercentualMaximo, 1));
+
+    private void AlternarMovimentos(Reserva reserva)
+        => ReservaAberta = ReservaAberta == reserva.Id ? null : reserva.Id;
+
+    private void AbrirDeposito(Reserva reserva) => AbrirMovimento(reserva, TipoMovimentoReserva.Deposito);
+
+    private void AbrirResgate(Reserva reserva) => AbrirMovimento(reserva, TipoMovimentoReserva.Resgate);
+
+    private void AbrirMovimento(Reserva reserva, TipoMovimentoReserva tipo)
+    {
+        ErroDoMovimento = null;
+        ReservaDoMovimento = reserva.Id;
+        MovimentoEmEdicao = new MovimentoReserva
+        {
+            Tipo = tipo,
+            Competencia = MesSelecionado,
+            Data = MesSelecionado.PrimeiroDia
+        };
+    }
+
+    private void FecharMovimento()
+    {
+        MovimentoEmEdicao = null;
+        ErroDoMovimento = null;
+    }
+
+    private void ConfirmarMovimento()
+    {
+        if (MovimentoEmEdicao is null)
+        {
+            return;
+        }
+
+        ErroDoMovimento = Validacoes.ValorPositivo(MovimentoEmEdicao.Valor);
+
+        if (ErroDoMovimento is not null)
+        {
+            return;
+        }
+
+        MovimentoEmEdicao.Competencia = Competencia.DaData(MovimentoEmEdicao.Data);
+        ServicoDeReservas.RegistrarMovimento(ReservaDoMovimento, MovimentoEmEdicao);
+        MovimentoEmEdicao = null;
+        Recarregar();
+    }
+
+    private void ExcluirMovimento(Reserva reserva, MovimentoReserva movimento)
+    {
+        ServicoDeReservas.ExcluirMovimento(reserva.Id, movimento.Id);
+        Recarregar();
+    }
+}

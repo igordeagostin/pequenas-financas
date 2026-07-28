@@ -1,0 +1,50 @@
+@namespace PequenasFinancas.App.Componentes.Compartilhados
+
+@if (Visivel)
+{
+    <div class="fundo-modal" @onclick="AoCancelar">
+        <div class="modal" @onclick:stopPropagation="true">
+            <div class="modal-cabecalho">
+                <h2>@Titulo</h2>
+                <button class="botao botao-icone" title="Fechar" @onclick="AoCancelar">×</button>
+            </div>
+
+            <div class="modal-corpo">
+                @if (!string.IsNullOrWhiteSpace(Erro))
+                {
+                    <div class="aviso-erro">@Erro</div>
+                }
+
+                @ChildContent
+            </div>
+
+            <div class="modal-rodape">
+                <button class="botao botao-secundario" @onclick="AoCancelar">Cancelar</button>
+                <button class="botao" @onclick="AoConfirmar">@TextoDoBotao</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public bool Visivel { get; set; }
+
+    [Parameter, EditorRequired]
+    public string Titulo { get; set; } = string.Empty;
+
+    [Parameter]
+    public string TextoDoBotao { get; set; } = "Salvar";
+
+    [Parameter]
+    public string? Erro { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public EventCallback AoConfirmar { get; set; }
+
+    [Parameter]
+    public EventCallback AoCancelar { get; set; }
+}

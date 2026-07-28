@@ -1,0 +1,27 @@
+@namespace PequenasFinancas.App.Componentes.Compartilhados
+
+<div class="cabecalho-pagina">
+    <div>
+        <h1>@Titulo</h1>
+        @if (!string.IsNullOrWhiteSpace(Explicacao))
+        {
+            <p>@Explicacao</p>
+        }
+    </div>
+
+    @if (Acoes is not null)
+    {
+        <div>@Acoes</div>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Titulo { get; set; } = string.Empty;
+
+    [Parameter]
+    public string? Explicacao { get; set; }
+
+    [Parameter]
+    public RenderFragment? Acoes { get; set; }
+}

@@ -1,0 +1,31 @@
+@namespace PequenasFinancas.App.Componentes.Compartilhados
+
+<div class="linha-lancamento">
+    <div class="marcador" style="background: @Cor"></div>
+
+    <div class="descricao">
+        <strong>@Lancamento.Descricao</strong>
+        <span>@Detalhe</span>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Lancamento.Categoria))
+    {
+        <span class="etiqueta">@Lancamento.Categoria</span>
+    }
+
+    <div class="valor @(Lancamento.EhEntrada ? "texto-entrada" : "texto-saida")">
+        @Dinheiro.FormatarComSinal(Lancamento.Valor, Lancamento.EhEntrada)
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public LancamentoDoMes Lancamento { get; set; } = default!;
+
+    private string Cor => Lancamento.EhEntrada ? "var(--success)" : "var(--error)";
+
+    private string Detalhe
+        => Lancamento.DiaDoMes is int dia
+            ? $"{Lancamento.Detalhe} · dia {dia}"
+            : Lancamento.Detalhe;
+}

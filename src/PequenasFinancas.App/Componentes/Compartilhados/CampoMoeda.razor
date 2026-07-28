@@ -1,0 +1,34 @@
+@namespace PequenasFinancas.App.Componentes.Compartilhados
+
+<div class="campo">
+    <label>@Rotulo</label>
+    <input type="number" step="0.01" min="0" placeholder="0,00" @bind="ValorInterno" @bind:event="oninput" />
+    @if (!string.IsNullOrWhiteSpace(Ajuda))
+    {
+        <div class="ajuda">@Ajuda</div>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Rotulo { get; set; } = string.Empty;
+
+    [Parameter]
+    public string? Ajuda { get; set; }
+
+    [Parameter]
+    public decimal Valor { get; set; }
+
+    [Parameter]
+    public EventCallback<decimal> ValorChanged { get; set; }
+
+    private decimal ValorInterno
+    {
+        get => Valor;
+        set
+        {
+            Valor = value;
+            ValorChanged.InvokeAsync(value);
+        }
+    }
+}

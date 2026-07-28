@@ -1,0 +1,37 @@
+@namespace PequenasFinancas.App.Componentes.Compartilhados
+
+<div class="campo">
+    <label>@Rotulo</label>
+    <input type="month" value="@TextoDoMes" @onchange="AoMudarOMes" />
+    @if (!string.IsNullOrWhiteSpace(Ajuda))
+    {
+        <div class="ajuda">@Ajuda</div>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Rotulo { get; set; } = string.Empty;
+
+    [Parameter]
+    public string? Ajuda { get; set; }
+
+    [Parameter]
+    public Competencia? Valor { get; set; }
+
+    [Parameter]
+    public EventCallback<Competencia?> ValorChanged { get; set; }
+
+    private string TextoDoMes => Valor?.ToString() ?? string.Empty;
+
+    private Task AoMudarOMes(ChangeEventArgs evento)
+    {
+        Competencia? mesEscolhido = Competencia.TentarAnalisar(evento.Value?.ToString(), out Competencia competencia)
+            ? competencia
+            : null;
+
+        Valor = mesEscolhido;
+
+        return ValorChanged.InvokeAsync(mesEscolhido);
+    }
+}

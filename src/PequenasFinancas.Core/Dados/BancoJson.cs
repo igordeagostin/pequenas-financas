@@ -1,7 +1,4 @@
-using System.Text.Encodings.Web;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using PequenasFinancas.Core.Comum;
 using PequenasFinancas.Core.Modelos;
 
 namespace PequenasFinancas.Core.Dados;
@@ -16,8 +13,6 @@ public sealed class BancoJson
     private const string NomeDaPastaDeBackups = "backups";
     private const string ExtensaoTemporaria = ".tmp";
     private const int QuantidadeDeBackupsMantidos = 10;
-
-    private static readonly JsonSerializerOptions OpcoesDeSerializacao = CriarOpcoes();
 
     private readonly Lock _travaDeGravacao = new();
     private BancoDados _dados = new();
@@ -83,7 +78,7 @@ public sealed class BancoJson
             GerarBackup();
 
             string caminhoTemporario = CaminhoDoArquivo + ExtensaoTemporaria;
-            File.WriteAllText(caminhoTemporario, JsonSerializer.Serialize(_dados, OpcoesDeSerializacao));
+            File.WriteAllText(caminhoTemporario, JsonSerializer.Serialize(_dados, OpcoesJson.Padrao));
             File.Move(caminhoTemporario, CaminhoDoArquivo, overwrite: true);
         }
 
@@ -99,7 +94,7 @@ public sealed class BancoJson
             return new BancoDados();
         }
 
-        return JsonSerializer.Deserialize<BancoDados>(conteudo, OpcoesDeSerializacao) ?? new BancoDados();
+        return JsonSerializer.Deserialize<BancoDados>(conteudo, OpcoesJson.Padrao) ?? new BancoDados();
     }
 
     private void GarantirPasta()
@@ -134,22 +129,5 @@ public sealed class BancoJson
         {
             backup.Delete();
         }
-    }
-
-    private static JsonSerializerOptions CriarOpcoes()
-    {
-        JsonSerializerOptions opcoes = new()
-        {
-            WriteIndented = true,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
-            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        };
-
-        opcoes.Converters.Add(new ConversorCompetenciaJson());
-        opcoes.Converters.Add(new JsonStringEnumConverter());
-
-        return opcoes;
     }
 }
