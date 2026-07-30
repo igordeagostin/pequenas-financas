@@ -53,6 +53,7 @@ public partial class App : Application
         servicos.AddSingleton<ServicoRendasExtras>();
         servicos.AddSingleton<ServicoContas>();
         servicos.AddSingleton<ServicoComprasCartao>();
+        servicos.AddSingleton<ServicoImportacaoFatura>();
         servicos.AddSingleton<ServicoReservas>();
         servicos.AddSingleton<ServicoPagamentos>();
         servicos.AddSingleton<ServicoParcelas>();

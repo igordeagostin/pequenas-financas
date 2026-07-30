@@ -17,7 +17,7 @@
 <CampoMoeda Rotulo="@RotuloDoValor" Valor="ValorInformado" ValorChanged="AoInformarValor" />
 
 @code {
-    private const int MaximoDeParcelas = 120;
+    public const int MaximoDeParcelas = 120;
 
     [Parameter, EditorRequired]
     public IParcelado Parcelado { get; set; } = default!;

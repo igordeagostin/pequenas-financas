@@ -474,6 +474,10 @@ Aqui é onde você lança o que comprou no crédito.
 
 Você lança a compra **uma vez** e o app espalha as parcelas pelos meses sozinho.
 
+Dá para lançar de duas formas: uma compra por vez, no botão **+ Nova compra**, ou a
+fatura inteira de uma vez, no botão **Importar fatura**. Veja **Importar a fatura do
+cartão** mais abaixo.
+
 1. Clique em **+ Nova compra**.
 2. Escreva o que você comprou.
 3. Escolha o cartão usado.
@@ -526,6 +530,77 @@ A lista mostra:
 
 Marque a caixa **mostrar só o que cai em…** para ver apenas as compras que pesam no
 mês escolhido.
+
+### Importar a fatura do cartão
+
+Em vez de digitar compra por compra, você pode trazer a fatura inteira de uma vez.
+
+> Por enquanto a importação entende **somente o arquivo CSV da fatura do Nubank**.
+> Fatura de outro banco ainda não funciona.
+
+**1. Baixar o arquivo**
+
+1. Abra a fatura no aplicativo do Nubank.
+2. Toque em compartilhar e salve o arquivo que termina em `.csv`.
+3. Guarde o arquivo em uma pasta que você ache fácil (a área de trabalho serve).
+
+**2. Escolher o arquivo no app**
+
+1. Vá em **Compras no cartão**.
+2. Clique em **Importar fatura**.
+3. Clique no campo do arquivo e escolha o `.csv` que você baixou.
+
+Se o arquivo não for o CSV da fatura do Nubank, o app avisa e não importa nada.
+
+**3. Conferir antes de salvar**
+
+Depois de escolher o arquivo, o app mostra uma lista com o que encontrou. Nada é salvo
+até você clicar no botão de importar.
+
+Nessa tela você:
+
+- escolhe o **cartão** que recebeu essa fatura;
+- escolhe o **mês em que a fatura pesa**, que é o mês em que você paga ela. O app já
+  tenta adivinhar pelo nome do arquivo (`Nubank_2026-08-09.csv` vira `08/2026`);
+- **desmarca** a caixinha do que você não quer trazer;
+- muda o **número de parcelas** de qualquer linha;
+- muda o **valor da parcela** de qualquer linha.
+
+Os botões **Marcar todas** e **Desmarcar todas** ajudam quando você quer trazer só
+algumas compras.
+
+Cada linha mostra o total da compra e o mês da primeira parcela, e os dois se atualizam
+na hora quando você mexe no valor ou no número de parcelas.
+
+**4. Importar**
+
+Clique em **Importar N compras**. As compras marcadas viram compras no cartão e você
+volta para a lista, onde pode editar ou excluir qualquer uma delas.
+
+### O que o app faz sozinho com a fatura
+
+- **Pagamento e desconto ficam de fora.** Linhas com valor negativo (como
+  `Pagamento recebido` e `Desconto Antecipação`) não são compras, então nem aparecem na lista.
+- **Compra à vista vira 1 parcela.** Uma compra de R$ 19,90 sem parcelamento entra como
+  1 parcela de R$ 19,90 no mês da fatura.
+- **Compra parcelada já vem com o número certo de parcelas.** A linha
+  `Loja do Bairro - Parcela 3/12` vira uma compra de 12 parcelas de R$ 76,30, ou seja,
+  R$ 915,60 no total.
+- **A primeira parcela volta no tempo.** Se a fatura pesa em `08/2026` e a linha diz
+  `Parcela 3/12`, a primeira parcela foi em `06/2026`. O app já grava assim, então as
+  parcelas que faltam caem nos meses certos daqui para a frente.
+- **Parcela adiantada não vira compra repetida.** Quando você antecipa parcelas, a mesma
+  compra aparece várias vezes na fatura (`Parcela 3/10`, `Parcela 4/10`, `Parcela 5/10`).
+  O app junta tudo em uma linha só, usando a parcela mais antiga.
+- **Compras iguais em dias diferentes continuam separadas.** Três almoços de R$ 50 no
+  mesmo restaurante, em dias diferentes, viram três compras.
+
+Uma coisa que o app **não** faz: conferir se você já importou aquela fatura antes. Se
+importar o mesmo arquivo duas vezes, as compras aparecem em dobro. Nesse caso, apague as
+repetidas na lista de compras.
+
+As compras importadas entram **sem categoria**. Se quiser, edite depois cada compra e
+escolha a categoria.
 
 ---
 

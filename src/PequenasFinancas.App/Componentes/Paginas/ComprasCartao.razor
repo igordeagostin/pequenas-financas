@@ -7,9 +7,17 @@
 <CabecalhoPagina Titulo="Compras no cartão"
                  Explicacao="Lance a compra uma vez e as parcelas aparecem sozinhas em cada mês.">
     <Acoes>
-        <button class="botao" @onclick="AbrirNovo" disabled="@(CartoesDisponiveis.Count == 0)">
-            <Icone Nome="NomeIcone.Adicionar" /> Nova compra
-        </button>
+        <div class="acoes-em-linha">
+            @if (CartoesDisponiveis.Count > 0)
+            {
+                <a class="botao botao-secundario" href="compras/importar">
+                    <Icone Nome="NomeIcone.Importar" /> Importar fatura
+                </a>
+            }
+            <button class="botao" @onclick="AbrirNovo" disabled="@(CartoesDisponiveis.Count == 0)">
+                <Icone Nome="NomeIcone.Adicionar" /> Nova compra
+            </button>
+        </div>
     </Acoes>
 </CabecalhoPagina>
 

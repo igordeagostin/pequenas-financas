@@ -16,17 +16,23 @@ public abstract class ServicoCrud<T>(BancoJson banco)
 
     public void Salvar(T item)
     {
-        AntesDeSalvar(item);
+        Guardar(item);
 
-        int indiceExistente = Colecao.FindIndex(existente => existente.Id == item.Id);
+        Banco.Salvar();
+    }
 
-        if (indiceExistente >= 0)
+    public void SalvarVarios(IEnumerable<T> itens)
+    {
+        List<T> itensParaGuardar = [.. itens];
+
+        if (itensParaGuardar.Count == 0)
         {
-            Colecao[indiceExistente] = item;
+            return;
         }
-        else
+
+        foreach (T item in itensParaGuardar)
         {
-            Colecao.Add(item);
+            Guardar(item);
         }
 
         Banco.Salvar();
@@ -53,4 +59,20 @@ public abstract class ServicoCrud<T>(BancoJson banco)
     }
 
     protected virtual IEnumerable<T> Ordenar(IEnumerable<T> itens) => itens;
+
+    private void Guardar(T item)
+    {
+        AntesDeSalvar(item);
+
+        int indiceExistente = Colecao.FindIndex(existente => existente.Id == item.Id);
+
+        if (indiceExistente >= 0)
+        {
+            Colecao[indiceExistente] = item;
+        }
+        else
+        {
+            Colecao.Add(item);
+        }
+    }
 }

@@ -1,0 +1,278 @@
+@page "/compras/importar"
+@namespace PequenasFinancas.App.Componentes.Paginas
+@using System.IO
+@using System.Text
+@inject ServicoCartoes ServicoDeCartoes
+@inject ServicoImportacaoFatura ServicoDeImportacao
+@inject EstadoAplicacao Estado
+@inject NavigationManager Navegacao
+
+<CabecalhoPagina Titulo="Importar fatura"
+                 Explicacao="Traga as compras da fatura do cartão de uma vez, sem digitar uma por uma.">
+    <Acoes>
+        <a class="botao botao-secundario" href="compras">Voltar para compras</a>
+    </Acoes>
+</CabecalhoPagina>
+
+@if (CartoesDisponiveis.Count == 0)
+{
+    <div class="painel">
+        <EstadoVazio Simbolo="NomeIcone.Cartao" Mensagem="Cadastre um cartão antes de importar uma fatura.">
+            <Acao>
+                <a class="botao" href="cartoes">Ir para cartões</a>
+            </Acao>
+        </EstadoVazio>
+    </div>
+}
+else
+{
+    <div class="painel">
+        <div class="painel-cabecalho">
+            <div>
+                <h2>1. Escolha o arquivo da fatura</h2>
+                <p class="texto-suave texto-pequeno">
+                    Por enquanto a importação entende <strong>somente o arquivo CSV da fatura do Nubank</strong>.
+                    Fatura de outro banco ainda não funciona aqui.
+                </p>
+            </div>
+        </div>
+
+        <div class="campo">
+            <label>Arquivo da fatura</label>
+            <InputFile accept=".csv" OnChange="AoEscolherArquivo" />
+            <div class="ajuda">@AjudaDoArquivo</div>
+        </div>
+
+        @if (ErroDoArquivo is not null)
+        {
+            <div class="aviso-erro">@ErroDoArquivo</div>
+        }
+    </div>
+
+    @if (ComprasDaFatura.Count > 0)
+    {
+        <div class="painel">
+            <div class="painel-cabecalho">
+                <div>
+                    <h2>2. Confira as compras</h2>
+                    <p class="texto-suave texto-pequeno">@ResumoDaSelecao</p>
+                </div>
+                <div class="acoes-em-linha">
+                    <button class="botao botao-secundario" @onclick="MarcarTodas">Marcar todas</button>
+                    <button class="botao botao-secundario" @onclick="DesmarcarTodas">Desmarcar todas</button>
+                </div>
+            </div>
+
+            <div class="linha-campos">
+                <div class="campo">
+                    <label>Cartão que recebeu esta fatura</label>
+                    <select @bind="CartaoEscolhido">
+                        @foreach (Cartao cartao in CartoesDisponiveis)
+                        {
+                            <option value="@cartao.Id">@cartao.Nome</option>
+                        }
+                    </select>
+                </div>
+
+                <CampoMes Rotulo="Mês em que esta fatura pesa"
+                          Ajuda="É o mês em que você paga a fatura."
+                          Valor="MesDaFatura"
+                          ValorChanged="DefinirMesDaFatura" />
+            </div>
+
+            <table class="tabela">
+                <thead>
+                    <tr>
+                        <th class="acoes">Importar</th>
+                        <th>Compra</th>
+                        <th>Parcelas</th>
+                        <th>Valor da parcela</th>
+                        <th class="direita">Total da compra</th>
+                        <th>1ª parcela</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (CompraDaFatura compra in ComprasDaFatura)
+                    {
+                        <tr>
+                            <td class="acoes">
+                                <input type="checkbox" @bind="compra.Selecionada" />
+                            </td>
+                            <td>
+                                <strong>@compra.Descricao</strong>
+                                <div class="texto-suave texto-pequeno">@DescreverOrigem(compra)</div>
+                            </td>
+                            <td class="campo-estreito">
+                                <div class="campo">
+                                    <input type="number" min="1" max="@CamposDoParcelamento.MaximoDeParcelas"
+                                           value="@compra.QuantidadeParcelas"
+                                           @oninput="argumentos => DefinirQuantidadeParcelas(compra, argumentos)" />
+                                </div>
+                            </td>
+                            <td class="campo-estreito">
+                                <CampoMoeda Valor="compra.ValorDaParcela"
+                                            ValorChanged="valor => compra.ValorDaParcela = valor" />
+                            </td>
+                            <td class="direita numero">@Dinheiro.Formatar(compra.ValorTotal)</td>
+                            <td class="texto-suave numero">
+                                @compra.CalcularCompetenciaDaPrimeiraParcela(MesDaFatura).NomeCurto
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            @if (ErroDaImportacao is not null)
+            {
+                <div class="aviso-erro aviso-no-rodape">@ErroDaImportacao</div>
+            }
+
+            <div class="acoes-do-rodape">
+                <a class="botao botao-secundario" href="compras">Cancelar</a>
+                <button class="botao" @onclick="Importar">
+                    <Icone Nome="NomeIcone.Importar" /> @TextoDoBotaoDeImportar
+                </button>
+            </div>
+        </div>
+    }
+}
+
+@code {
+    private const long TamanhoMaximoDoArquivoEmBytes = 5 * 1024 * 1024;
+    private const int MinimoDeParcelas = 1;
+
+    private IReadOnlyList<Cartao> CartoesDisponiveis = [];
+
+    private IReadOnlyList<CompraDaFatura> ComprasDaFatura = [];
+
+    private Guid CartaoEscolhido;
+
+    private Competencia MesDaFatura = Competencia.Atual;
+
+    private string? NomeDoArquivo;
+
+    private string? ErroDoArquivo;
+
+    private string? ErroDaImportacao;
+
+    protected override void OnInitialized()
+    {
+        CartoesDisponiveis = ServicoDeCartoes.ListarAtivos();
+        CartaoEscolhido = CartoesDisponiveis.FirstOrDefault()?.Id ?? Guid.Empty;
+        MesDaFatura = Estado.MesSelecionado;
+    }
+
+    private IEnumerable<CompraDaFatura> ComprasMarcadas
+        => ComprasDaFatura.Where(compra => compra.Selecionada);
+
+    private int QuantidadeMarcada => ComprasMarcadas.Count();
+
+    private string AjudaDoArquivo
+        => NomeDoArquivo is null
+            ? "No aplicativo do Nubank, abra a fatura, toque em compartilhar e salve o arquivo .csv."
+            : $"Arquivo escolhido: {NomeDoArquivo}";
+
+    private string ResumoDaSelecao
+        => $"Encontrei {DescreverQuantidade(ComprasDaFatura.Count)} nesta fatura. "
+        + $"{DescreverQuantidade(QuantidadeMarcada)} vão ser importadas.";
+
+    private string TextoDoBotaoDeImportar => $"Importar {DescreverQuantidade(QuantidadeMarcada)}";
+
+    private async Task AoEscolherArquivo(InputFileChangeEventArgs argumentos)
+    {
+        ErroDoArquivo = null;
+        ErroDaImportacao = null;
+        ComprasDaFatura = [];
+        NomeDoArquivo = argumentos.File.Name;
+
+        try
+        {
+            ComprasDaFatura = LeitorFaturaNubank.Ler(await LerConteudo(argumentos.File));
+            MesDaFatura = LeitorFaturaNubank.DeduzirMesDaFatura(NomeDoArquivo) ?? Estado.MesSelecionado;
+
+            if (ComprasDaFatura.Count == 0)
+            {
+                ErroDoArquivo = "Não encontrei nenhuma compra neste arquivo.";
+            }
+        }
+        catch (FormatException erro)
+        {
+            ErroDoArquivo = erro.Message;
+        }
+        catch (IOException)
+        {
+            ErroDoArquivo = "Não consegui ler este arquivo. Baixe a fatura de novo e tente outra vez.";
+        }
+    }
+
+    private static async Task<string> LerConteudo(IBrowserFile arquivo)
+    {
+        using StreamReader leitor = new(arquivo.OpenReadStream(TamanhoMaximoDoArquivoEmBytes), Encoding.UTF8);
+
+        return await leitor.ReadToEndAsync();
+    }
+
+    private void Importar()
+    {
+        ErroDaImportacao = Conferir();
+
+        if (ErroDaImportacao is not null)
+        {
+            return;
+        }
+
+        ServicoDeImportacao.Importar(ComprasDaFatura, CartaoEscolhido, MesDaFatura);
+
+        Navegacao.NavigateTo("compras");
+    }
+
+    private string? Conferir()
+        => Validacoes.Primeira(
+            Validacoes.Selecionado(CartaoEscolhido, "um cartão"),
+            ConferirQuantidadeMarcada(),
+            ConferirValoresMarcados());
+
+    private string? ConferirQuantidadeMarcada()
+        => QuantidadeMarcada == 0 ? "Marque ao menos uma compra para importar." : null;
+
+    private string? ConferirValoresMarcados()
+        => ComprasMarcadas.Any(compra => compra.ValorDaParcela <= 0)
+            ? "Toda compra marcada precisa ter valor maior que zero."
+            : null;
+
+    private void MarcarTodas() => DefinirSelecaoDeTodas(true);
+
+    private void DesmarcarTodas() => DefinirSelecaoDeTodas(false);
+
+    private void DefinirSelecaoDeTodas(bool selecionada)
+    {
+        foreach (CompraDaFatura compra in ComprasDaFatura)
+        {
+            compra.Selecionada = selecionada;
+        }
+    }
+
+    private void DefinirMesDaFatura(Competencia? mes) => MesDaFatura = mes ?? MesDaFatura;
+
+    private static void DefinirQuantidadeParcelas(CompraDaFatura compra, ChangeEventArgs argumentos)
+    {
+        if (int.TryParse(argumentos.Value?.ToString(), out int quantidade)
+            && quantidade >= MinimoDeParcelas
+            && quantidade <= CamposDoParcelamento.MaximoDeParcelas)
+        {
+            compra.QuantidadeParcelas = quantidade;
+        }
+    }
+
+    private static string DescreverOrigem(CompraDaFatura compra)
+    {
+        string data = compra.DataDaCompra.ToString("dd/MM/yyyy");
+
+        return compra.EhParcelada
+            ? $"{data} · parcela {compra.NumeroDaParcelaNaFatura} de {compra.QuantidadeParcelas} nesta fatura"
+            : $"{data} · à vista";
+    }
+
+    private static string DescreverQuantidade(int quantidade)
+        => quantidade == 1 ? "1 compra" : $"{quantidade} compras";
+}

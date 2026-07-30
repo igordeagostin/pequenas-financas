@@ -17,6 +17,7 @@ public enum NomeIcone
     Pago,
     APagar,
     Adicionar,
+    Importar,
     MesAnterior,
     ProximoMes,
     Fechar

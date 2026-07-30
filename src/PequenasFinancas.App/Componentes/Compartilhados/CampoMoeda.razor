@@ -1,7 +1,10 @@
 @namespace PequenasFinancas.App.Componentes.Compartilhados
 
 <div class="campo">
-    <label>@Rotulo</label>
+    @if (!string.IsNullOrWhiteSpace(Rotulo))
+    {
+        <label>@Rotulo</label>
+    }
     <input type="text" inputmode="decimal" placeholder="0,00"
            value="@TextoDigitado" @oninput="AoDigitar" @onblur="AoSairDoCampo" />
     @if (!string.IsNullOrWhiteSpace(Ajuda))
@@ -11,8 +14,8 @@
 </div>
 
 @code {
-    [Parameter, EditorRequired]
-    public string Rotulo { get; set; } = string.Empty;
+    [Parameter]
+    public string? Rotulo { get; set; }
 
     [Parameter]
     public string? Ajuda { get; set; }

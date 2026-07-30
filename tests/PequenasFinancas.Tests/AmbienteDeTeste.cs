@@ -18,6 +18,7 @@ public sealed class AmbienteDeTeste : IDisposable
         RendasExtras = new ServicoRendasExtras(Banco);
         Contas = new ServicoContas(Banco, Categorias);
         ComprasCartao = new ServicoComprasCartao(Banco, Categorias);
+        ImportacaoDeFatura = new ServicoImportacaoFatura(ComprasCartao);
         Reservas = new ServicoReservas(Banco);
         Pagamentos = new ServicoPagamentos(Banco);
         Parcelas = new ServicoParcelas(Banco, Cartoes, Pagamentos);
@@ -39,6 +40,8 @@ public sealed class AmbienteDeTeste : IDisposable
     public ServicoContas Contas { get; }
 
     public ServicoComprasCartao ComprasCartao { get; }
+
+    public ServicoImportacaoFatura ImportacaoDeFatura { get; }
 
     public ServicoReservas Reservas { get; }
 

@@ -391,6 +391,8 @@ a {
 .tabela tr:last-child td { border-bottom: none; }
 .tabela .direita { text-align: right; }
 .tabela .acoes { width: 1%; white-space: nowrap; }
+.tabela .campo-estreito { width: 140px; }
+.tabela .campo { margin-bottom: 0; }
 
 .linha-lancamento {
     display: flex;
@@ -658,6 +660,18 @@ a {
     gap: 0 14px;
 }
 
+.acoes-em-linha {
+    display: flex;
+    gap: 8px;
+}
+
+.acoes-do-rodape {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 16px;
+}
+
 .aviso-erro {
     margin-bottom: 14px;
     padding: 9px 12px;
@@ -666,6 +680,10 @@ a {
     border: 1px solid var(--error-borda);
     color: var(--error);
     font-size: 13px;
+}
+
+.aviso-no-rodape {
+    margin: 16px 0 0;
 }
 
 .previa {
