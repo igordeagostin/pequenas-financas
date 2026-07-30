@@ -358,8 +358,9 @@ As duas coisas se cadastram do mesmo jeito. A diferença é só o campo **Termin
 1. Clique em **+ Nova conta**.
 2. Escreva a descrição (ex.: `Aluguel`).
 3. Informe o valor por mês.
-4. Escolha a categoria (ex.: `Moradia`) — ela é usada no gráfico do resumo. Clique no campo
-   para ver as categorias que você já usou, ou escreva uma nova. Veja **Categorias**.
+4. Escolha a categoria (ex.: `Moradia`) — ela é usada no gráfico do resumo. Abaixo do campo
+   ficam as categorias que você já usou: clique em uma delas ou escreva uma nova.
+   Veja **Categorias**.
 5. Informe o dia do vencimento.
 6. Em **Começa em**, escolha o primeiro mês em que você paga.
 7. **Termina em** é opcional: preencha só quando a conta tem data para acabar.
@@ -480,8 +481,8 @@ Você lança a compra **uma vez** e o app espalha as parcelas pelos meses sozinh
 5. Informe em quantas vezes você parcelou.
 6. Em **Você vai informar**, escolha se vai digitar o valor da parcela ou o valor total.
 7. Digite o valor.
-8. Escolha a categoria (ex.: `Eletrônicos`). Clique no campo para ver as categorias que
-   você já usou, ou escreva uma nova. Veja **Categorias**.
+8. Escolha a categoria (ex.: `Eletrônicos`). Abaixo do campo ficam as categorias que você
+   já usou: clique em uma delas ou escreva uma nova. Veja **Categorias**.
 
 Enquanto você preenche, o app mostra uma prévia: `12x de R$ 400,00 · 07/2026 → 06/2027`.
 
@@ -595,11 +596,12 @@ em que tipo de coisa o dinheiro foi: `Moradia`, `Transporte`, `Alimentação`.
 Elas aparecem no quadro **Para onde vai o dinheiro**, no resumo do mês.
 
 Você não precisa cadastrar nada antes de começar. Toda categoria que você escreve em uma
-conta ou em uma compra fica salva sozinha.
+conta ou em uma compra fica salva sozinha. As que você já tinha usado antes também entram
+na lista sozinhas.
 
 Exemplo: você cadastra o aluguel e escreve `Moradia` na categoria. Da próxima vez que
-abrir o cadastro de uma conta e clicar no campo **Categoria**, `Moradia` já aparece na
-lista para você escolher, sem digitar de novo.
+abrir o cadastro de uma conta, `Moradia` aparece logo abaixo do campo **Categoria**: é só
+clicar nela, sem digitar de novo. Clicando de novo na mesma, a conta fica sem categoria.
 
 Se você escrever `moradia` e já existir `Moradia`, o app usa a que já existe. Assim a
 mesma categoria não vira duas.

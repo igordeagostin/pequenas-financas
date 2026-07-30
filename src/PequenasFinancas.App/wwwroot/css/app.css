@@ -451,6 +451,33 @@ a {
     border-color: transparent;
 }
 
+.etiqueta-escolhivel {
+    padding: 4px 10px;
+    background: var(--surface);
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.etiqueta-escolhivel:hover {
+    border-color: var(--secondary);
+    color: var(--primary);
+}
+
+.etiqueta-escolhivel.escolhida {
+    background: var(--primary-claro);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.sugestoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 7px;
+    max-height: 84px;
+    overflow-y: auto;
+}
+
 .nome-colorido {
     display: inline-flex;
     align-items: center;

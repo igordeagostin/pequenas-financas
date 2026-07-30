@@ -37,6 +37,30 @@ public sealed class ServicoCategorias(BancoJson banco) : ServicoCrud<Categoria>(
         return nome;
     }
 
+    public void ImportarDosLancamentos()
+    {
+        int quantidadeInicial = Colecao.Count;
+        bool algumLancamentoMudou = false;
+
+        foreach (ICategorizavel lancamento in ListarCategorizaveis())
+        {
+            string nome = RegistrarNome(lancamento.Categoria);
+
+            if (nome == lancamento.Categoria)
+            {
+                continue;
+            }
+
+            lancamento.Categoria = nome;
+            algumLancamentoMudou = true;
+        }
+
+        if (algumLancamentoMudou || Colecao.Count > quantidadeInicial)
+        {
+            Banco.Salvar();
+        }
+    }
+
     protected override void AntesDeSalvar(Categoria categoria)
     {
         string nomeAnterior = Obter(categoria.Id)?.Nome ?? string.Empty;

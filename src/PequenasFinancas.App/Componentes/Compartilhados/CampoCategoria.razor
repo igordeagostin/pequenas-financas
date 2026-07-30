@@ -3,19 +3,27 @@
 
 <div class="campo">
     <label>Categoria</label>
-    <input type="text" list="@IdDaLista" placeholder="Ex.: Moradia"
-           value="@Valor" @oninput="AoDigitar" />
-    <datalist id="@IdDaLista">
-        @foreach (string nome in CategoriasConhecidas)
-        {
-            <option value="@nome"></option>
-        }
-    </datalist>
-    <div class="ajuda">Escolha uma já usada ou escreva uma nova.</div>
+    <input type="text" placeholder="Ex.: Moradia" value="@Valor" @oninput="AoDigitar" />
+
+    @if (Sugestoes.Count > 0)
+    {
+        <div class="sugestoes">
+            @foreach (string nome in Sugestoes)
+            {
+                <button type="button" class="etiqueta etiqueta-escolhivel @(EstaEscolhida(nome) ? "escolhida" : null)"
+                        @onclick="() => Escolher(nome)">
+                    @nome
+                </button>
+            }
+        </div>
+    }
+
+    <div class="ajuda">@Ajuda</div>
 </div>
 
 @code {
-    private readonly string IdDaLista = $"categorias-{Guid.NewGuid():N}";
+    private const string AjudaComSugestoes = "Clique em uma já usada ou escreva uma nova.";
+    private const string AjudaSemSugestoes = "A categoria que você escrever fica salva para a próxima vez.";
 
     private IReadOnlyList<string> CategoriasConhecidas = [];
 
@@ -25,12 +33,28 @@
     [Parameter]
     public EventCallback<string> ValorChanged { get; set; }
 
+    private IReadOnlyList<string> Sugestoes
+        => [.. CategoriasConhecidas.Where(nome => CombinaComODigitado(nome))];
+
+    private string Ajuda => Sugestoes.Count > 0 ? AjudaComSugestoes : AjudaSemSugestoes;
+
     protected override void OnInitialized() => CategoriasConhecidas = ServicoDeCategorias.ListarNomes();
 
-    private Task AoDigitar(ChangeEventArgs argumentos)
-    {
-        Valor = argumentos.Value?.ToString() ?? string.Empty;
+    private bool CombinaComODigitado(string nome)
+        => string.IsNullOrWhiteSpace(Valor)
+        || nome.Contains(Valor.Trim(), StringComparison.CurrentCultureIgnoreCase);
 
-        return ValorChanged.InvokeAsync(Valor);
+    private bool EstaEscolhida(string nome)
+        => string.Equals(nome, Valor?.Trim(), StringComparison.CurrentCultureIgnoreCase);
+
+    private Task Escolher(string nome) => Definir(EstaEscolhida(nome) ? string.Empty : nome);
+
+    private Task AoDigitar(ChangeEventArgs argumentos) => Definir(argumentos.Value?.ToString() ?? string.Empty);
+
+    private Task Definir(string nome)
+    {
+        Valor = nome;
+
+        return ValorChanged.InvokeAsync(nome);
     }
 }

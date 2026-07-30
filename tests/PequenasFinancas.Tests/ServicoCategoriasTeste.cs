@@ -129,6 +129,30 @@ public sealed class ServicoCategoriasTeste : IDisposable
     }
 
     [Fact]
+    public void CategoriasUsadasAntesEntramNaListaSozinhas()
+    {
+        GuardarContaSemPassarPeloServico("Moradia");
+        GuardarContaSemPassarPeloServico("moradia");
+        GuardarContaSemPassarPeloServico("Transporte");
+
+        _ambiente.Categorias.ImportarDosLancamentos();
+
+        Assert.Equal(["Moradia", "Transporte"], _ambiente.Categorias.ListarNomes());
+        Assert.All(_ambiente.Contas.Listar(), conta => Assert.NotEqual("moradia", conta.Categoria));
+    }
+
+    [Fact]
+    public void ImportarDeNovoNaoDuplicaNemPerdeNada()
+    {
+        GuardarContaSemPassarPeloServico("Moradia");
+
+        _ambiente.Categorias.ImportarDosLancamentos();
+        _ambiente.Categorias.ImportarDosLancamentos();
+
+        Assert.Equal(["Moradia"], _ambiente.Categorias.ListarNomes());
+    }
+
+    [Fact]
     public void CategoriasSobrevivemARecargaDoArquivo()
     {
         SalvarConta("Moradia");
@@ -147,6 +171,15 @@ public sealed class ServicoCategoriasTeste : IDisposable
 
         _ambiente.Categorias.Salvar(categoria);
     }
+
+    private void GuardarContaSemPassarPeloServico(string categoria)
+        => _ambiente.Banco.Dados.Contas.Add(new Conta
+        {
+            Descricao = "Aluguel",
+            Valor = 1500.00m,
+            Categoria = categoria,
+            VigenciaInicio = MesAnalisado
+        });
 
     private Conta SalvarConta(string categoria)
     {

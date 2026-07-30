@@ -18,7 +18,11 @@ public partial class App : Application
         base.OnStartup(argumentos);
 
         AplicarCulturaBrasileira();
-        Resources.Add(ChaveDosServicos, ConstruirProvedorDeServicos());
+
+        IServiceProvider servicos = ConstruirProvedorDeServicos();
+        servicos.GetRequiredService<ServicoCategorias>().ImportarDosLancamentos();
+
+        Resources.Add(ChaveDosServicos, servicos);
 
         new MainWindow().Show();
     }
