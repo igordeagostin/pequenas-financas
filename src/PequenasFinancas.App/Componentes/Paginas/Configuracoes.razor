@@ -34,13 +34,13 @@
         <table class="tabela">
             <thead>
                 <tr>
-                    <th>Categoria</th>
-                    <th>Onde é usada</th>
+                    <CabecalhoOrdenavel Ordenacao="Ordenacao" Coluna="Categoria" />
+                    <CabecalhoOrdenavel Ordenacao="Ordenacao" Coluna="Onde é usada" />
                     <th class="acoes"></th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (Categoria categoria in Itens)
+                @foreach (Categoria categoria in Ordenacao.Aplicar(Itens))
                 {
                     <tr>
                         <td><span class="etiqueta">@categoria.Nome</span></td>
@@ -79,7 +79,19 @@
                   AoCancelar="CancelarExclusao" />
 
 @code {
+    private readonly OrdenacaoDaTabela<Categoria> Ordenacao = new();
+
     protected override ServicoCrud<Categoria> Servico => ServicoDeCategorias;
+
+    protected override void OnInitialized()
+    {
+        Ordenacao
+            .Coluna("Categoria", categoria => categoria.Nome)
+            .Coluna("Onde é usada", categoria => ServicoDeCategorias.ContarUsos(categoria.Nome))
+            .RedesenharCom(StateHasChanged);
+
+        base.OnInitialized();
+    }
 
     protected override string? Conferir(Categoria categoria)
         => Validacoes.Primeira(

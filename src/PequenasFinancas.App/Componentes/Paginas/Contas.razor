@@ -42,17 +42,17 @@
         <table class="tabela">
             <thead>
                 <tr>
-                    <th>Descrição</th>
-                    <th>Categoria</th>
-                    <th>Vence</th>
-                    <th>Período</th>
-                    <th class="direita">Valor neste mês</th>
-                    <th>Pagamento</th>
+                    <CabecalhoOrdenavel Ordenacao="Ordenacao" Coluna="Descrição" />
+                    <CabecalhoOrdenavel Ordenacao="Ordenacao" Coluna="Categoria" />
+                    <CabecalhoOrdenavel Ordenacao="Ordenacao" Coluna="Vence" />
+                    <CabecalhoOrdenavel Ordenacao="Ordenacao" Coluna="Período" />
+                    <CabecalhoOrdenavel Ordenacao="Ordenacao" Coluna="Valor neste mês" Classe="direita" />
+                    <CabecalhoOrdenavel Ordenacao="Ordenacao" Coluna="Pagamento" />
                     <th class="acoes"></th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (Conta conta in Itens)
+                @foreach (Conta conta in Ordenacao.Aplicar(Itens))
                 {
                     bool valeNesteMes = ServicoRecorrencia.EstaVigenteEm(conta, MesSelecionado);
 
@@ -129,9 +129,25 @@
                   AoCancelar="CancelarExclusao" />
 
 @code {
+    private readonly OrdenacaoDaTabela<Conta> Ordenacao = new();
+
     private ResumoContas ResumoDoMes = default!;
 
     protected override ServicoCrud<Conta> Servico => ServicoDeContas;
+
+    protected override void OnInitialized()
+    {
+        Ordenacao
+            .Coluna("Descrição", conta => conta.Descricao)
+            .Coluna("Categoria", conta => conta.Categoria)
+            .Coluna("Vence", conta => conta.DiaVencimento)
+            .Coluna("Período", conta => conta.VigenciaInicio)
+            .Coluna("Valor neste mês", conta => ServicoRecorrencia.ValorNoMes(conta, MesSelecionado))
+            .Coluna("Pagamento", conta => ServicoPagamentos.EstaPago(conta, MesSelecionado))
+            .RedesenharCom(StateHasChanged);
+
+        base.OnInitialized();
+    }
 
     protected override void Recarregar()
     {

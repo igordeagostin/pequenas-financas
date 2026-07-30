@@ -391,8 +391,43 @@ a {
 .tabela tr:last-child td { border-bottom: none; }
 .tabela .direita { text-align: right; }
 .tabela .acoes { width: 1%; white-space: nowrap; }
-.tabela .campo-estreito { width: 140px; }
+.tabela .campo-estreito { width: 120px; }
 .tabela .campo { margin-bottom: 0; }
+
+.tabela th .ordenar {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    color: inherit;
+    text-transform: inherit;
+    letter-spacing: inherit;
+    cursor: pointer;
+}
+
+.tabela th .ordenar:hover { color: var(--primary); }
+.tabela th .ordenar.ordenando { color: var(--primary); }
+
+.tabela th .ordenar .seta {
+    font-size: 9px;
+    visibility: hidden;
+}
+
+.tabela th .ordenar.ordenando .seta { visibility: visible; }
+
+.linha-selecionavel { cursor: pointer; }
+.linha-selecionavel:hover { background: var(--background); }
+.linha-selecionavel.marcada { background: var(--primary-claro); }
+
+.marca-selecao {
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+    accent-color: var(--primary);
+}
 
 .linha-lancamento {
     display: flex;
@@ -664,6 +699,24 @@ a {
     display: flex;
     gap: 8px;
 }
+
+.escolhas { margin-bottom: 14px; }
+
+.escolha {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 11px 13px;
+    border: 1px solid var(--border);
+    border-radius: var(--raio-pequeno);
+    cursor: pointer;
+}
+
+.escolha + .escolha { margin-top: 8px; }
+.escolha:hover { background: var(--background); }
+.escolha input { margin-top: 3px; accent-color: var(--primary); }
+.escolha strong { display: block; }
+.escolha span span { display: block; margin-top: 2px; }
 
 .acoes-do-rodape {
     display: flex;

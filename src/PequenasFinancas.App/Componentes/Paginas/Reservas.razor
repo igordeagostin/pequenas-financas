@@ -79,15 +79,15 @@ else
                     <table class="tabela">
                         <thead>
                             <tr>
-                                <th>Data</th>
-                                <th>Movimento</th>
-                                <th>Observação</th>
-                                <th class="direita">Valor</th>
+                                <CabecalhoOrdenavel Ordenacao="OrdenacaoDosMovimentos" Coluna="Data" />
+                                <CabecalhoOrdenavel Ordenacao="OrdenacaoDosMovimentos" Coluna="Movimento" />
+                                <CabecalhoOrdenavel Ordenacao="OrdenacaoDosMovimentos" Coluna="Observação" />
+                                <CabecalhoOrdenavel Ordenacao="OrdenacaoDosMovimentos" Coluna="Valor" Classe="direita" />
                                 <th class="acoes"></th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (MovimentoReserva movimento in movimentos)
+                            @foreach (MovimentoReserva movimento in OrdenacaoDosMovimentos.Aplicar(movimentos))
                             {
                                 bool ehDeposito = movimento.Tipo == TipoMovimentoReserva.Deposito;
 
@@ -167,12 +167,26 @@ else
                   AoCancelar="CancelarExclusao" />
 
 @code {
+    private readonly OrdenacaoDaTabela<MovimentoReserva> OrdenacaoDosMovimentos = new();
+
     private Guid? ReservaAberta;
     private Guid ReservaDoMovimento;
     private MovimentoReserva? MovimentoEmEdicao;
     private string? ErroDoMovimento;
 
     protected override ServicoCrud<Reserva> Servico => ServicoDeReservas;
+
+    protected override void OnInitialized()
+    {
+        OrdenacaoDosMovimentos
+            .Coluna("Data", movimento => movimento.Data)
+            .Coluna("Movimento", movimento => movimento.Tipo)
+            .Coluna("Observação", movimento => movimento.Observacao)
+            .Coluna("Valor", movimento => movimento.Valor)
+            .RedesenharCom(StateHasChanged);
+
+        base.OnInitialized();
+    }
 
     protected override string? Conferir(Reserva reserva) => Validacoes.Nome(reserva.Nome);
 

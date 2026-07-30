@@ -1,0 +1,27 @@
+@namespace PequenasFinancas.App.Componentes.Compartilhados
+
+<th class="@Classe">
+    <button type="button" class="ordenar @(EstaOrdenando ? "ordenando" : null)"
+            title="Ordenar por @Coluna" @onclick="() => Ordenacao.Alternar(Coluna)">
+        @Coluna
+        <span class="seta">@Seta</span>
+    </button>
+</th>
+
+@code {
+    private const string SetaCrescente = "▲";
+    private const string SetaDecrescente = "▼";
+
+    [Parameter, EditorRequired]
+    public IOrdenacaoDaTabela Ordenacao { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public string Coluna { get; set; } = string.Empty;
+
+    [Parameter]
+    public string? Classe { get; set; }
+
+    private bool EstaOrdenando => Ordenacao.EstaOrdenandoPor(Coluna);
+
+    private string Seta => Ordenacao.Crescente ? SetaCrescente : SetaDecrescente;
+}

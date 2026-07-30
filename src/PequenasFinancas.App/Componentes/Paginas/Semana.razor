@@ -89,14 +89,14 @@ else
             <table class="tabela">
                 <thead>
                     <tr>
-                        <th>Descrição</th>
-                        <th>Dia</th>
-                        <th class="direita">Valor</th>
+                        <CabecalhoOrdenavel Ordenacao="OrdenacaoDosGastos" Coluna="Descrição" />
+                        <CabecalhoOrdenavel Ordenacao="OrdenacaoDosGastos" Coluna="Dia" />
+                        <CabecalhoOrdenavel Ordenacao="OrdenacaoDosGastos" Coluna="Valor" Classe="direita" />
                         <th class="acoes"></th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (GastoProvavel gasto in Resumo.GastosProvaveis)
+                    @foreach (GastoProvavel gasto in OrdenacaoDosGastos.Aplicar(Resumo.GastosProvaveis))
                     {
                         <tr>
                             <td><strong>@gasto.Descricao</strong></td>
@@ -129,15 +129,15 @@ else
         <table class="tabela">
             <thead>
                 <tr>
-                    <th>Período</th>
-                    <th class="direita">Começou com</th>
-                    <th class="direita">Podia gastar</th>
-                    <th class="direita">Sobrou de verdade</th>
-                    <th class="direita">Diferença do previsto</th>
+                    <CabecalhoOrdenavel Ordenacao="OrdenacaoDasFechadas" Coluna="Período" />
+                    <CabecalhoOrdenavel Ordenacao="OrdenacaoDasFechadas" Coluna="Começou com" Classe="direita" />
+                    <CabecalhoOrdenavel Ordenacao="OrdenacaoDasFechadas" Coluna="Podia gastar" Classe="direita" />
+                    <CabecalhoOrdenavel Ordenacao="OrdenacaoDasFechadas" Coluna="Sobrou de verdade" Classe="direita" />
+                    <CabecalhoOrdenavel Ordenacao="OrdenacaoDasFechadas" Coluna="Diferença do previsto" Classe="direita" />
                 </tr>
             </thead>
             <tbody>
-                @foreach (ResumoSemana fechada in SemanasFechadas)
+                @foreach (ResumoSemana fechada in OrdenacaoDasFechadas.Aplicar(SemanasFechadas))
                 {
                     <tr>
                         <td>
@@ -223,6 +223,10 @@ else
 </ModalFormulario>
 
 @code {
+    private readonly OrdenacaoDaTabela<GastoProvavel> OrdenacaoDosGastos = new();
+
+    private readonly OrdenacaoDaTabela<ResumoSemana> OrdenacaoDasFechadas = new();
+
     private ResumoSemana? Resumo;
     private IReadOnlyList<ResumoSemana> SemanasFechadas = [];
     private GastoProvavel? GastoEmEdicao;
@@ -243,6 +247,20 @@ else
 
     protected override void OnInitialized()
     {
+        OrdenacaoDosGastos
+            .Coluna("Descrição", gasto => gasto.Descricao)
+            .Coluna("Dia", gasto => gasto.Data)
+            .Coluna("Valor", gasto => gasto.Valor)
+            .RedesenharCom(StateHasChanged);
+
+        OrdenacaoDasFechadas
+            .Coluna("Período", semana => semana.DataInicio)
+            .Coluna("Começou com", semana => semana.SaldoInicial)
+            .Coluna("Podia gastar", semana => semana.PodeGastarNaSemana)
+            .Coluna("Sobrou de verdade", semana => semana.SaldoInformado)
+            .Coluna("Diferença do previsto", semana => semana.DiferencaDoPrevisto)
+            .RedesenharCom(StateHasChanged);
+
         Estado.MesAlterado += AoTrocarDeMes;
         Recarregar();
     }

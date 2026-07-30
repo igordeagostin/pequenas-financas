@@ -82,4 +82,17 @@ public sealed class CompetenciaTeste
         Assert.True(new Competencia(2026, 1) < new Competencia(2026, 2));
         Assert.True(new Competencia(2027, 1) > new Competencia(2026, 12));
     }
+
+    [Fact]
+    public void OrdenaCompetenciasMesmoSemSaberOTipo()
+    {
+        IComparable janeiro = new Competencia(2026, 1);
+
+        Assert.True(janeiro.CompareTo(new Competencia(2026, 2)) < 0);
+        Assert.Equal(0, janeiro.CompareTo(new Competencia(2026, 1)));
+    }
+
+    [Fact]
+    public void CompararComOutroTipoNaoEhPermitido()
+        => Assert.Throws<ArgumentException>(() => ((IComparable)new Competencia(2026, 1)).CompareTo("2026-01"));
 }

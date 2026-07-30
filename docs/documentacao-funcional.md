@@ -24,6 +24,24 @@ Seus dados ficam salvos no seu computador, num arquivo só seu. Nada vai para a 
 
 ---
 
+## Ordenar as listas do app
+
+Em toda tabela do app, o título de cada coluna é um botão.
+
+1. Clique no título da coluna para ordenar por ela, do menor para o maior.
+2. Clique no mesmo título de novo para inverter, do maior para o menor.
+
+Uma setinha ao lado do título mostra por qual coluna a lista está ordenada e para que lado.
+
+Serve para qualquer coluna: nome, data, dia do vencimento ou valor. Por exemplo, na tela
+**Contas e parcelas**, clicar em **Valor neste mês** joga para cima a conta que mais pesa
+no mês.
+
+A ordem que você escolhe vale só enquanto você está olhando aquela tela. Ao sair e voltar,
+a lista aparece na ordem normal de novo.
+
+---
+
 ## Como digitar valores em dinheiro
 
 Em todo campo de dinheiro do app você pode separar os centavos com **vírgula ou ponto**,

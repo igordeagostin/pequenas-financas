@@ -2,7 +2,7 @@ using System.Globalization;
 
 namespace PequenasFinancas.Core.Comum;
 
-public readonly record struct Competencia : IComparable<Competencia>
+public readonly record struct Competencia : IComparable<Competencia>, IComparable
 {
     private const int PrimeiroMes = 1;
     private const int UltimoMes = 12;
@@ -101,6 +101,11 @@ public readonly record struct Competencia : IComparable<Competencia>
         int comparacaoDeAno = Ano.CompareTo(outra.Ano);
         return comparacaoDeAno != 0 ? comparacaoDeAno : Mes.CompareTo(outra.Mes);
     }
+
+    public int CompareTo(object? outra)
+        => outra is Competencia competencia
+            ? CompareTo(competencia)
+            : throw new ArgumentException("Só dá para comparar uma competência com outra competência.", nameof(outra));
 
     public override string ToString() => $"{Ano:D4}-{Mes:D2}";
 

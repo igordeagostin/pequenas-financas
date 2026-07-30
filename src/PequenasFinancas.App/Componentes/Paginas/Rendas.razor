@@ -30,15 +30,15 @@
         <table class="tabela">
             <thead>
                 <tr>
-                    <th>Descrição</th>
-                    <th>Tipo</th>
-                    <th>Período</th>
-                    <th class="direita">Valor neste mês</th>
+                    <CabecalhoOrdenavel Ordenacao="Ordenacao" Coluna="Descrição" />
+                    <CabecalhoOrdenavel Ordenacao="Ordenacao" Coluna="Tipo" />
+                    <CabecalhoOrdenavel Ordenacao="Ordenacao" Coluna="Período" />
+                    <CabecalhoOrdenavel Ordenacao="Ordenacao" Coluna="Valor neste mês" Classe="direita" />
                     <th class="acoes"></th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (FonteRenda renda in Itens)
+                @foreach (FonteRenda renda in Ordenacao.Aplicar(Itens))
                 {
                     bool valeNesteMes = ServicoRecorrencia.EstaVigenteEm(renda, MesSelecionado);
 
@@ -91,14 +91,14 @@
         <table class="tabela">
             <thead>
                 <tr>
-                    <th>Descrição</th>
-                    <th>Dia</th>
-                    <th class="direita">Valor</th>
+                    <CabecalhoOrdenavel Ordenacao="OrdenacaoDasExtras" Coluna="Descrição" />
+                    <CabecalhoOrdenavel Ordenacao="OrdenacaoDasExtras" Coluna="Dia" />
+                    <CabecalhoOrdenavel Ordenacao="OrdenacaoDasExtras" Coluna="Valor" Classe="direita" />
                     <th class="acoes"></th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (RendaExtra renda in RendasExtras)
+                @foreach (RendaExtra renda in OrdenacaoDasExtras.Aplicar(RendasExtras))
                 {
                     <tr>
                         <td><strong>@renda.Descricao</strong></td>
@@ -184,11 +184,33 @@
                   AoCancelar="CancelarExclusao" />
 
 @code {
+    private readonly OrdenacaoDaTabela<FonteRenda> Ordenacao = new();
+
+    private readonly OrdenacaoDaTabela<RendaExtra> OrdenacaoDasExtras = new();
+
     private IReadOnlyList<RendaExtra> RendasExtras = [];
     private RendaExtra? RendaExtraEmEdicao;
     private string? ErroDaRendaExtra;
 
     protected override ServicoCrud<FonteRenda> Servico => ServicoDeRendas;
+
+    protected override void OnInitialized()
+    {
+        Ordenacao
+            .Coluna("Descrição", renda => renda.Descricao)
+            .Coluna("Tipo", renda => renda.Tipo)
+            .Coluna("Período", renda => renda.VigenciaInicio)
+            .Coluna("Valor neste mês", renda => ServicoRecorrencia.ValorNoMes(renda, MesSelecionado))
+            .RedesenharCom(StateHasChanged);
+
+        OrdenacaoDasExtras
+            .Coluna("Descrição", renda => renda.Descricao)
+            .Coluna("Dia", renda => renda.Data)
+            .Coluna("Valor", renda => renda.Valor)
+            .RedesenharCom(StateHasChanged);
+
+        base.OnInitialized();
+    }
 
     protected override FonteRenda CriarNovo() => new() { VigenciaInicio = MesSelecionado };
 

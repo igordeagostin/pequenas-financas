@@ -25,15 +25,15 @@
         <table class="tabela">
             <thead>
                 <tr>
-                    <th>Cartão</th>
-                    <th>Vencimento</th>
-                    <th class="direita">Falta pagar</th>
-                    <th class="direita">Neste mês</th>
+                    <CabecalhoOrdenavel Ordenacao="Ordenacao" Coluna="Cartão" />
+                    <CabecalhoOrdenavel Ordenacao="Ordenacao" Coluna="Vencimento" />
+                    <CabecalhoOrdenavel Ordenacao="Ordenacao" Coluna="Falta pagar" Classe="direita" />
+                    <CabecalhoOrdenavel Ordenacao="Ordenacao" Coluna="Neste mês" Classe="direita" />
                     <th class="acoes"></th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (Cartao cartao in Itens)
+                @foreach (Cartao cartao in Ordenacao.Aplicar(Itens))
                 {
                     <tr>
                         <td>
@@ -126,9 +126,23 @@
     private const int MesesDepoisDoGrafico = 6;
     private const int MesesNoGrafico = MesesAntesDoGrafico + MesesDepoisDoGrafico + 1;
 
+    private readonly OrdenacaoDaTabela<Cartao> Ordenacao = new();
+
     private string CartaoDoGrafico = string.Empty;
 
     protected override ServicoCrud<Cartao> Servico => ServicoDeCartoes;
+
+    protected override void OnInitialized()
+    {
+        Ordenacao
+            .Coluna("Cartão", cartao => cartao.Nome)
+            .Coluna("Vencimento", cartao => cartao.DiaVencimento)
+            .Coluna("Falta pagar", cartao => CalcularFaltaPagar(cartao))
+            .Coluna("Neste mês", cartao => CalcularTotalDoMes(cartao))
+            .RedesenharCom(StateHasChanged);
+
+        base.OnInitialized();
+    }
 
     protected override void Recarregar()
     {
