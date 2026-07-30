@@ -12,6 +12,28 @@ public sealed class ServicoComprasCartao(BancoJson banco, ServicoCategorias serv
     public IReadOnlyList<CompraCartao> ListarDoCartao(Guid cartaoId)
         => [.. Listar().Where(compra => compra.CartaoId == cartaoId)];
 
+    public IReadOnlyList<CompraCartao> ListarDoMes(Competencia competencia)
+        => [.. Listar().Where(compra => ServicoParcelas.PossuiParcelaEm(compra, competencia))];
+
+    public void RemoverParcela(Guid compraId, Competencia competencia)
+    {
+        if (Obter(compraId) is not CompraCartao compra
+            || !ServicoParcelas.PossuiParcelaEm(compra, competencia))
+        {
+            return;
+        }
+
+        compra.ParcelasRemovidas.Add(competencia);
+
+        if (!ServicoParcelas.PossuiAlgumaParcela(compra))
+        {
+            Excluir(compraId);
+            return;
+        }
+
+        Salvar(compra);
+    }
+
     public decimal CalcularSaldoDevedor(Guid cartaoId, Competencia competencia)
         => ListarDoCartao(cartaoId).Sum(compra => ServicoParcelas.CalcularValorEmAberto(compra, competencia));
 

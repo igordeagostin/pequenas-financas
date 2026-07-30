@@ -19,9 +19,15 @@ public static class DescritorParcelamento
             ? "Preencha o valor e o número de parcelas."
             : $"{Parcelas(parcelado)} · {Periodo(parcelado)}";
 
+    public static int NumeroDaParcelaNoMes(IParcelado parcelado, Competencia mes)
+        => mes.DiferencaEmMesesDe(parcelado.CompetenciaPrimeiraParcela) + 1;
+
+    public static string ParcelaDoMes(IParcelado parcelado, Competencia mes)
+        => $"{NumeroDaParcelaNoMes(parcelado, mes)} de {parcelado.QuantidadeParcelas}";
+
     public static string SituacaoNoMes(IParcelado parcelado, Competencia mes)
     {
-        int numeroDaParcela = mes.DiferencaEmMesesDe(parcelado.CompetenciaPrimeiraParcela) + 1;
+        int numeroDaParcela = NumeroDaParcelaNoMes(parcelado, mes);
 
         if (numeroDaParcela < 1)
         {
@@ -36,12 +42,12 @@ public static class DescritorParcelamento
         return $"Parcela {numeroDaParcela} de {parcelado.QuantidadeParcelas}";
     }
 
-    public static bool CaiNoMes(IParcelado parcelado, Competencia mes)
-    {
-        int indice = mes.DiferencaEmMesesDe(parcelado.CompetenciaPrimeiraParcela);
-        return indice >= 0 && indice < parcelado.QuantidadeParcelas;
-    }
+    public static decimal ValorNoMes(IParcelado parcelado, Competencia mes)
+        => ServicoParcelas.CalcularValorNoMes(parcelado, mes);
 
     public static decimal ValorEmAberto(IParcelado parcelado, Competencia mes)
         => ServicoParcelas.CalcularValorEmAberto(parcelado, mes);
+
+    public static decimal ValorQueSobrou(IParcelado parcelado)
+        => ServicoParcelas.CalcularValorQueSobrou(parcelado);
 }

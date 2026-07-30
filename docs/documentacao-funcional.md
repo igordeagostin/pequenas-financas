@@ -539,15 +539,61 @@ some sozinha, porque já acabou.
 Você não precisa informar a data da compra: o que importa para o app é o mês em que cai
 a primeira parcela.
 
-A lista mostra:
+### Duas formas de ver a lista
 
-- **Parcelas**: quanto é cada parcela.
+No canto do painel existem dois botões que trocam o que a lista mostra.
+
+**Parcelas do mês** (é o que aparece ao abrir a tela)
+
+Mostra **só as parcelas que caem no mês escolhido** lá no topo do app. É a visão do
+dia a dia: o que esse mês vai cobrar de você. No título do painel aparece quantas
+parcelas caem no mês e quanto elas somam.
+
+Cada linha mostra:
+
+- **Compra**: o que você comprou, com o parcelamento e a categoria embaixo.
+- **Cartão**: em qual cartão a compra foi feita.
+- **Parcela**: em que parcela você está, por exemplo `3 de 12`.
 - **Período**: o mês da primeira e o da última parcela.
-- **Neste mês**: em que parcela você está no mês que está vendo.
-- **Falta pagar**: quanto ainda falta dessa compra.
+- **Neste mês**: quanto essa parcela pesa no mês escolhido.
+- **Falta pagar**: quanto ainda falta dessa compra, contando deste mês para a frente.
 
-Marque a caixa **mostrar só o que cai em…** para ver apenas as compras que pesam no
-mês escolhido.
+**Todas as compras**
+
+Mostra **tudo que você já lançou**, de todos os meses, inclusive o que já acabou e o
+que ainda vai começar. É onde você procura uma compra antiga ou confere o que veio de
+uma importação.
+
+Cada linha mostra:
+
+- **Compra**, **Cartão** e **Categoria**.
+- **Parcelas**: quantas vezes e quanto é cada parcela.
+- **Período**: o mês da primeira e o da última parcela.
+- **Total**: quanto a compra soma no fim.
+- **Falta pagar**: quanto ainda falta, contando do mês escolhido para a frente.
+
+Nessa visão aparece também uma caixinha para filtrar por cartão. Escolha um cartão para
+ver só as compras dele, ou deixe em **Todos os cartões**.
+
+### Excluir a compra ou só uma parcela
+
+Ao clicar em **Excluir** na visão **Parcelas do mês**, o app pergunta o que você quer
+tirar:
+
+- **Só a parcela deste mês**: essa parcela desaparece e as outras continuam nos meses
+  delas. Serve para quando você adiantou uma parcela ou quando uma parcela veio errada
+  de uma importação. O total da compra diminui só o valor dessa parcela.
+- **A compra inteira**: a compra sai de todos os meses, do começo ao fim.
+
+Exemplo: um notebook de R$ 4.800 em 12 parcelas de R$ 400. Se você excluir só a parcela
+de setembro, ficam 11 parcelas de R$ 400 e o total cai para R$ 4.400. Setembro deixa de
+cobrar essa compra e os outros meses não mudam.
+
+Se você excluir a única parcela que ainda sobrava, a compra é apagada por inteiro.
+
+Na visão **Todas as compras** não existe a opção de parcela, porque ali você não está
+olhando um mês só: o **Excluir** tira a compra inteira. Quando uma compra tem parcela
+excluída, aparece um aviso embaixo do nome dela, como `1 parcela excluída`.
 
 ### Importar a fatura do cartão
 
@@ -580,9 +626,14 @@ Nessa tela você:
 - escolhe o **cartão** que recebeu essa fatura;
 - escolhe o **mês em que a fatura pesa**, que é o mês em que você paga ela. O app já
   tenta adivinhar pelo nome do arquivo (`Nubank_2026-08-09.csv` vira `08/2026`);
-- **desmarca** a caixinha do que você não quer trazer;
+- **clica na linha** para marcar ou desmarcar a compra;
 - muda o **número de parcelas** de qualquer linha;
 - muda o **valor da parcela** de qualquer linha.
+
+Todas as compras já vêm marcadas. Para deixar uma de fora, clique em qualquer lugar da
+linha dela: a linha perde o destaque e a caixinha desmarca. Clique de novo para marcar
+outra vez. Clicar dentro dos campos de **parcelas** e de **valor** não desmarca a linha,
+então dá para corrigir o valor sem medo.
 
 Os botões **Marcar todas** e **Desmarcar todas** ajudam quando você quer trazer só
 algumas compras.
@@ -614,8 +665,12 @@ volta para a lista, onde pode editar ou excluir qualquer uma delas.
   mesmo restaurante, em dias diferentes, viram três compras.
 
 Uma coisa que o app **não** faz: conferir se você já importou aquela fatura antes. Se
-importar o mesmo arquivo duas vezes, as compras aparecem em dobro. Nesse caso, apague as
-repetidas na lista de compras.
+importar o mesmo arquivo duas vezes, as compras aparecem em dobro. Nesse caso, use a visão
+**Todas as compras** e apague as repetidas.
+
+Depois de importar, vale olhar a visão **Todas as compras**: as parcelas que você já
+adiantou continuam marcadas para os próximos meses. Use **Excluir → só a parcela deste
+mês** nos meses em que a cobrança não vai mais existir.
 
 As compras importadas entram **sem categoria**. Se quiser, edite depois cada compra e
 escolha a categoria.

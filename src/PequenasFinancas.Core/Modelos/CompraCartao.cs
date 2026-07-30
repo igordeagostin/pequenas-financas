@@ -16,5 +16,7 @@ public sealed class CompraCartao : IParcelado
 
     public Competencia CompetenciaPrimeiraParcela { get; set; } = Competencia.Atual;
 
+    public List<Competencia> ParcelasRemovidas { get; set; } = [];
+
     public string Categoria { get; set; } = string.Empty;
 }

@@ -1,0 +1,41 @@
+@namespace PequenasFinancas.App.Componentes.Compartilhados
+
+<div class="previa">@DescritorParcelamento.Previa(Compra)</div>
+
+<div class="campo">
+    <label>O que você comprou</label>
+    <input type="text" placeholder="Ex.: Notebook" @bind="Compra.Descricao" @bind:event="oninput" />
+</div>
+
+<div class="linha-campos">
+    <div class="campo">
+        <label>Cartão usado</label>
+        <select @bind="Compra.CartaoId">
+            @foreach (Cartao cartao in Cartoes)
+            {
+                <option value="@cartao.Id">@cartao.Nome</option>
+            }
+        </select>
+    </div>
+
+    <CampoMes Rotulo="Mês da 1ª parcela"
+              Valor="Compra.CompetenciaPrimeiraParcela"
+              ValorChanged="DefinirPrimeiraParcela" />
+</div>
+
+<div class="linha-campos">
+    <CamposDoParcelamento Parcelado="Compra" AoAlterar="StateHasChanged" />
+</div>
+
+<CampoCategoria @bind-Valor="Compra.Categoria" />
+
+@code {
+    [Parameter, EditorRequired]
+    public CompraCartao Compra { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public IReadOnlyList<Cartao> Cartoes { get; set; } = [];
+
+    private void DefinirPrimeiraParcela(Competencia? mes)
+        => Compra.CompetenciaPrimeiraParcela = mes ?? Compra.CompetenciaPrimeiraParcela;
+}

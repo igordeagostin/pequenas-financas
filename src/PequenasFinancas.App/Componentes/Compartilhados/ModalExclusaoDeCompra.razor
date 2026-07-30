@@ -1,0 +1,78 @@
+@namespace PequenasFinancas.App.Componentes.Compartilhados
+
+<ModalFormulario Visivel="Visivel"
+                 Titulo="Confirmar exclusão"
+                 TextoDoBotao="Excluir"
+                 AoConfirmar="Confirmar"
+                 AoCancelar="AoCancelar">
+    @if (PodeExcluirSomenteAParcela)
+    {
+        <p>O que você quer excluir de <strong>@Descricao</strong>?</p>
+
+        <div class="escolhas">
+            <label class="escolha">
+                <input type="radio" name="oQueExcluir" checked="@SomenteAParcela"
+                       @onchange="() => SomenteAParcela = true" />
+                <span>
+                    <strong>Só a parcela de @Mes.NomeCurto</strong>
+                    <span class="texto-suave texto-pequeno">As outras parcelas continuam nos meses delas.</span>
+                </span>
+            </label>
+
+            <label class="escolha">
+                <input type="radio" name="oQueExcluir" checked="@(!SomenteAParcela)"
+                       @onchange="() => SomenteAParcela = false" />
+                <span>
+                    <strong>A compra inteira</strong>
+                    <span class="texto-suave texto-pequeno">Tira a compra de todos os meses, do começo ao fim.</span>
+                </span>
+            </label>
+        </div>
+    }
+    else
+    {
+        <p>Quer mesmo excluir <strong>@Descricao</strong>, com todas as parcelas?</p>
+    }
+
+    <p class="texto-suave">Depois de excluir não dá para voltar atrás.</p>
+</ModalFormulario>
+
+@code {
+    private bool EstavaVisivel;
+
+    [Parameter]
+    public bool Visivel { get; set; }
+
+    [Parameter]
+    public string Descricao { get; set; } = string.Empty;
+
+    [Parameter]
+    public Competencia Mes { get; set; }
+
+    [Parameter]
+    public bool PodeExcluirSomenteAParcela { get; set; }
+
+    [Parameter]
+    public EventCallback AoExcluirSomenteAParcela { get; set; }
+
+    [Parameter]
+    public EventCallback AoExcluirACompra { get; set; }
+
+    [Parameter]
+    public EventCallback AoCancelar { get; set; }
+
+    private bool SomenteAParcela { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (Visivel && !EstavaVisivel)
+        {
+            SomenteAParcela = PodeExcluirSomenteAParcela;
+        }
+
+        EstavaVisivel = Visivel;
+    }
+
+    private Task Confirmar()
+        => SomenteAParcela ? AoExcluirSomenteAParcela.InvokeAsync() : AoExcluirACompra.InvokeAsync();
+}

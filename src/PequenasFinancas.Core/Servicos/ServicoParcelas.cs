@@ -21,26 +21,41 @@ public sealed class ServicoParcelas(
         => [.. ObterParcelasDeCartao(competencia).Where(parcela => parcela.CartaoId == cartaoId)];
 
     public static decimal CalcularValorEmAberto(IParcelado parcelado, Competencia aPartirDe)
-    {
-        IReadOnlyList<decimal> parcelas = RateioParcelas.Calcular(
-            parcelado.ValorTotal, parcelado.QuantidadeParcelas);
-
-        int primeiroIndiceEmAberto = Math.Max(
-            0, aPartirDe.DiferencaEmMesesDe(parcelado.CompetenciaPrimeiraParcela));
-
-        return primeiroIndiceEmAberto >= parcelas.Count
-            ? 0
-            : parcelas.Skip(primeiroIndiceEmAberto).Sum();
-    }
+        => ListarCompetencias(parcelado)
+            .Where(competencia => competencia >= aPartirDe)
+            .Sum(competencia => CalcularValorNoMes(parcelado, competencia));
 
     public static decimal CalcularValorNoMes(IParcelado parcelado, Competencia competencia)
     {
         int indiceDaParcela = competencia.DiferencaEmMesesDe(parcelado.CompetenciaPrimeiraParcela);
 
-        return indiceDaParcela < 0 || indiceDaParcela >= parcelado.QuantidadeParcelas
+        return !PossuiParcelaEm(parcelado, competencia)
             ? 0
             : RateioParcelas.Calcular(parcelado.ValorTotal, parcelado.QuantidadeParcelas)[indiceDaParcela];
     }
+
+    public static decimal CalcularValorQueSobrou(IParcelado parcelado)
+        => ListarCompetencias(parcelado).Sum(competencia => CalcularValorNoMes(parcelado, competencia));
+
+    public static bool PossuiParcelaEm(IParcelado parcelado, Competencia competencia)
+    {
+        int indiceDaParcela = competencia.DiferencaEmMesesDe(parcelado.CompetenciaPrimeiraParcela);
+
+        return indiceDaParcela >= 0
+            && indiceDaParcela < parcelado.QuantidadeParcelas
+            && !parcelado.ParcelasRemovidas.Contains(competencia);
+    }
+
+    public static bool PossuiAlgumaParcela(IParcelado parcelado)
+        => ListarCompetencias(parcelado).Any(competencia => PossuiParcelaEm(parcelado, competencia));
+
+    public static int ContarParcelasQueSobraram(IParcelado parcelado)
+        => ListarCompetencias(parcelado).Count(competencia => PossuiParcelaEm(parcelado, competencia));
+
+    public static IEnumerable<Competencia> ListarCompetencias(IParcelado parcelado)
+        => Enumerable
+            .Range(0, parcelado.QuantidadeParcelas)
+            .Select(parcelado.CompetenciaPrimeiraParcela.Adicionar);
 
     public static Competencia CalcularUltimaCompetencia(IParcelado parcelado)
         => parcelado.CompetenciaPrimeiraParcela.Adicionar(parcelado.QuantidadeParcelas - 1);
@@ -65,12 +80,12 @@ public sealed class ServicoParcelas(
     private static ParcelaCalculada? MontarParcela(
         IParcelado parcelado, Competencia competencia, OrigemLancamento origem)
     {
-        int indiceDaParcela = competencia.DiferencaEmMesesDe(parcelado.CompetenciaPrimeiraParcela);
-
-        if (indiceDaParcela < 0 || indiceDaParcela >= parcelado.QuantidadeParcelas)
+        if (!PossuiParcelaEm(parcelado, competencia))
         {
             return null;
         }
+
+        int indiceDaParcela = competencia.DiferencaEmMesesDe(parcelado.CompetenciaPrimeiraParcela);
 
         return new ParcelaCalculada
         {

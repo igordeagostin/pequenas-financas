@@ -80,36 +80,42 @@ else
                           ValorChanged="DefinirMesDaFatura" />
             </div>
 
+            <p class="texto-suave texto-pequeno">Clique na linha para marcar ou desmarcar a compra.</p>
+
             <table class="tabela">
                 <thead>
                     <tr>
                         <th class="acoes">Importar</th>
-                        <th>Compra</th>
-                        <th>Parcelas</th>
-                        <th>Valor da parcela</th>
-                        <th class="direita">Total da compra</th>
-                        <th>1ª parcela</th>
+                        <CabecalhoOrdenavel Ordenacao="Ordenacao" Coluna="Compra" />
+                        <CabecalhoOrdenavel Ordenacao="Ordenacao" Coluna="Data" />
+                        <CabecalhoOrdenavel Ordenacao="Ordenacao" Coluna="Parcelas" />
+                        <CabecalhoOrdenavel Ordenacao="Ordenacao" Coluna="Valor da parcela" />
+                        <CabecalhoOrdenavel Ordenacao="Ordenacao" Coluna="Total da compra" Classe="direita" />
+                        <CabecalhoOrdenavel Ordenacao="Ordenacao" Coluna="1ª parcela" />
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (CompraDaFatura compra in ComprasDaFatura)
+                    @foreach (CompraDaFatura compra in ComprasOrdenadas)
                     {
-                        <tr>
+                        <tr class="linha-selecionavel @(compra.Selecionada ? "marcada" : null)"
+                            @onclick="() => AlternarSelecao(compra)">
                             <td class="acoes">
-                                <input type="checkbox" @bind="compra.Selecionada" />
+                                <input type="checkbox" class="marca-selecao" checked="@compra.Selecionada"
+                                       tabindex="-1" aria-hidden="true" />
                             </td>
                             <td>
                                 <strong>@compra.Descricao</strong>
                                 <div class="texto-suave texto-pequeno">@DescreverOrigem(compra)</div>
                             </td>
-                            <td class="campo-estreito">
+                            <td class="texto-suave numero">@compra.DataDaCompra.ToString("dd/MM/yyyy")</td>
+                            <td class="campo-estreito" @onclick:stopPropagation="true">
                                 <div class="campo">
                                     <input type="number" min="1" max="@CamposDoParcelamento.MaximoDeParcelas"
                                            value="@compra.QuantidadeParcelas"
                                            @oninput="argumentos => DefinirQuantidadeParcelas(compra, argumentos)" />
                                 </div>
                             </td>
-                            <td class="campo-estreito">
+                            <td class="campo-estreito" @onclick:stopPropagation="true">
                                 <CampoMoeda Valor="compra.ValorDaParcela"
                                             ValorChanged="valor => compra.ValorDaParcela = valor" />
                             </td>
@@ -141,6 +147,8 @@ else
     private const long TamanhoMaximoDoArquivoEmBytes = 5 * 1024 * 1024;
     private const int MinimoDeParcelas = 1;
 
+    private readonly OrdenacaoDaTabela<CompraDaFatura> Ordenacao = new();
+
     private IReadOnlyList<Cartao> CartoesDisponiveis = [];
 
     private IReadOnlyList<CompraDaFatura> ComprasDaFatura = [];
@@ -160,7 +168,18 @@ else
         CartoesDisponiveis = ServicoDeCartoes.ListarAtivos();
         CartaoEscolhido = CartoesDisponiveis.FirstOrDefault()?.Id ?? Guid.Empty;
         MesDaFatura = Estado.MesSelecionado;
+
+        Ordenacao
+            .Coluna("Compra", compra => compra.Descricao)
+            .Coluna("Data", compra => compra.DataDaCompra)
+            .Coluna("Parcelas", compra => compra.QuantidadeParcelas)
+            .Coluna("Valor da parcela", compra => compra.ValorDaParcela)
+            .Coluna("Total da compra", compra => compra.ValorTotal)
+            .Coluna("1ª parcela", compra => compra.CalcularCompetenciaDaPrimeiraParcela(MesDaFatura))
+            .RedesenharCom(StateHasChanged);
     }
+
+    private IReadOnlyList<CompraDaFatura> ComprasOrdenadas => Ordenacao.Aplicar(ComprasDaFatura);
 
     private IEnumerable<CompraDaFatura> ComprasMarcadas
         => ComprasDaFatura.Where(compra => compra.Selecionada);
@@ -240,6 +259,8 @@ else
             ? "Toda compra marcada precisa ter valor maior que zero."
             : null;
 
+    private static void AlternarSelecao(CompraDaFatura compra) => compra.Selecionada = !compra.Selecionada;
+
     private void MarcarTodas() => DefinirSelecaoDeTodas(true);
 
     private void DesmarcarTodas() => DefinirSelecaoDeTodas(false);
@@ -265,13 +286,9 @@ else
     }
 
     private static string DescreverOrigem(CompraDaFatura compra)
-    {
-        string data = compra.DataDaCompra.ToString("dd/MM/yyyy");
-
-        return compra.EhParcelada
-            ? $"{data} · parcela {compra.NumeroDaParcelaNaFatura} de {compra.QuantidadeParcelas} nesta fatura"
-            : $"{data} · à vista";
-    }
+        => compra.EhParcelada
+            ? $"parcela {compra.NumeroDaParcelaNaFatura} de {compra.QuantidadeParcelas} nesta fatura"
+            : "à vista";
 
     private static string DescreverQuantidade(int quantidade)
         => quantidade == 1 ? "1 compra" : $"{quantidade} compras";

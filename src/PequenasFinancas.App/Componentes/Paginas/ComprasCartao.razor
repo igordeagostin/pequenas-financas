@@ -35,63 +35,158 @@ else
 {
     <div class="painel">
         <div class="painel-cabecalho">
-            <h2>Compras lançadas</h2>
-            <label class="texto-suave texto-pequeno">
-                <input type="checkbox" @bind="MostrarSomenteDoMes" />
-                mostrar só o que cai em @MesSelecionado.NomeCurto
-            </label>
+            <div>
+                <h2>@Titulo</h2>
+                <p class="texto-suave texto-pequeno">@Resumo</p>
+            </div>
+            <div class="acoes-em-linha">
+                @if (VendoTodasAsCompras)
+                {
+                    <select class="filtro" value="@CartaoFiltrado" @onchange="TrocarCartaoFiltrado">
+                        <option value="">Todos os cartões</option>
+                        @foreach (Cartao cartao in CartoesDisponiveis)
+                        {
+                            <option value="@cartao.Id">@cartao.Nome</option>
+                        }
+                    </select>
+                }
+                <button class="botao @(VendoTodasAsCompras ? "botao-secundario" : null)"
+                        @onclick="VerParcelasDoMes">
+                    Parcelas do mês
+                </button>
+                <button class="botao @(VendoTodasAsCompras ? null : "botao-secundario")"
+                        @onclick="VerTodasAsCompras">
+                    Todas as compras
+                </button>
+            </div>
         </div>
 
-        @if (ComprasVisiveis.Count == 0)
+        @if (VendoTodasAsCompras)
         {
-            <EstadoVazio Simbolo="NomeIcone.Compra" Mensagem="Nenhuma compra para mostrar." />
+            @if (ComprasFiltradas.Count == 0)
+            {
+                <EstadoVazio Simbolo="NomeIcone.Compra" Mensagem="Nenhuma compra lançada ainda.">
+                    <Acao>
+                        <button class="botao" @onclick="AbrirNovo">Lançar minha primeira compra</button>
+                    </Acao>
+                </EstadoVazio>
+            }
+            else
+            {
+                <table class="tabela">
+                    <thead>
+                        <tr>
+                            <CabecalhoOrdenavel Ordenacao="OrdenacaoDeTodas" Coluna="Compra" />
+                            <CabecalhoOrdenavel Ordenacao="OrdenacaoDeTodas" Coluna="Cartão" />
+                            <CabecalhoOrdenavel Ordenacao="OrdenacaoDeTodas" Coluna="Categoria" />
+                            <CabecalhoOrdenavel Ordenacao="OrdenacaoDeTodas" Coluna="Parcelas" />
+                            <CabecalhoOrdenavel Ordenacao="OrdenacaoDeTodas" Coluna="Período" />
+                            <CabecalhoOrdenavel Ordenacao="OrdenacaoDeTodas" Coluna="Total" Classe="direita" />
+                            <CabecalhoOrdenavel Ordenacao="OrdenacaoDeTodas" Coluna="Falta pagar" Classe="direita" />
+                            <th class="acoes"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (CompraCartao compra in OrdenacaoDeTodas.Aplicar(ComprasFiltradas))
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@compra.Descricao</strong>
+                                    @if (compra.ParcelasRemovidas.Count > 0)
+                                    {
+                                        <div class="texto-suave texto-pequeno">@DescreverParcelasRemovidas(compra)</div>
+                                    }
+                                </td>
+                                <td>
+                                    <NomeColorido Nome="@ObterNomeDoCartao(compra.CartaoId)"
+                                                  Cor="@ObterCorDoCartao(compra.CartaoId)" />
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrWhiteSpace(compra.Categoria))
+                                    {
+                                        <span class="etiqueta">@compra.Categoria</span>
+                                    }
+                                </td>
+                                <td class="numero">@DescritorParcelamento.Parcelas(compra)</td>
+                                <td class="texto-suave">@DescritorParcelamento.Periodo(compra)</td>
+                                <td class="direita numero">
+                                    @Dinheiro.Formatar(DescritorParcelamento.ValorQueSobrou(compra))
+                                </td>
+                                <td class="direita numero">
+                                    @Dinheiro.Formatar(DescritorParcelamento.ValorEmAberto(compra, MesSelecionado))
+                                </td>
+                                <td class="acoes">
+                                    <button class="botao botao-secundario" @onclick="() => AbrirEdicao(compra)">Editar</button>
+                                    <button class="botao botao-perigo" @onclick="() => PedirExclusao(compra)">Excluir</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
         }
         else
         {
-            <table class="tabela">
-                <thead>
-                    <tr>
-                        <th>Compra</th>
-                        <th>Cartão</th>
-                        <th>Parcelas</th>
-                        <th>Período</th>
-                        <th>Neste mês</th>
-                        <th class="direita">Falta pagar</th>
-                        <th class="acoes"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (CompraCartao compra in ComprasVisiveis)
-                    {
+            @if (ParcelasDoMes.Count == 0)
+            {
+                <EstadoVazio Simbolo="NomeIcone.Compra"
+                             Mensagem="@($"Nenhuma parcela cai em {MesSelecionado.NomeExtenso}.")">
+                    <Acao>
+                        <button class="botao botao-secundario" @onclick="VerTodasAsCompras">
+                            Ver todas as compras
+                        </button>
+                    </Acao>
+                </EstadoVazio>
+            }
+            else
+            {
+                <table class="tabela">
+                    <thead>
                         <tr>
-                            <td>
-                                <strong>@compra.Descricao</strong>
-                                <div class="texto-suave texto-pequeno">
-                                    @Dinheiro.Formatar(compra.ValorTotal)
-                                    @if (!string.IsNullOrWhiteSpace(compra.Categoria))
-                                    {
-                                        <text> · @compra.Categoria</text>
-                                    }
-                                </div>
-                            </td>
-                            <td>
-                                <NomeColorido Nome="@ServicoDeCartoes.ObterNome(compra.CartaoId)"
-                                              Cor="@ObterCor(compra.CartaoId)" />
-                            </td>
-                            <td class="numero">@DescritorParcelamento.Parcelas(compra)</td>
-                            <td class="texto-suave">@DescritorParcelamento.Periodo(compra)</td>
-                            <td class="texto-suave">@DescritorParcelamento.SituacaoNoMes(compra, MesSelecionado)</td>
-                            <td class="direita numero">
-                                @Dinheiro.Formatar(DescritorParcelamento.ValorEmAberto(compra, MesSelecionado))
-                            </td>
-                            <td class="acoes">
-                                <button class="botao botao-secundario" @onclick="() => AbrirEdicao(compra)">Editar</button>
-                                <button class="botao botao-perigo" @onclick="() => PedirExclusao(compra)">Excluir</button>
-                            </td>
+                            <CabecalhoOrdenavel Ordenacao="OrdenacaoDoMes" Coluna="Compra" />
+                            <CabecalhoOrdenavel Ordenacao="OrdenacaoDoMes" Coluna="Cartão" />
+                            <CabecalhoOrdenavel Ordenacao="OrdenacaoDoMes" Coluna="Parcela" />
+                            <CabecalhoOrdenavel Ordenacao="OrdenacaoDoMes" Coluna="Período" />
+                            <CabecalhoOrdenavel Ordenacao="OrdenacaoDoMes" Coluna="Neste mês" Classe="direita" />
+                            <CabecalhoOrdenavel Ordenacao="OrdenacaoDoMes" Coluna="Falta pagar" Classe="direita" />
+                            <th class="acoes"></th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (CompraCartao compra in OrdenacaoDoMes.Aplicar(ParcelasDoMes))
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@compra.Descricao</strong>
+                                    <div class="texto-suave texto-pequeno">
+                                        @DescritorParcelamento.Parcelas(compra)
+                                        @if (!string.IsNullOrWhiteSpace(compra.Categoria))
+                                        {
+                                            <text> · @compra.Categoria</text>
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    <NomeColorido Nome="@ObterNomeDoCartao(compra.CartaoId)"
+                                                  Cor="@ObterCorDoCartao(compra.CartaoId)" />
+                                </td>
+                                <td class="numero">@DescritorParcelamento.ParcelaDoMes(compra, MesSelecionado)</td>
+                                <td class="texto-suave">@DescritorParcelamento.Periodo(compra)</td>
+                                <td class="direita numero texto-saida">
+                                    @Dinheiro.Formatar(DescritorParcelamento.ValorNoMes(compra, MesSelecionado))
+                                </td>
+                                <td class="direita numero">
+                                    @Dinheiro.Formatar(DescritorParcelamento.ValorEmAberto(compra, MesSelecionado))
+                                </td>
+                                <td class="acoes">
+                                    <button class="botao botao-secundario" @onclick="() => AbrirEdicao(compra)">Editar</button>
+                                    <button class="botao botao-perigo" @onclick="() => PedirExclusao(compra)">Excluir</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
         }
     </div>
 }
@@ -103,53 +198,62 @@ else
                  AoCancelar="FecharFormulario">
     @if (ItemEmEdicao is CompraCartao compra)
     {
-        <div class="previa">@DescritorParcelamento.Previa(compra)</div>
-
-        <div class="campo">
-            <label>O que você comprou</label>
-            <input type="text" placeholder="Ex.: Notebook" @bind="compra.Descricao" @bind:event="oninput" />
-        </div>
-
-        <div class="linha-campos">
-            <div class="campo">
-                <label>Cartão usado</label>
-                <select @bind="compra.CartaoId">
-                    @foreach (Cartao cartao in CartoesDisponiveis)
-                    {
-                        <option value="@cartao.Id">@cartao.Nome</option>
-                    }
-                </select>
-            </div>
-
-            <CampoMes Rotulo="Mês da 1ª parcela"
-                      Valor="compra.CompetenciaPrimeiraParcela"
-                      ValorChanged="mes => DefinirPrimeiraParcela(compra, mes)" />
-        </div>
-
-        <div class="linha-campos">
-            <CamposDoParcelamento Parcelado="compra" AoAlterar="StateHasChanged" />
-        </div>
-
-        <CampoCategoria @bind-Valor="compra.Categoria" />
+        <FormularioCompra Compra="compra" Cartoes="CartoesDisponiveis" />
     }
 </ModalFormulario>
 
-<ModalConfirmacao Visivel="ItemParaExcluir is not null"
-                  Descricao="@(ItemParaExcluir is null ? string.Empty : DescreverParaExclusao(ItemParaExcluir))"
-                  AoConfirmar="ConfirmarExclusao"
-                  AoCancelar="CancelarExclusao" />
+<ModalExclusaoDeCompra Visivel="ItemParaExcluir is not null"
+                       Descricao="@(ItemParaExcluir?.Descricao ?? string.Empty)"
+                       Mes="MesSelecionado"
+                       PodeExcluirSomenteAParcela="PodeExcluirSomenteAParcela"
+                       AoExcluirSomenteAParcela="ExcluirSomenteAParcela"
+                       AoExcluirACompra="ConfirmarExclusao"
+                       AoCancelar="CancelarExclusao" />
 
 @code {
-    private bool MostrarSomenteDoMes;
+    private readonly OrdenacaoDaTabela<CompraCartao> OrdenacaoDoMes = new();
+
+    private readonly OrdenacaoDaTabela<CompraCartao> OrdenacaoDeTodas = new();
 
     private IReadOnlyList<Cartao> CartoesDisponiveis = [];
 
+    private IReadOnlyList<CompraCartao> ParcelasDoMes = [];
+
+    private bool VendoTodasAsCompras;
+
+    private string CartaoFiltrado = string.Empty;
+
     protected override ServicoCrud<CompraCartao> Servico => ServicoDeCompras;
+
+    protected override void OnInitialized()
+    {
+        OrdenacaoDoMes
+            .Coluna("Compra", compra => compra.Descricao)
+            .Coluna("Cartão", compra => ObterNomeDoCartao(compra.CartaoId))
+            .Coluna("Parcela", compra => DescritorParcelamento.NumeroDaParcelaNoMes(compra, MesSelecionado))
+            .Coluna("Período", compra => compra.CompetenciaPrimeiraParcela)
+            .Coluna("Neste mês", compra => DescritorParcelamento.ValorNoMes(compra, MesSelecionado))
+            .Coluna("Falta pagar", compra => DescritorParcelamento.ValorEmAberto(compra, MesSelecionado))
+            .RedesenharCom(StateHasChanged);
+
+        OrdenacaoDeTodas
+            .Coluna("Compra", compra => compra.Descricao)
+            .Coluna("Cartão", compra => ObterNomeDoCartao(compra.CartaoId))
+            .Coluna("Categoria", compra => compra.Categoria)
+            .Coluna("Parcelas", compra => compra.QuantidadeParcelas)
+            .Coluna("Período", compra => compra.CompetenciaPrimeiraParcela)
+            .Coluna("Total", compra => DescritorParcelamento.ValorQueSobrou(compra))
+            .Coluna("Falta pagar", compra => DescritorParcelamento.ValorEmAberto(compra, MesSelecionado))
+            .RedesenharCom(StateHasChanged);
+
+        base.OnInitialized();
+    }
 
     protected override void Recarregar()
     {
         base.Recarregar();
         CartoesDisponiveis = ServicoDeCartoes.ListarAtivos();
+        ParcelasDoMes = ServicoDeCompras.ListarDoMes(MesSelecionado);
     }
 
     protected override CompraCartao CriarNovo() => new()
@@ -167,13 +271,73 @@ else
 
     protected override string DescreverParaExclusao(CompraCartao compra) => $"a compra {compra.Descricao}";
 
-    private IReadOnlyList<CompraCartao> ComprasVisiveis
-        => MostrarSomenteDoMes
-            ? [.. Itens.Where(compra => DescritorParcelamento.CaiNoMes(compra, MesSelecionado))]
+    private string Titulo
+        => VendoTodasAsCompras ? "Todas as compras" : $"Parcelas de {MesSelecionado.NomeExtenso}";
+
+    private string Resumo
+        => VendoTodasAsCompras
+            ? DescreverTodasAsCompras()
+            : DescreverParcelasDoMes();
+
+    private IReadOnlyList<CompraCartao> ComprasFiltradas
+        => CartaoEscolhido is Guid cartaoId
+            ? [.. Itens.Where(compra => compra.CartaoId == cartaoId)]
             : Itens;
 
-    private string ObterCor(Guid cartaoId) => ServicoDeCartoes.Obter(cartaoId)?.Cor ?? "var(--text-suave)";
+    private Guid? CartaoEscolhido => Guid.TryParse(CartaoFiltrado, out Guid cartaoId) ? cartaoId : null;
 
-    private static void DefinirPrimeiraParcela(CompraCartao compra, Competencia? mes)
-        => compra.CompetenciaPrimeiraParcela = mes ?? compra.CompetenciaPrimeiraParcela;
+    private bool PodeExcluirSomenteAParcela
+        => !VendoTodasAsCompras
+        && ItemParaExcluir is CompraCartao compra
+        && ServicoParcelas.PossuiParcelaEm(compra, MesSelecionado);
+
+    private string ObterNomeDoCartao(Guid cartaoId) => ServicoDeCartoes.ObterNome(cartaoId);
+
+    private string ObterCorDoCartao(Guid cartaoId) => ServicoDeCartoes.Obter(cartaoId)?.Cor ?? "var(--text-suave)";
+
+    private void VerParcelasDoMes() => VendoTodasAsCompras = false;
+
+    private void VerTodasAsCompras() => VendoTodasAsCompras = true;
+
+    private void TrocarCartaoFiltrado(ChangeEventArgs evento)
+        => CartaoFiltrado = evento.Value?.ToString() ?? string.Empty;
+
+    private void ExcluirSomenteAParcela()
+    {
+        if (ItemParaExcluir is null)
+        {
+            return;
+        }
+
+        ServicoDeCompras.RemoverParcela(ItemParaExcluir.Id, MesSelecionado);
+        CancelarExclusao();
+        Recarregar();
+    }
+
+    private string DescreverParcelasDoMes()
+        => ParcelasDoMes.Count == 0
+            ? "Nenhuma parcela neste mês."
+            : $"{DescreverQuantidadeDeParcelas(ParcelasDoMes.Count)} · {Dinheiro.Formatar(TotalDoMes)} neste mês";
+
+    private string DescreverTodasAsCompras()
+        => ComprasFiltradas.Count == 0
+            ? "Nenhuma compra lançada ainda."
+            : $"{DescreverQuantidadeDeCompras(ComprasFiltradas.Count)} · {Dinheiro.Formatar(TotalDasCompras)} no total";
+
+    private decimal TotalDoMes
+        => ParcelasDoMes.Sum(compra => DescritorParcelamento.ValorNoMes(compra, MesSelecionado));
+
+    private decimal TotalDasCompras
+        => ComprasFiltradas.Sum(compra => DescritorParcelamento.ValorQueSobrou(compra));
+
+    private static string DescreverParcelasRemovidas(CompraCartao compra)
+        => compra.ParcelasRemovidas.Count == 1
+            ? "1 parcela excluída"
+            : $"{compra.ParcelasRemovidas.Count} parcelas excluídas";
+
+    private static string DescreverQuantidadeDeParcelas(int quantidade)
+        => quantidade == 1 ? "1 parcela" : $"{quantidade} parcelas";
+
+    private static string DescreverQuantidadeDeCompras(int quantidade)
+        => quantidade == 1 ? "1 compra" : $"{quantidade} compras";
 }

@@ -11,4 +11,6 @@ public interface IParcelado : ICategorizavel
     int QuantidadeParcelas { get; set; }
 
     Competencia CompetenciaPrimeiraParcela { get; set; }
+
+    List<Competencia> ParcelasRemovidas { get; set; }
 }
