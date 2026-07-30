@@ -733,8 +733,58 @@ Clique em **Ver movimentos** para conferir tudo que entrou e saiu daquela reserv
 
 ## Configurações
 
-É a última tela do menu. Ali ficam os ajustes do aplicativo. Por enquanto ela tem uma
-coisa só: a lista de **categorias**.
+É a última tela do menu. Ali ficam os ajustes do aplicativo: a aparência, no quadro
+**Exibição**, e a lista de **categorias**.
+
+### Exibição
+
+Serve para deixar o app do jeito mais confortável para você olhar: o tamanho da janela,
+o tamanho das letras e qual tela abre primeiro.
+
+Tudo que você escolhe aqui é salvo na hora, sem botão de salvar. Nada disso mexe nos seus
+valores: só muda a aparência.
+
+### Tamanho da janela
+
+O app já vem lembrando o tamanho que você usou por último. Se você aumentar a janela com
+o mouse e fechar o app, na próxima vez ele abre com esse mesmo tamanho.
+
+Para escolher outro jeito:
+
+1. Clique em **Configurações**, no menu.
+2. No quadro **Exibição**, abra **Tamanho da janela**.
+3. Escolha uma das opções:
+   - **Lembrar o último tamanho que eu deixar** — abre do tamanho em que você fechou.
+   - **Abrir em tela cheia** — abre ocupando a tela inteira.
+   - Um tamanho da lista, como **1600 × 900** — abre sempre desse tamanho.
+
+Ao escolher um tamanho da lista, a janela muda na hora: você vê o resultado sem precisar
+fechar o app.
+
+Embaixo do campo o app avisa qual foi o último tamanho que você deixou, por exemplo
+*Da última vez: 1600 × 900*.
+
+A janela nunca fica menor que 1040 × 700, para as tabelas não ficarem apertadas. Se o
+tamanho escolhido for maior que a sua tela, o app usa o tamanho da tela.
+
+### Tamanho das letras
+
+Deixa tudo maior ou menor de uma vez: letras, botões e tabelas.
+
+1. No quadro **Exibição**, abra **Tamanho das letras**.
+2. Escolha **90%**, **100% (normal)**, **110%** ou **125%**.
+
+A tela muda na hora.
+
+### Tela que abre primeiro
+
+O app abre no **Resumo do mês**. Se você usa mais uma outra tela, pode mandar o app abrir
+direto nela.
+
+1. No quadro **Exibição**, abra **Tela que abre primeiro**.
+2. Escolha a tela, por exemplo **Compras no cartão**.
+
+Vale a partir da próxima vez que você abrir o app.
 
 ### Categorias
 

@@ -2,6 +2,8 @@
 @inherits LayoutComponentBase
 @implements IDisposable
 @inject EstadoAplicacao Estado
+@inject ServicoExibicao ServicoDeExibicao
+@inject NavigationManager Navegacao
 
 <div class="aplicacao">
     <MenuNavegacao />
@@ -19,9 +21,28 @@
 </div>
 
 @code {
-    protected override void OnInitialized() => Estado.MesAlterado += AoTrocarDeMes;
+    protected override void OnInitialized()
+    {
+        Estado.MesAlterado += AoTrocarDeMes;
+        AbrirTelaEscolhida();
+    }
 
     public void Dispose() => Estado.MesAlterado -= AoTrocarDeMes;
 
     private void AoTrocarDeMes() => InvokeAsync(StateHasChanged);
+
+    private void AbrirTelaEscolhida()
+    {
+        if (Navegacao.ToBaseRelativePath(Navegacao.Uri).Length > 0)
+        {
+            return;
+        }
+
+        string rota = TelasDoApp.RotaDe(ServicoDeExibicao.Preferencias.TelaInicial);
+
+        if (rota.Length > 0)
+        {
+            Navegacao.NavigateTo(rota);
+        }
+    }
 }

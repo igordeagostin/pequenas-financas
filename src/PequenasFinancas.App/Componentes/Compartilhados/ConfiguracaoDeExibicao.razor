@@ -1,0 +1,106 @@
+@namespace PequenasFinancas.App.Componentes.Compartilhados
+@inject ServicoExibicao ServicoDeExibicao
+
+<div class="painel">
+    <div class="painel-cabecalho">
+        <div>
+            <h2>Exibição</h2>
+            <p class="texto-suave texto-pequeno">
+                Muda o jeito que o app aparece na tela: tamanho da janela, tamanho das letras
+                e qual tela abre primeiro.
+            </p>
+        </div>
+    </div>
+
+    <div class="linha-campos">
+        <div class="campo">
+            <label>Tamanho da janela</label>
+            <select @bind="TamanhoEscolhido">
+                @foreach (OpcaoDeTamanhoDaJanela opcao in TamanhoDaJanela.Opcoes)
+                {
+                    <option value="@opcao.Codigo">@opcao.Nome</option>
+                }
+            </select>
+            <div class="ajuda">@ExplicarTamanhoDaJanela()</div>
+        </div>
+
+        <div class="campo">
+            <label>Tamanho das letras</label>
+            <select @bind="TamanhoDoTexto">
+                @foreach (int porcentagem in PreferenciasExibicao.TamanhosDoTextoDisponiveis)
+                {
+                    <option value="@porcentagem">@DescreverTamanhoDoTexto(porcentagem)</option>
+                }
+            </select>
+            <div class="ajuda">Aumenta ou diminui na hora tudo que aparece na tela.</div>
+        </div>
+
+        <div class="campo">
+            <label>Tela que abre primeiro</label>
+            <select @bind="TelaDeAbertura">
+                @foreach (TelaDoApp tela in TelasDoApp.QueAbremOApp)
+                {
+                    <option value="@tela.Abertura">@tela.Nome</option>
+                }
+            </select>
+            <div class="ajuda">Vale na próxima vez que você abrir o app.</div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private PreferenciasExibicao _preferencias = new();
+
+    protected override void OnInitialized() => Recarregar();
+
+    private string TamanhoEscolhido
+    {
+        get => TamanhoDaJanela.CodigoDe(_preferencias);
+        set
+        {
+            TamanhoDaJanela.Aplicar(value, _preferencias);
+            Guardar();
+        }
+    }
+
+    private int TamanhoDoTexto
+    {
+        get => _preferencias.TamanhoDoTextoEmPorcentagem;
+        set
+        {
+            _preferencias.TamanhoDoTextoEmPorcentagem = value;
+            Guardar();
+        }
+    }
+
+    private TelaInicial TelaDeAbertura
+    {
+        get => _preferencias.TelaInicial;
+        set
+        {
+            _preferencias.TelaInicial = value;
+            Guardar();
+        }
+    }
+
+    private void Guardar()
+    {
+        ServicoDeExibicao.Salvar(_preferencias);
+        Recarregar();
+    }
+
+    private void Recarregar() => _preferencias = Clonador.Clonar(ServicoDeExibicao.Preferencias);
+
+    private string ExplicarTamanhoDaJanela()
+        => TamanhoDaJanela.GuardaOUltimoTamanho(TamanhoEscolhido)
+            ? $"O app abre do tamanho em que você fechou. Da última vez: {DescreverUltimoTamanho()}."
+            : "O app abre sempre desse tamanho.";
+
+    private string DescreverUltimoTamanho()
+        => _preferencias.JanelaMaximizada ? "tela cheia" : _preferencias.Resolucao.Descricao;
+
+    private static string DescreverTamanhoDoTexto(int porcentagem)
+        => porcentagem == PreferenciasExibicao.TamanhoDoTextoPadrao
+            ? $"{porcentagem}% (normal)"
+            : $"{porcentagem}%";
+}

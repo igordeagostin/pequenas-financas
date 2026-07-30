@@ -24,7 +24,7 @@ public partial class App : Application
 
         Resources.Add(ChaveDosServicos, servicos);
 
-        new MainWindow().Show();
+        new MainWindow(servicos.GetRequiredService<ServicoExibicao>()).Show();
     }
 
     private static void AplicarCulturaBrasileira()
@@ -47,6 +47,7 @@ public partial class App : Application
 #endif
 
         servicos.AddSingleton<BancoJson>();
+        servicos.AddSingleton<ServicoExibicao>();
         servicos.AddSingleton<ServicoCategorias>();
         servicos.AddSingleton<ServicoCartoes>();
         servicos.AddSingleton<ServicoRendas>();

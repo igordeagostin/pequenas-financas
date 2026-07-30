@@ -5,12 +5,12 @@
         xmlns:componentes="clr-namespace:PequenasFinancas.App.Componentes"
         Title="Pequenas Finanças"
         Icon="logo.ico"
-        Height="860" Width="1320"
-        MinHeight="700" MinWidth="1040"
         WindowStartupLocation="CenterScreen"
-        Background="#F8FAFC">
+        Background="#F8FAFC"
+        Closing="AoFechar">
     <Grid>
-        <blazor:BlazorWebView HostPage="wwwroot\index.html"
+        <blazor:BlazorWebView x:Name="visualizador"
+                              HostPage="wwwroot\index.html"
                               Services="{DynamicResource servicos}">
             <blazor:BlazorWebView.RootComponents>
                 <blazor:RootComponent Selector="#app"
