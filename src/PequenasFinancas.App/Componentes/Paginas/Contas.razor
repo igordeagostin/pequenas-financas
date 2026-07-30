@@ -104,10 +104,7 @@
         <div class="linha-campos">
             <CampoMoeda Rotulo="Valor por mês" @bind-Valor="conta.Valor" />
 
-            <div class="campo">
-                <label>Categoria</label>
-                <input type="text" placeholder="Ex.: Moradia" @bind="conta.Categoria" @bind:event="oninput" />
-            </div>
+            <CampoCategoria @bind-Valor="conta.Categoria" />
 
             <div class="campo">
                 <label>Dia do vencimento</label>

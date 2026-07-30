@@ -1,0 +1,112 @@
+@page "/configuracoes"
+@namespace PequenasFinancas.App.Componentes.Paginas
+@inherits PaginaCadastro<Categoria>
+@inject ServicoCategorias ServicoDeCategorias
+
+<CabecalhoPagina Titulo="Configurações"
+                 Explicacao="Ajustes do aplicativo." />
+
+<div class="painel">
+    <div class="painel-cabecalho">
+        <div>
+            <h2>Categorias</h2>
+            <p class="texto-suave texto-pequeno">
+                As categorias aparecem prontas para escolher quando você cadastra uma conta
+                ou uma compra no cartão.
+            </p>
+        </div>
+        <button class="botao" @onclick="AbrirNovo">
+            <Icone Nome="NomeIcone.Adicionar" /> Nova categoria
+        </button>
+    </div>
+
+    @if (Itens.Count == 0)
+    {
+        <EstadoVazio Simbolo="NomeIcone.Configuracoes"
+                     Mensagem="Nenhuma categoria ainda. Ela também é criada sozinha quando você escreve uma categoria nova em uma conta ou compra.">
+            <Acao>
+                <button class="botao" @onclick="AbrirNovo">Criar minha primeira categoria</button>
+            </Acao>
+        </EstadoVazio>
+    }
+    else
+    {
+        <table class="tabela">
+            <thead>
+                <tr>
+                    <th>Categoria</th>
+                    <th>Onde é usada</th>
+                    <th class="acoes"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Categoria categoria in Itens)
+                {
+                    <tr>
+                        <td><span class="etiqueta">@categoria.Nome</span></td>
+                        <td class="texto-suave">@DescreverUsos(categoria)</td>
+                        <td class="acoes">
+                            <button class="botao botao-secundario" @onclick="() => AbrirEdicao(categoria)">Editar</button>
+                            <button class="botao botao-perigo" @onclick="() => PedirExclusao(categoria)">Excluir</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+<ModalFormulario Visivel="FormularioAberto"
+                 Titulo="@(EhCadastroNovo ? "Nova categoria" : "Editar categoria")"
+                 Erro="@MensagemDeErro"
+                 AoConfirmar="ConfirmarFormulario"
+                 AoCancelar="FecharFormulario">
+    @if (ItemEmEdicao is Categoria categoria)
+    {
+        <div class="campo">
+            <label>Nome da categoria</label>
+            <input type="text" placeholder="Ex.: Moradia" @bind="categoria.Nome" @bind:event="oninput" />
+            <div class="ajuda">
+                Ao mudar o nome, os lançamentos que usam esta categoria passam a mostrar o nome novo.
+            </div>
+        </div>
+    }
+</ModalFormulario>
+
+<ModalConfirmacao Visivel="ItemParaExcluir is not null"
+                  Descricao="@(ItemParaExcluir is null ? string.Empty : DescreverParaExclusao(ItemParaExcluir))"
+                  AoConfirmar="ConfirmarExclusao"
+                  AoCancelar="CancelarExclusao" />
+
+@code {
+    protected override ServicoCrud<Categoria> Servico => ServicoDeCategorias;
+
+    protected override string? Conferir(Categoria categoria)
+        => Validacoes.Primeira(
+            Validacoes.Nome(categoria.Nome),
+            ConferirNomeRepetido(categoria));
+
+    protected override string DescreverParaExclusao(Categoria categoria)
+    {
+        int usos = ServicoDeCategorias.ContarUsos(categoria.Nome);
+
+        return usos == 0
+            ? $"a categoria {categoria.Nome}"
+            : $"a categoria {categoria.Nome}, que vai sair de {DescreverQuantidadeDeUsos(usos)}";
+    }
+
+    private string? ConferirNomeRepetido(Categoria categoria)
+        => ServicoDeCategorias.ExisteOutraComOMesmoNome(categoria)
+            ? "Já existe uma categoria com esse nome."
+            : null;
+
+    private string DescreverUsos(Categoria categoria)
+    {
+        int usos = ServicoDeCategorias.ContarUsos(categoria.Nome);
+
+        return usos == 0 ? "ainda não usada" : DescreverQuantidadeDeUsos(usos);
+    }
+
+    private static string DescreverQuantidadeDeUsos(int usos)
+        => usos == 1 ? "1 lançamento" : $"{usos} lançamentos";
+}

@@ -358,7 +358,8 @@ As duas coisas se cadastram do mesmo jeito. A diferença é só o campo **Termin
 1. Clique em **+ Nova conta**.
 2. Escreva a descrição (ex.: `Aluguel`).
 3. Informe o valor por mês.
-4. Escreva a categoria (ex.: `Moradia`) — ela é usada no gráfico do resumo.
+4. Escolha a categoria (ex.: `Moradia`) — ela é usada no gráfico do resumo. Clique no campo
+   para ver as categorias que você já usou, ou escreva uma nova. Veja **Categorias**.
 5. Informe o dia do vencimento.
 6. Em **Começa em**, escolha o primeiro mês em que você paga.
 7. **Termina em** é opcional: preencha só quando a conta tem data para acabar.
@@ -479,6 +480,8 @@ Você lança a compra **uma vez** e o app espalha as parcelas pelos meses sozinh
 5. Informe em quantas vezes você parcelou.
 6. Em **Você vai informar**, escolha se vai digitar o valor da parcela ou o valor total.
 7. Digite o valor.
+8. Escolha a categoria (ex.: `Eletrônicos`). Clique no campo para ver as categorias que
+   você já usou, ou escreva uma nova. Veja **Categorias**.
 
 Enquanto você preenche, o app mostra uma prévia: `12x de R$ 400,00 · 07/2026 → 06/2027`.
 
@@ -579,6 +582,70 @@ Clique em **Ver movimentos** para conferir tudo que entrou e saiu daquela reserv
 
 ---
 
+## Configurações
+
+É a última tela do menu. Ali ficam os ajustes do aplicativo. Por enquanto ela tem uma
+coisa só: a lista de **categorias**.
+
+### Categorias
+
+Categoria é a etiqueta que você põe em uma conta ou em uma compra no cartão para saber
+em que tipo de coisa o dinheiro foi: `Moradia`, `Transporte`, `Alimentação`.
+
+Elas aparecem no quadro **Para onde vai o dinheiro**, no resumo do mês.
+
+Você não precisa cadastrar nada antes de começar. Toda categoria que você escreve em uma
+conta ou em uma compra fica salva sozinha.
+
+Exemplo: você cadastra o aluguel e escreve `Moradia` na categoria. Da próxima vez que
+abrir o cadastro de uma conta e clicar no campo **Categoria**, `Moradia` já aparece na
+lista para você escolher, sem digitar de novo.
+
+Se você escrever `moradia` e já existir `Moradia`, o app usa a que já existe. Assim a
+mesma categoria não vira duas.
+
+### Ver as categorias que você usa
+
+1. Clique em **Configurações**, no menu.
+2. A lista mostra todas as categorias em ordem alfabética.
+3. Ao lado de cada uma, **Onde é usada** diz em quantos lançamentos ela está:
+   *3 lançamentos*, *1 lançamento* ou *ainda não usada*.
+
+### Criar uma categoria
+
+Serve para deixar a lista pronta antes de cadastrar as contas.
+
+1. Clique em **+ Nova categoria**.
+2. Escreva o nome (ex.: `Lazer`).
+
+Ela passa a aparecer na lista de escolha das contas e das compras, mesmo sem nenhum
+lançamento usando ela ainda.
+
+Não dá para ter duas categorias com o mesmo nome: o app avisa e não deixa salvar.
+
+### Mudar o nome de uma categoria
+
+1. Clique em **Editar** na categoria.
+2. Escreva o nome novo.
+
+Todos os lançamentos que usavam o nome antigo passam a mostrar o nome novo, sem você
+precisar abrir um por um.
+
+Exemplo: você tem o aluguel e a compra do sofá em `Moradia`. Ao trocar o nome para
+`Casa`, os dois passam a aparecer como `Casa` no quadro **Para onde vai o dinheiro**.
+
+### Excluir uma categoria
+
+1. Clique em **Excluir** na categoria.
+2. O aviso diz de quantos lançamentos ela vai sair.
+
+Os lançamentos **não são apagados**: eles apenas ficam sem categoria. No quadro
+**Para onde vai o dinheiro** eles passam a ser somados em **Sem categoria**.
+
+Para colocá-los em outra categoria, abra cada lançamento e escolha a nova.
+
+---
+
 ## Perguntas rápidas
 
 **Onde ficam meus dados?**
@@ -608,6 +675,11 @@ Não, está certo. A marca vale para um mês só, porque no mês seguinte a cont
 
 **Marquei sem querer. Como desfaço?**
 Clique no mesmo botão outra vez. Ele volta para **Marcar pago**.
+
+**Preciso cadastrar as categorias antes de usar o app?**
+Não. Basta escrever a categoria na conta ou na compra: ela fica salva sozinha e aparece
+pronta para escolher da próxima vez. A tela **Configurações** serve para arrumar essa
+lista quando você quiser.
 
 **Onde eu anoto o mercado, a farmácia, o lanche?**
 O app não é um caderno de gastos do dia a dia. O que existe é o **planejamento da

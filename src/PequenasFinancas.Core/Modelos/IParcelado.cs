@@ -2,7 +2,7 @@ using PequenasFinancas.Core.Comum;
 
 namespace PequenasFinancas.Core.Modelos;
 
-public interface IParcelado : IRegistro
+public interface IParcelado : ICategorizavel
 {
     string Descricao { get; set; }
 
@@ -11,6 +11,4 @@ public interface IParcelado : IRegistro
     int QuantidadeParcelas { get; set; }
 
     Competencia CompetenciaPrimeiraParcela { get; set; }
-
-    string Categoria { get; set; }
 }

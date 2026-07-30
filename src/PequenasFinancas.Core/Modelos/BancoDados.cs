@@ -6,6 +6,8 @@ public sealed class BancoDados
 
     public int Versao { get; set; } = VersaoAtual;
 
+    public List<Categoria> Categorias { get; set; } = [];
+
     public List<Cartao> Cartoes { get; set; } = [];
 
     public List<FonteRenda> Rendas { get; set; } = [];

@@ -43,6 +43,7 @@ public partial class App : Application
 #endif
 
         servicos.AddSingleton<BancoJson>();
+        servicos.AddSingleton<ServicoCategorias>();
         servicos.AddSingleton<ServicoCartoes>();
         servicos.AddSingleton<ServicoRendas>();
         servicos.AddSingleton<ServicoRendasExtras>();

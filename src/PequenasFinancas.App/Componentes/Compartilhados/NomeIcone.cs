@@ -10,6 +10,7 @@ public enum NomeIcone
     Compra,
     Guardado,
     Semana,
+    Configuracoes,
     Entrada,
     Saida,
     DinheiroLivre,

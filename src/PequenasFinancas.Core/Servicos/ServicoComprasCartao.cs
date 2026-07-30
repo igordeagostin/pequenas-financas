@@ -4,7 +4,8 @@ using PequenasFinancas.Core.Modelos;
 
 namespace PequenasFinancas.Core.Servicos;
 
-public sealed class ServicoComprasCartao(BancoJson banco) : ServicoCrud<CompraCartao>(banco)
+public sealed class ServicoComprasCartao(BancoJson banco, ServicoCategorias servicoCategorias)
+    : ServicoCrudCategorizado<CompraCartao>(banco, servicoCategorias)
 {
     protected override List<CompraCartao> Colecao => Banco.Dados.ComprasCartao;
 

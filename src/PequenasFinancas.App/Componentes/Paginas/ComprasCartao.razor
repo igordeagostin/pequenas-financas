@@ -122,10 +122,7 @@ else
             <CamposDoParcelamento Parcelado="compra" AoAlterar="StateHasChanged" />
         </div>
 
-        <div class="campo">
-            <label>Categoria</label>
-            <input type="text" placeholder="Ex.: Eletrônicos" @bind="compra.Categoria" @bind:event="oninput" />
-        </div>
+        <CampoCategoria @bind-Valor="compra.Categoria" />
     }
 </ModalFormulario>
 

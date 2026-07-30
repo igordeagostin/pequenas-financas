@@ -16,6 +16,8 @@ public abstract class ServicoCrud<T>(BancoJson banco)
 
     public void Salvar(T item)
     {
+        AntesDeSalvar(item);
+
         int indiceExistente = Colecao.FindIndex(existente => existente.Id == item.Id);
 
         if (indiceExistente >= 0)
@@ -32,10 +34,22 @@ public abstract class ServicoCrud<T>(BancoJson banco)
 
     public void Excluir(Guid id)
     {
-        if (Colecao.RemoveAll(item => item.Id == id) > 0)
+        if (Obter(id) is not T item)
         {
-            Banco.Salvar();
+            return;
         }
+
+        AntesDeExcluir(item);
+        Colecao.Remove(item);
+        Banco.Salvar();
+    }
+
+    protected virtual void AntesDeSalvar(T item)
+    {
+    }
+
+    protected virtual void AntesDeExcluir(T item)
+    {
     }
 
     protected virtual IEnumerable<T> Ordenar(IEnumerable<T> itens) => itens;

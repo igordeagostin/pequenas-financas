@@ -1,0 +1,36 @@
+@namespace PequenasFinancas.App.Componentes.Compartilhados
+@inject ServicoCategorias ServicoDeCategorias
+
+<div class="campo">
+    <label>Categoria</label>
+    <input type="text" list="@IdDaLista" placeholder="Ex.: Moradia"
+           value="@Valor" @oninput="AoDigitar" />
+    <datalist id="@IdDaLista">
+        @foreach (string nome in CategoriasConhecidas)
+        {
+            <option value="@nome"></option>
+        }
+    </datalist>
+    <div class="ajuda">Escolha uma já usada ou escreva uma nova.</div>
+</div>
+
+@code {
+    private readonly string IdDaLista = $"categorias-{Guid.NewGuid():N}";
+
+    private IReadOnlyList<string> CategoriasConhecidas = [];
+
+    [Parameter]
+    public string Valor { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> ValorChanged { get; set; }
+
+    protected override void OnInitialized() => CategoriasConhecidas = ServicoDeCategorias.ListarNomes();
+
+    private Task AoDigitar(ChangeEventArgs argumentos)
+    {
+        Valor = argumentos.Value?.ToString() ?? string.Empty;
+
+        return ValorChanged.InvokeAsync(Valor);
+    }
+}

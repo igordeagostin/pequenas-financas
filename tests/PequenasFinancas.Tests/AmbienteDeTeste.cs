@@ -12,11 +12,12 @@ public sealed class AmbienteDeTeste : IDisposable
         _pastaTemporaria = Path.Combine(Path.GetTempPath(), "PequenasFinancas.Testes", Guid.NewGuid().ToString("N"));
 
         Banco = new BancoJson(Path.Combine(_pastaTemporaria, "dados.json"));
+        Categorias = new ServicoCategorias(Banco);
         Cartoes = new ServicoCartoes(Banco);
         Rendas = new ServicoRendas(Banco);
         RendasExtras = new ServicoRendasExtras(Banco);
-        Contas = new ServicoContas(Banco);
-        ComprasCartao = new ServicoComprasCartao(Banco);
+        Contas = new ServicoContas(Banco, Categorias);
+        ComprasCartao = new ServicoComprasCartao(Banco, Categorias);
         Reservas = new ServicoReservas(Banco);
         Pagamentos = new ServicoPagamentos(Banco);
         Parcelas = new ServicoParcelas(Banco, Cartoes, Pagamentos);
@@ -26,6 +27,8 @@ public sealed class AmbienteDeTeste : IDisposable
     }
 
     public BancoJson Banco { get; }
+
+    public ServicoCategorias Categorias { get; }
 
     public ServicoCartoes Cartoes { get; }
 
