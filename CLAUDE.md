@@ -122,11 +122,36 @@ Nunca versionar, em hipótese alguma:
 - **Dados pessoais reais** — valores, nomes, extratos ou capturas de tela com dados
   verdadeiros. Exemplos em código, testes, documentação e imagens usam **dados fictícios**.
 
+### Só dado fictício, em qualquer lugar
+
+Nenhuma informação verdadeira do usuário pode ser escrita em lugar nenhum do repositório:
+nem no código, nem em teste, nem na documentação, nem em mensagem de commit, nem em
+imagem. Isso vale mesmo que o dado pareça inofensivo.
+
+Nunca escrever:
+
+- salário, saldo, valor de compra, limite ou qualquer número tirado do uso real do app;
+- nome de pessoa, loja, banco, cidade ou estabelecimento que apareça no extrato do usuário;
+- número de cartão, conta, agência, CPF, telefone, e-mail ou endereço;
+- conteúdo de arquivo que o usuário tenha enviado — fatura, extrato, planilha, CSV;
+- captura de tela feita com o banco de dados de verdade.
+
+O que fazer no lugar:
+
+- Inventar nomes e valores redondos: `Loja do Bairro`, `Mercado Bom Preço`,
+  `Livraria Central`, R$ 4.800 em 12x de R$ 400.
+- Ao receber um arquivo real do usuário para entender um formato, usar o arquivo apenas
+  para conferir a leitura, **fora** da pasta do repositório, e apagá-lo em seguida.
+  O teste que fica versionado recria o formato com dados inventados.
+- Ao precisar de uma tela de exemplo na documentação, montar com um banco de dados
+  fictício, nunca com o do usuário.
+
 Antes de cada commit:
 
 1. Rodar `git status` e conferir o que está sendo adicionado.
 2. Nunca usar `git add -f` para forçar um arquivo ignorado.
 3. Conferir que o `.gitignore` continua bloqueando `dados.json`, `backups/`, `.env` e chaves.
+4. Reler o que está entrando e conferir que todo nome e todo valor são inventados.
 
 Se um segredo ou dado pessoal for enviado por engano, ele deve ser tratado como vazado:
 trocar a credencial e limpar o histórico, não basta apagar em um commit novo.
